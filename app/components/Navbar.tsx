@@ -108,11 +108,11 @@ export default function Navbar() {
                       href={link.href}
                       className={`block font-semibold py-2 ${
   pathname === link.href ? 'text-[#00c2cb]' : 'text-white'
-}`
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
+}`}
+  onClick={() => setMobileMenuOpen(false)}
+>
+  {link.label}
+</Link>
                   </li>
                 ))}
               </ul>
