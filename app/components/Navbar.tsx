@@ -25,8 +25,8 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-[#0d1321] border-b border-[#00c2cb] z-50">
-      <div className="flex items-center justify-between px-4 py-3">
+    <nav className="fixed top-0 left-0 w-full bg-white border-b border-[#00c2cb] z-50">
+      <div className="flex items-center justify-between px-4 py-3 bg-white">
         <Link href="/" className="flex-shrink-0 max-w-[120px] lg:max-w-[180px]">
           <Image
             src="/images/apex-logo-white.png"
@@ -61,12 +61,12 @@ export default function Navbar() {
           </svg>
         </button>
         {/* Desktop Nav */}
-        <div className="hidden lg:flex lg:items-center lg:space-x-6">
+        <div className="hidden lg:flex lg:items-center lg:space-x-6 bg-white">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`font-semibold transition hover:text-[#00c2cb] ${pathname === link.href ? 'text-[#00c2cb]' : 'text-white'}`}
+              className={`font-semibold transition hover:text-[#00c2cb] ${pathname === link.href ? 'text-[#00c2cb]' : 'text-[#052438]'}`}
             >
               {link.label}
             </Link>
@@ -75,8 +75,16 @@ export default function Navbar() {
       </div>
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="block md:hidden bg-white border-t border-[#e2e8f0] w-full absolute left-0 top-full z-40 shadow-xl animate-fadeInDown">
-          <ul className="flex flex-col space-y-2 px-4 py-4">
+        <div className="block lg:hidden bg-white border-t border-[#e2e8f0] w-full absolute left-0 top-full z-50 shadow-xl animate-fadeInDown max-h-[80vh] overflow-y-auto" style={{maxHeight: '80vh', backgroundColor: '#fff'}}>
+          <button
+            className="absolute top-2 right-4 text-[#052438] text-3xl font-bold focus:outline-none"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close navigation menu"
+            style={{zIndex: 100}}
+          >
+            &times;
+          </button>
+          <ul className="flex flex-col space-y-2 px-4 py-4 pt-10">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
