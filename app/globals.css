@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-[#e2e8f0] bg-[#0d1321] min-h-screen;
+  }
+}
+
+@layer components {
+  main {
+    @apply flex-grow;
+  }
+  footer {
+    @apply bg-[#091018] text-[#a0aec0];
+  }
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Ensure proper spacing between sections */
+section {
+  @apply py-16;
+}
+
+/* Ensure proper text colors */
+.text-primary {
+  @apply text-[#00c2cb];
+}
+
+.text-secondary {
+  @apply text-[#a0aec0];
+}
+
+/* Ensure proper background colors */
+.bg-primary {
+  @apply bg-[#00c2cb];
+}
+
+.bg-secondary {
+  @apply bg-[#091018];
+}

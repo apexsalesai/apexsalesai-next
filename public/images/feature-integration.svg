@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="integrationGradient" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00C2CB"/>
+      <stop offset="1" stop-color="#a0aec0"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="#a0aec0" fill-opacity="0.11"/>
+  <rect x="16" y="28" width="32" height="8" rx="4" fill="url(#integrationGradient)"/>
+  <rect x="28" y="16" width="8" height="32" rx="4" fill="url(#integrationGradient)"/>
+  <circle cx="32" cy="32" r="6" fill="#fff"/>
+</svg>

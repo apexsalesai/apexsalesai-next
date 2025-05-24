@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #00c2cb;
+  --primary-dark: #00a8b3;
+  --secondary: #052438;
+  --bg-dark: #0d1321;
+  --bg-darker: #091018;
+  --bg-card: rgba(26, 32, 44, 0.5);
+  --text: #e2e8f0;
+  --text-light: #cbd5e0;
+  --text-dimmed: #a0aec0;
+  --border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background-color: var(--bg-dark);
+}
+
+@layer components {
+  .hero-title {
+    @apply text-4xl md:text-5xl font-extrabold mb-6;
+    background: linear-gradient(to right, #ffffff, rgba(0, 194, 203, 0.8));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-subtitle {
+    @apply text-lg text-text-light max-w-3xl mx-auto mb-8;
+  }
+
+  .cta {
+    @apply bg-primary text-secondary font-semibold px-6 py-3 rounded-lg inline-block m-2 transition-all;
+  }
+
+  .cta:hover {
+    @apply transform -translate-y-1 bg-primary;
+    box-shadow: 0 10px 25px rgba(0, 194, 203, 0.4);
+  }
+
+  .cta-outline {
+    @apply bg-transparent text-primary border-2 border-primary;
+  }
+
+  .cta-outline:hover {
+    @apply bg-opacity-10 bg-primary transform -translate-y-1;
+    box-shadow: 0 10px 25px rgba(0, 194, 203, 0.2);
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-extrabold mb-6 text-center;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-text-dimmed max-w-3xl mx-auto mb-12 text-center;
+  }
+
+  .feature-card {
+    @apply bg-[rgba(26,32,44,0.5)] border border-[rgba(255,255,255,0.1)] rounded-xl p-8 transition-all h-full;
+  }
+
+  .feature-card:hover {
+    @apply transform -translate-y-2 shadow-xl border-[#00c2cb] border-opacity-30;
+  }
+
+  .navbar {
+    @apply sticky top-0 z-50 bg-[#0d1321] bg-opacity-95 backdrop-blur-sm border-b border-[#1a1e29] py-4;
+  }
+
+  .footer {
+    @apply bg-[#0d1321] bg-opacity-95 pt-16 pb-8 border-t border-[#1a1e29] mt-20;
+  }
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+.animation-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-3 {
+  animation-delay: 0.3s;
+}

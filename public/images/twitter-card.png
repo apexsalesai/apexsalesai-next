@@ -1,0 +1,13 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00C2CB"/>
+      <stop offset="1" stop-color="#0d1321"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect x="60" y="60" width="1080" height="510" rx="40" fill="#fff" fill-opacity="0.10"/>
+  <text x="50%" y="40%" text-anchor="middle" fill="#fff" font-size="80" font-family="Arial, Helvetica, sans-serif" font-weight="bold">ApexSalesAI</text>
+  <text x="50%" y="54%" text-anchor="middle" fill="#00C2CB" font-size="38" font-family="Arial, Helvetica, sans-serif">Predictive Autonomous Revenue Execution</text>
+  <text x="50%" y="64%" text-anchor="middle" fill="#fff" font-size="28" font-family="Arial, Helvetica, sans-serif">apexsalesai.com</text>
+</svg>

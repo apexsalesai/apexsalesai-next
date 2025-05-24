@@ -1,0 +1,1 @@
+// Deprecated: SendGrid is no longer used in this project. This file is obsolete and can be deleted.

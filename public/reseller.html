@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partner Ecosystem | ApexSalesAI</title>
+  <meta name="description" content="Join ApexSalesAI's elite reseller program and deliver next-generation AI sales and support solutions to your clients. Exceptional margins, seamless onboarding, and dedicated partner success." />
+  <meta name="keywords" content="AI reseller program, ApexSalesAI partner, AI sales channel, technology reseller opportunity, SaaS reseller program, AI partner program" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/reseller.css">
+</head>
+<body>
+  <!-- Navigation and other sections will be similar to your current design -->
+
+  <!-- Hero Section with Sharpened Value Prop -->
+  <section class="hero">
+    <div class="container hero-content">
+      <h1 class="fade-in">Partner Ecosystem Program</h1>
+      <h2 class="fade-in animation-delay-1" style="font-size:2rem;font-weight:600;color:#00c2cb;">Built for MSPs, VARs, Distributors & Channel Innovators</h2>
+      <p class="fade-in animation-delay-2">Whether you’re an MSP, VAR, distributor, or SaaS consultant, ApexSalesAI gives you the tools, support, and margins to dominate the AI sales revolution.</p>
+      <div class="fade-in animation-delay-3">
+        <a href="#partner-tiers" class="btn">Explore Program Tiers</a>
+        <a href="#application" class="btn btn-outline">Apply Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who Should Partner Section -->
+  <section class="who-partner-section">
+    <div class="container">
+      <h2>Who Should Partner With Us?</h2>
+      <div class="partner-types">
+        <div class="partner-type"><span style="font-size:2rem;">🛠️</span><h4>Managed Service Providers (MSPs)</h4><p>Expand your portfolio with AI-driven revenue solutions.</p></div>
+        <div class="partner-type"><span style="font-size:2rem;">🏢</span><h4>Value-Added Resellers (VARs)</h4><p>Deliver next-gen automation to your enterprise clients.</p></div>
+        <div class="partner-type"><span style="font-size:2rem;">🌐</span><h4>Distributors</h4><p>Bring AI innovation to your channel network.</p></div>
+        <div class="partner-type"><span style="font-size:2rem;">💡</span><h4>Consultants & ISVs</h4><p>Enhance offerings with proven AI sales tech.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner Success Stories -->
+  <section class="success-stories-section">
+    <div class="container">
+      <h2>Partner Success Stories</h2>
+      <div class="success-stories-grid">
+        <div class="success-story-card">
+          <h4>$100K+ new ARR in 6 months</h4>
+          <p>One of our MSP partners closed six-figure new business in their first two quarters.</p>
+        </div>
+        <div class="success-story-card">
+          <h4>Doubled client retention with AI automation</h4>
+          <p>A VAR leveraged our platform to deliver automated sales support, doubling their client retention rate.</p>
+        </div>
+        <div class="success-story-card">
+          <h4>White-labeled for 20+ enterprise clients</h4>
+          <p>A distributor successfully deployed our white-label solution to over 20 enterprise customers in under a year.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Revenue Calculator -->
+  <section class="revenue-calculator-section">
+    <div class="container">
+      <h2>Estimate Your Revenue Potential</h2>
+      <form id="revenueCalculator" style="max-width:500px;margin:0 auto;">
+        <label>Number of Clients: <input type="number" id="clients" min="1" value="10" required></label><br><br>
+        <label>Average Deal Size ($): <input type="number" id="dealSize" min="1000" value="5000" required></label><br><br>
+        <label>First-Year Margin (%): <input type="number" id="margin" min="10" max="50" value="40" required></label><br><br>
+        <button type="button" class="btn" onclick="calculateRevenue()">Calculate</button>
+      </form>
+      <div id="revenueResult" style="margin-top:2rem;font-size:1.25rem;color:#00c2cb;font-weight:600;"></div>
+    </div>
+    <script>
+      function calculateRevenue() {
+        var clients = parseInt(document.getElementById('clients').value) || 0;
+        var dealSize = parseInt(document.getElementById('dealSize').value) || 0;
+        var margin = parseInt(document.getElementById('margin').value) || 0;
+        var revenue = clients * dealSize * (margin/100);
+        document.getElementById('revenueResult').innerText =
+          'Estimated First-Year Revenue: $' + revenue.toLocaleString();
+      }
+    </script>
+  </section>
+
+  <!-- Co-Marketing & Lead Sharing Section -->
+  <section class="co-marketing-section">
+    <div class="container">
+      <h2>Co-Marketing & Lead Sharing</h2>
+      <p>We invest in our partners: co-branded campaigns, lead referrals, and joint events help you grow faster and win more business. Our marketing team works hand-in-hand with you to generate demand and accelerate your pipeline.</p>
+    </div>
+  </section>
+
+  <!-- Technical Enablement Section -->
+  <section class="technical-enablement-section">
+    <div class="container">
+      <h2>Technical Enablement & Integration Support</h2>
+      <ul>
+        <li>✔️ Guided onboarding and sandbox access for your team</li>
+        <li>✔️ Comprehensive API documentation</li>
+        <li>✔️ Dedicated integration specialists</li>
+        <li>✔️ Access to our developer community and support resources</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- (Rest of your current page: benefits, tiers, process, testimonials, FAQ, CTA, etc.) -->
+
+</body>
+</html>

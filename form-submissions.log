@@ -1,0 +1,16 @@
+{"timestamp":"2025-05-24T06:03:48.588Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"Failed to notify admin."}
+{"timestamp":"2025-05-24T06:05:52.206Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"Failed to notify admin."}
+{"timestamp":"2025-05-24T06:15:19.088Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"Failed to notify admin."}
+{"timestamp":"2025-05-24T06:16:45.435Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"Failed to notify admin."}
+{"timestamp":"2025-05-24T06:24:43.285Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"Failed to notify admin."}
+{"timestamp":"2025-05-24T06:25:57.320Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"Failed to notify admin."}
+{"timestamp":"2025-05-24T06:30:59.938Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T06:35:24.125Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T06:36:08.198Z","endpoint":"/api/subscribe","data":{"email":"big@outlook.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T06:39:02.886Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T06:48:04.618Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T06:54:29.891Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T07:00:32.662Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T07:03:05.911Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T07:08:36.147Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":false,"error":"API key is invalid"}
+{"timestamp":"2025-05-24T07:11:35.975Z","endpoint":"/api/subscribe","data":{"email":"big@email.com"},"success":true}

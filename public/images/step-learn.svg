@@ -1,0 +1,17 @@
+<svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="learnBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00C2CB" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#00C2CB" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="learnMain" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00C2CB"/>
+      <stop offset="1" stop-color="#a0aec0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="36" cy="60" rx="28" ry="8" fill="url(#learnBg)"/>
+  <rect x="18" y="22" width="36" height="24" rx="12" fill="url(#learnMain)"/>
+  <circle cx="36" cy="34" r="8" fill="#fff" fill-opacity=".15"/>
+  <path d="M36 26 Q44 34 36 42 Q28 34 36 26 Z" fill="#fff" fill-opacity=".13"/>
+  <circle cx="36" cy="34" r="4" fill="#00C2CB"/>
+</svg>

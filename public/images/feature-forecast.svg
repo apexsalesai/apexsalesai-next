@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="forecastBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00C2CB" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#00C2CB" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="forecastMain" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00C2CB"/>
+      <stop offset="1" stop-color="#ffd700"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="32" cy="54" rx="24" ry="8" fill="url(#forecastBg)"/>
+  <rect x="12" y="16" width="40" height="32" rx="16" fill="url(#forecastMain)"/>
+  <path d="M24 40 Q32 28 40 40" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <circle cx="32" cy="32" r="8" fill="#fff" fill-opacity=".13"/>
+</svg>

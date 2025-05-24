@@ -1,0 +1,11 @@
+body {
+  @apply text-[#e2e8f0] bg-[#0d1321] min-h-screen;
+}
+
+main {
+  @apply flex-grow;
+}
+
+footer {
+  @apply bg-[#091018] text-[#a0aec0];
+}
