@@ -39,7 +39,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`navbar transition-all duration-300 z-[100] fixed w-full top-0 left-0 border-b border-primary bg-bg-dark ${scrolled ? 'py-2 shadow-lg' : 'py-4'}`} style={{zIndex: 100, overflow: 'visible'}}>
+    <nav className={`navbar transition-all duration-300 z-[100] fixed w-full top-0 left-0 border-b border-[#00c2cb] bg-[#0d1321] ${scrolled ? 'py-2 shadow-lg' : 'py-4'}`} style={{zIndex: 100, overflow: 'visible'}}>
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link href="/" className="flex-shrink-0">
   <Image
@@ -55,26 +55,25 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex">
-          <ul className="flex space-x-6">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link 
-                  href={link.href}
-                  className={`font-semibold transition hover:text-primary ${
-                    pathname === link.href ? 'text-primary' : 'text-text'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+  <ul className="flex space-x-6">
+    {navLinks.map((link) => (
+      <li key={link.href}>
+        <Link 
+          href={link.href}
+          className={`font-semibold transition hover:text-[#00c2cb] ${
+            pathname === link.href ? 'text-[#00c2cb]' : 'text-white'
+          }`}
+        >
+          {link.label}
+        </Link>
+      </li>
+    ))}
+  </ul>
+</div>
 
         {/* Mobile Menu Button */}
         <button
-  className="flex md:hidden ml-auto text-white bg-primary rounded p-2 shadow-lg focus:outline-none z-[200] border-2 border-red-500"
-  style={{zIndex: 200, border: '2px solid #f00'}}
+  className="flex md:hidden ml-auto text-white bg-[#00c2cb] rounded p-2 shadow-lg focus:outline-none z-[200] border-2 border-[#2d3748]" style={{zIndex: 200}}
   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
   aria-label="Toggle navigation menu"
 >
@@ -100,7 +99,7 @@ export default function Navbar() {
         <>
           {/* Backdrop */}
           <div className="fixed inset-0 bg-black bg-opacity-60 z-40" onClick={() => setMobileMenuOpen(false)} />
-          <div className="md:hidden bg-bg-dark border-t border-border py-4 fixed top-16 left-0 w-full z-50 animate-fadeInDown shadow-xl">
+          <div className="md:hidden bg-[#0d1321] border-t border-[#2d3748] py-4 fixed top-16 left-0 w-full z-50 animate-fadeInDown shadow-xl">
             <div className="container mx-auto px-4">
               <ul className="flex flex-col space-y-4">
                 {navLinks.map((link) => (
@@ -108,8 +107,8 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       className={`block font-semibold py-2 ${
-                        pathname === link.href ? 'text-primary' : 'text-text'
-                      }`}
+  pathname === link.href ? 'text-[#00c2cb]' : 'text-white'
+}`
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {link.label}
