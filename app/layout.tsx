@@ -4,7 +4,7 @@ import '../styles/globals.css';
 import './layout.css';
 import Script from 'next/script';
 import Head from 'next/head';
-import Header from './components/Header';
+import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 export const metadata: Metadata = {
@@ -123,7 +123,7 @@ export default function RootLayout({
         <Script src="https://cdn.botpress.cloud/webchat/v2.4/inject.js" strategy="afterInteractive" />
         <Script src="https://files.bpcontent.cloud/2025/05/06/05/20250506051043-1TC1W944.js" strategy="afterInteractive" />
         <div className="min-h-screen flex flex-col">
-  <Header />
+  <Navbar />
   <main className="flex-grow pt-24">
     {children}
   </main>
