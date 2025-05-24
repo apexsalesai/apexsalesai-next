@@ -8,7 +8,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <SessionProvider>
       <Navbar />
       <main className="flex-grow pt-24">{children}</main>
-      <Footer />
     </SessionProvider>
   );
 }

@@ -68,7 +68,7 @@ export default function Footer() {
               <li><Link href="/platform" className="text-[#a0aec0] hover:text-white transition-colors">Platform</Link></li>
               <li><Link href="/pricing" className="text-[#a0aec0] hover:text-white transition-colors">Pricing</Link></li>
               <li><Link href="/demo" className="text-[#a0aec0] hover:text-white transition-colors">Request Demo</Link></li>
-              <li><Link href="/documentation" className="text-[#a0aec0] hover:text-white transition-colors">Documentation</Link></li>
+              
             </ul>
           </div>
 
@@ -161,9 +161,6 @@ export default function Footer() {
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="/terms" className="text-[#a0aec0] hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="text-[#a0aec0] hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/press" className="text-[#a0aec0] hover:text-white transition-colors">Press</Link>
-            <Link href="/careers" className="text-[#a0aec0] hover:text-white transition-colors">Careers</Link>
-            <Link href="/sitemap.xml" className="text-[#a0aec0] hover:text-white transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

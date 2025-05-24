@@ -121,6 +121,88 @@ export default function About() {
   </div>
 </section>
 
+      {/* Company Values & Culture Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#052438]">Our Values Drive Us Forward</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center text-center">
+              <span className="mb-4 text-5xl text-[#00c2cb]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </span>
+              <h3 className="font-bold text-xl mb-2">Relentless Innovation</h3>
+              <p className="text-[#1a202c]">We do not wait for the future. We create it. Every day, every meeting, every line of code is an opportunity to push boundaries and deliver breakthroughs.</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="mb-4 text-5xl text-[#00c2cb]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm0 2c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6z" /></svg>
+              </span>
+              <h3 className="font-bold text-xl mb-2">Customer Obsession</h3>
+              <p className="text-[#1a202c]">We live and breathe our customers’ success. Their challenges are our fuel. Their wins are our celebration.</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="mb-4 text-5xl text-[#00c2cb]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a4 4 0 118 0v2m-4 4v-4m0 0v-4m0 0V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v2" /></svg>
+              </span>
+              <h3 className="font-bold text-xl mb-2">Radical Transparency</h3>
+              <p className="text-[#1a202c]">We believe in open conversations. We share our victories and our setbacks. That is how we grow. That is how we win.</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="mb-4 text-5xl text-[#00c2cb]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m13-2.13V8a4 4 0 00-3-3.87M6 8V5a4 4 0 013-3.87" /></svg>
+              </span>
+              <h3 className="font-bold text-xl mb-2">Unstoppable Teamwork</h3>
+              <p className="text-[#1a202c]">When you join ApexSalesAI, you join a team that never settles. We lift each other up. We challenge each other. Together, we are unstoppable.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Diversity & Inclusion Statement */}
+      <section className="py-16 bg-[#00c2cb]/10">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#00c2cb]">Diversity Powers Our Progress</h2>
+          <p className="text-lg max-w-3xl mx-auto text-[#052438]">At ApexSalesAI, we know that greatness comes from every corner of the world. We welcome every voice, every background, every perspective. Our doors are open. Our table is wide. We are building a company where everyone belongs and everyone can lead. This is not just a promise. This is our foundation.</p>
+        </div>
+      </section>
+
+      {/* Community Involvement or Social Impact */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#052438]">Committed to a Greater Impact</h2>
+          <p className="text-lg max-w-3xl mx-auto text-[#1a202c]">We are not just building technology. We are building a better world. Our team volunteers in local schools to inspire the next generation of innovators. We support open source projects that move our industry forward. We invest in causes that lift up our communities. Our mission goes beyond business. We are here to make a difference.</p>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-[#f7fafc]">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#052438]">Frequently Asked Questions</h2>
+          <div className="max-w-3xl mx-auto space-y-8">
+            <div>
+              <h3 className="font-semibold text-xl text-[#00c2cb] mb-2">What is ApexSalesAI’s mission?</h3>
+              <p className="text-[#1a202c]">To empower every organization to achieve more with predictive autonomous agents. We turn every customer moment into momentum.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-[#00c2cb] mb-2">Who leads ApexSalesAI?</h3>
+              <p className="text-[#1a202c]">Our leadership team brings decades of experience in AI, enterprise sales, and technology. We are united by a single vision: to change the game for our customers.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-[#00c2cb] mb-2">How can I join the team?</h3>
+              <p className="text-[#1a202c]">We are always looking for passionate, driven people. Visit our Careers page or reach out directly. If you want to change the world, you belong here.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-[#00c2cb] mb-2">What makes your culture unique?</h3>
+              <p className="text-[#1a202c]">We combine bold ambition with deep empathy. We celebrate big wins and learn from every challenge. Here, you will find energy, passion, and purpose.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-xl text-[#00c2cb] mb-2">How does ApexSalesAI support diversity?</h3>
+              <p className="text-[#1a202c]">We recruit globally. We listen deeply. We invest in every team member’s growth. Diversity is not an initiative. It is who we are.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 bg-[#091018] text-center">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-4">From Pipeline to Profit—Let AI Do the Heavy Lifting.</h2>
