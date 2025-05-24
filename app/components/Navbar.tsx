@@ -40,59 +40,59 @@ export default function Navbar() {
 
   return (
     <nav className={`navbar transition-all duration-300 z-[100] fixed w-full top-0 left-0 border-b border-[#00c2cb] bg-[#0d1321] ${scrolled ? 'py-2 shadow-lg' : 'py-4'}`} style={{zIndex: 100, overflow: 'visible'}}>
-      <div className="container mx-auto flex items-center justify-between px-4">
-        <Link href="/" className="flex-shrink-0">
-  <Image
-    src="/images/apex-logo-white.png"
-    alt="ApexSalesAI"
-    width={140}
-    height={40}
-    className="h-[40px] w-auto max-w-[120px] sm:max-w-[180px]"
-    priority
-    onError={(e: any) => { e.target.src = '/images/placeholder.svg'; }}
-  />
-</Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex">
-  <ul className="flex space-x-6">
-    {navLinks.map((link) => (
-      <li key={link.href}>
-        <Link 
-          href={link.href}
-          className={`font-semibold transition hover:text-[#00c2cb] ${
-            pathname === link.href ? 'text-[#00c2cb]' : 'text-white'
-          }`}
-        >
-          {link.label}
-        </Link>
-      </li>
-    ))}
-  </ul>
-</div>
-
-        {/* Mobile Menu Button */}
-        <button
-  className="flex md:hidden ml-auto text-white bg-[#00c2cb] rounded p-2 shadow-lg focus:outline-none z-[200] border-2 border-[#2d3748]" style={{zIndex: 200}}
-  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-  aria-label="Toggle navigation menu"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-8 w-8"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
+  <div className="container mx-auto flex items-center justify-between px-4">
+    <Link href="/" className="flex-shrink-0 max-w-[120px]">
+      <Image
+        src="/images/apex-logo-white.png"
+        alt="ApexSalesAI"
+        width={120}
+        height={36}
+        className="h-9 w-auto"
+        priority
+        onError={(e: any) => { e.target.src = '/images/placeholder.svg'; }}
+      />
+    </Link>
+    {/* Desktop Navigation */}
+    <div className="hidden md:flex">
+      <ul className="flex space-x-6">
+        {navLinks.map((link) => (
+          <li key={link.href}>
+            <Link
+              href={link.href}
+              className={`font-semibold transition hover:text-[#00c2cb] ${
+                pathname === link.href ? 'text-[#00c2cb]' : 'text-white'
+              }`}
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  {/* Mobile Menu Button - always visible, absolute top right */}
+  <button
+    className="md:hidden fixed top-4 right-4 text-white bg-[#00c2cb] rounded-full p-3 shadow-lg border-2 border-[#2d3748] z-[200] focus:outline-none focus:ring-2 focus:ring-[#00c2cb]"
+    style={{zIndex: 200}}
+    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    aria-label="Open navigation menu"
   >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d={mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
-    />
-  </svg>
-</button>
-      </div>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-8 w-8"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d={mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+      />
+    </svg>
+    <span className="sr-only">Menu</span>
+  </button>
 
       {/* Mobile Navigation Menu & Backdrop */}
       {mobileMenuOpen && (
