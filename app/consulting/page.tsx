@@ -16,6 +16,43 @@ export default function ConsultingPage() {
       {/* Consulting Solutions Cards (from homepage section) */}
       <ConsultingSection />
 
+      {/* Professional & Managed Services */}
+      <section className="py-16 bg-[#f8fafc] border-b border-gray-100">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-10 text-[#0d1321]">Professional & Managed Services</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 text-[#00c2cb]">Custom Web Development</h3>
+              <p className="text-gray-600">Modern websites & apps using React, Next.js, and Tailwind CSS.</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 text-[#00c2cb]">Website Modernization</h3>
+              <p className="text-gray-600">Upgrade legacy sites to fast, secure, and scalable platforms.</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 text-[#00c2cb]">Managed Hosting & Maintenance</h3>
+              <p className="text-gray-600">Ongoing support, updates, and security for your web presence.</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 text-[#00c2cb]">Content & SEO Services</h3>
+              <p className="text-gray-600">Content creation, optimization, and analytics integration.</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 text-[#00c2cb]">API & Backend Integration</h3>
+              <p className="text-gray-600">Connect your site to CRMs, ERPs, payment gateways, and more.</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 text-[#00c2cb]">White-Label Development</h3>
+              <p className="text-gray-600">Development for agencies and partners under your brand.</p>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row justify-center gap-6 mb-6">
+            <a href="/contact" className="bg-[#00c2cb] text-[#0d1321] font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-[#00b3bf] transition-all duration-300">Request a Quote</a>
+            <a href="#book" className="bg-[#0d1321] text-[#00c2cb] font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-[#091018] transition-all duration-300">Book a Discovery Call</a>
+          </div>
+        </div>
+      </section>
+
       {/* Value Proposition Cards */}
       <section className="py-16 bg-white border-b border-gray-100">
         <div className="container mx-auto px-4">
