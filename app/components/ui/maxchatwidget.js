@@ -17,7 +17,7 @@ export default function MaxChatWidget() {
               messagingUrl: 'https://messaging.botpress.cloud',
               clientId: process.env.NEXT_PUBLIC_BOTPRESS_CLIENT_ID || 'YOUR_CLIENT_ID',
               botName: 'Max',
-              stylesheet: 'https://www.apexsalesai.com/css/botpress-chat.css',
+              stylesheet: 'https://www.apexsalesai.com/botpress-chat.css',
               useSessionStorage: true,
               enableConversationDeletion: true,
               showConversationButton: false,

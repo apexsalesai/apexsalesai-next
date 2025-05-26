@@ -1,0 +1,117 @@
+/* ApexSalesAI Premium Botpress Chat Widget Styles */
+
+/* Widget Container */
+.bp-widget {
+  border-radius: 24px !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18) !important;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+
+/* Header */
+.bp-header {
+  background: linear-gradient(90deg, #00c2cb 0%, #0d1321 100%) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 1.15rem !important;
+  border-top-left-radius: 24px !important;
+  border-top-right-radius: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 18px 24px !important;
+}
+
+/* Bot Avatar */
+.bp-avatar, .bp-message-avatar {
+  border-radius: 50% !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  background: #fff !important;
+  border: 2px solid #00c2cb !important;
+}
+
+/* User Message Bubble */
+.bp-message--user {
+  background: #00c2cb !important;
+  color: #fff !important;
+  border-radius: 18px 18px 4px 18px !important;
+  font-size: 1rem !important;
+  margin-bottom: 6px !important;
+  box-shadow: 0 2px 8px rgba(0,194,203,0.10) !important;
+}
+
+/* Bot Message Bubble */
+.bp-message--bot {
+  background: #1a202c !important;
+  color: #fff !important;
+  border-radius: 18px 18px 18px 4px !important;
+  font-size: 1rem !important;
+  margin-bottom: 6px !important;
+  box-shadow: 0 2px 8px rgba(13,19,33,0.10) !important;
+}
+
+/* Chat Input */
+.bp-input, .bp-input input, .bp-input textarea {
+  background: #f8fafc !important;
+  color: #0d1321 !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  font-size: 1rem !important;
+  padding: 10px 16px !important;
+  margin-bottom: 8px !important;
+  box-shadow: none !important;
+}
+.bp-input input::placeholder, .bp-input textarea::placeholder {
+  color: #a0aec0 !important;
+  opacity: 1 !important;
+}
+
+/* Send Button */
+.bp-send-button {
+  background: linear-gradient(90deg, #00c2cb 0%, #0d1321 100%) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  box-shadow: 0 2px 8px rgba(0,194,203,0.12) !important;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.bp-send-button:hover {
+  background: linear-gradient(90deg, #00b3bf 0%, #091018 100%) !important;
+  box-shadow: 0 4px 16px rgba(0,194,203,0.18) !important;
+}
+
+/* Launcher Button */
+.bp-widget-launcher {
+  background: linear-gradient(135deg, #00c2cb 0%, #0d1321 100%) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+  border-radius: 50% !important;
+  width: 64px !important;
+  height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.bp-widget-launcher:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35) !important;
+  transform: scale(1.06);
+}
+
+/* Animations */
+.bp-widget, .bp-header, .bp-message--user, .bp-message--bot {
+  transition: all 0.2s cubic-bezier(.4,0,.2,1) !important;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .bp-widget {
+    width: 98vw !important;
+    min-width: unset !important;
+    border-radius: 12px !important;
+  }
+  .bp-header {
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+  }
+}
