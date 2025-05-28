@@ -17,7 +17,7 @@ type Escalation = {
 export default function AdminDashboard() {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [escalations, setEscalations] = useState<Escalation[]>([]);
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState<{ timestamp: number | string; user?: { name?: string; email?: string }; messages?: any }[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
