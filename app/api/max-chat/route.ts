@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       }
       if (companyInfo.faq && Array.isArray(companyInfo.faq)) {
         sysPrompt += '\nFAQs:\n';
-        companyInfo.faq.forEach(f => {
+        companyInfo.faq.forEach((f: { question: string; answer: string }) => {
           sysPrompt += `Q: ${f.question}\nA: ${f.answer}\n`;
         });
       }
