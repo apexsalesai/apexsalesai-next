@@ -101,9 +101,9 @@ export async function POST(req: NextRequest) {
 
     const data = await azureRes.json();
     // Extract suggestions from the assistant's response (if present)
-    let suggestions = [];
-    let media = [];
-    let escalation = false;
+    let suggestions: string[] = [];
+    let media: string[] = [];
+    let escalation: boolean = false;
     let feedback = true;
     let answer = '';
     if (data.choices && data.choices[0]?.message?.content) {
