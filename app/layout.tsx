@@ -6,6 +6,7 @@ import Script from 'next/script';
 import Head from 'next/head';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MaxChatWidget from './components/ui/maxchatwidget.js';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3002'),
@@ -120,8 +121,7 @@ export default function RootLayout({
         />
       </Head>
       <body className="min-h-screen bg-[#0d1321]">
-        <Script src="https://cdn.botpress.cloud/webchat/v2.4/inject.js" strategy="afterInteractive" />
-        <Script src="https://files.bpcontent.cloud/2025/05/06/05/20250506051043-1TC1W944.js" strategy="afterInteractive" />
+        {/* Remove legacy Botpress scripts and inject MaxChatWidget globally */}
         <div className="min-h-screen flex flex-col">
   <Navbar />
   <main className="flex-grow pt-24">
@@ -129,6 +129,10 @@ export default function RootLayout({
   </main>
   <Footer />
 </div>
+        {/* MaxChatWidget injected globally as a proper React component */}
+        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 10000 }}>
+          <MaxChatWidget />
+        </div>
       </body>
     </html>
   );

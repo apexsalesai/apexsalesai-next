@@ -42,7 +42,6 @@ export default function Home() {
               Transform your revenue operations with predictive autonomous agents that see opportunities others miss, deliver real-time decisions, and execute with unmatched precision.
             </p>
             <div className="flex flex-wrap gap-4 mb-8">
-              <Link href="/demo" className="cta bg-[#00c2cb] text-[#0d1321] font-bold py-4 px-10 rounded-xl shadow-xl hover:bg-[#00b3bf] transition-all duration-300 text-lg">Schedule Demo</Link>
               <Link href="/contact" className="cta-outline border-2 border-[#00c2cb] text-[#00c2cb] font-bold py-4 px-10 rounded-xl hover:bg-[#00c2cb]/10 transition-all duration-300 text-lg">Contact Sales</Link>
             </div>
             <div className="flex gap-10 mt-8">
@@ -63,9 +62,7 @@ export default function Home() {
           {/* Optionally, you could add a product image or animation here */}
         </div>
         {/* Sticky/Floating CTA Button */}
-        <div className="fixed bottom-8 right-32 z-[100]">
-          <Link href="/demo" className="bg-[#00c2cb] text-[#0d1321] font-bold py-3 px-8 rounded-full shadow-2xl hover:bg-[#00b3bf] transition-all duration-300 text-lg animate-bounce">Schedule Demo</Link>
-        </div>
+
       </section>
 
       {/* Not CRM Section */}

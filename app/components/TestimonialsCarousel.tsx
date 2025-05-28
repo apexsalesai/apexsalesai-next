@@ -17,21 +17,21 @@ const testimonials: Testimonial[] = [
     role: "VP of Sales",
     company: "TechCorp",
     quote: "ApexSalesAI has completely transformed our sales process. The predictive insights and autonomous execution capabilities have exceeded our expectations.",
-    image: "/images/testimonials/sarah.jpg",
+    image: "/images/testimonials/placeholder.jpg",
   },
   {
     name: "Michael Chen",
     role: "Sales Director",
     company: "GrowthTech",
     quote: "The ROI from implementing ApexSalesAI has been phenomenal. We've seen a 40% increase in deal velocity and a 25% improvement in win rates.",
-    image: "/images/testimonials/michael.jpg",
+    image: "/images/testimonials/placeholder.jpg",
   },
   {
     name: "Lisa Rodriguez",
     role: "Sales Operations Manager",
     company: "InnovateX",
     quote: "The platform's AI-powered insights have helped us identify high-value opportunities we would have otherwise missed. It's like having a sales genius in our team.",
-    image: "/images/testimonials/lisa.jpg",
+    image: "/images/testimonials/placeholder.jpg",
   },
 ];
 

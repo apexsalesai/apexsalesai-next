@@ -1,0 +1,28 @@
+{
+  "companyName": "ApexSalesAI",
+  "ceo": "Tim Bryant",
+  "headquarters": "[Insert Location]",
+  "website": "https://apexsalesai.com",
+  "mission": "Empowering sales teams with AI-driven insights, multi-channel orchestration, and unmatched precision.",
+  "tagline": "This isn't CRM. It's Autonomous Revenue Execution.",
+  "productHighlights": [
+    "Predictive Autonomous Revenue Execution",
+    "Pipeline growth: +37%",
+    "Rep productivity: 4x",
+    "24/7 AI engagement"
+  ],
+  "faq": [
+    {
+      "question": "Who is the CEO of ApexSalesAI?",
+      "answer": "The CEO of ApexSalesAI is Tim Bryant."
+    },
+    {
+      "question": "What does ApexSalesAI do?",
+      "answer": "ApexSalesAI delivers predictive, autonomous revenue execution for sales teams, driving pipeline growth and productivity."
+    },
+    {
+      "question": "How can I schedule a demo?",
+      "answer": "You can schedule a demo by clicking the 'Schedule Demo' button or asking Max to connect you with our sales team."
+    }
+  ]
+}
