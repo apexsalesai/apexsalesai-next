@@ -121,15 +121,15 @@ export default function RootLayout({
         />
       </Head>
       <body className="min-h-screen bg-[#0d1321]">
-        {/* Remove legacy Botpress scripts and inject MaxChatWidget globally */}
+        {/* Legacy Botpress/Botpress Cloud webchat scripts and code removed here. */}
+        {/* New MaxChatWidget React component injected globally below. */}
         <div className="min-h-screen flex flex-col">
-  <Navbar />
-  <main className="flex-grow pt-24">
-    {children}
-  </main>
-  <Footer />
-</div>
-        {/* MaxChatWidget injected globally as a proper React component */}
+          <Navbar />
+          <main className="flex-grow pt-24">
+            {children}
+          </main>
+          <Footer />
+        </div>
         <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 10000 }}>
           <MaxChatWidget />
         </div>
