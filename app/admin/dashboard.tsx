@@ -1,8 +1,22 @@
 import { useEffect, useState } from 'react';
 
+type Feedback = {
+  timestamp: number | string;
+  user?: { name?: string; email?: string };
+  messageIdx?: number;
+  feedback?: number;
+};
+
+type Escalation = {
+  timestamp: number | string;
+  user?: { name?: string; email?: string };
+  reason?: string;
+  transcript?: any;
+};
+
 export default function AdminDashboard() {
-  const [feedback, setFeedback] = useState([]);
-  const [escalations, setEscalations] = useState([]);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [escalations, setEscalations] = useState<Escalation[]>([]);
   const [chats, setChats] = useState([]);
   const [error, setError] = useState('');
 
