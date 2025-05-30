@@ -4,23 +4,38 @@ import { useState, useRef, useEffect } from 'react';
 
 // Stub: Replace this with your real user session/auth integration
 function getUserInfo() {
-  // Example: return { name: 'Jane Doe', email: 'jane@example.com' };
-  return null; // No user info by default
+  // Try to get user info from localStorage
+  if (typeof window !== 'undefined') {
+    const name = localStorage.getItem('maxchat_name');
+    const email = localStorage.getItem('maxchat_email');
+    if (name) return { name, email };
+  }
+  return null;
 }
+
 
 export default function MaxChatWidget() {
   const [minimized, setMinimized] = useState(true);
   const [lastActive, setLastActive] = useState(Date.now());
-  const user = getUserInfo();
+  const [user, setUser] = useState(getUserInfo());
+const [askingName, setAskingName] = useState(!getUserInfo());
+const [nameInput, setNameInput] = useState('');
 
-  // Personalized greeting
-  const initialGreeting = user?.name
-    ? `Hi ${user.name}! I'm Max, your executive AI assistant. How can I help you today?`
-    : "Hi! I'm Max, your executive AI assistant. How can I help you today?";
-
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: initialGreeting, suggestions: [], media: [], escalation: false, feedback: false }
-  ]);
+// Restore chat history from localStorage
+const [messages, setMessages] = useState(() => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('maxchat_history');
+    if (stored) return JSON.parse(stored);
+  }
+  // Initial greeting
+  return [{
+    role: 'assistant',
+    content: user?.name
+      ? `Hi ${user.name}! I'm Max, your executive AI assistant. How can I help you today?`
+      : "Hi! I'm Max, your executive AI assistant. What's your name?",
+    suggestions: [], media: [], escalation: false, feedback: false
+  }];
+});
 const [suggestions, setSuggestions] = useState([]);
 const [media, setMedia] = useState([]);
 const [escalation, setEscalation] = useState(false);
@@ -55,18 +70,42 @@ const [feedbackGiven, setFeedbackGiven] = useState([]);
     }
   }, [minimized]);
 
-  const handleUserActive = () => setLastActive(Date.now());
+  // Store chat history in localStorage on change
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('maxchat_history', JSON.stringify(messages));
+  }
+}, [messages]);
+
+// Store user name in localStorage
+useEffect(() => {
+  if (user?.name && typeof window !== 'undefined') {
+    localStorage.setItem('maxchat_name', user.name);
+    if (user.email) localStorage.setItem('maxchat_email', user.email);
+  }
+}, [user]);
+
+const handleUserActive = () => setLastActive(Date.now());
 
   const sendMessage = async (suggestion = null) => {
-    const userInput = suggestion || input;
-    if (!userInput.trim()) return;
-    setMessages(msgs => [...msgs, { role: 'user', content: userInput }]);
-    setLoading(true);
-    setError('');
-    setSuggestions([]);
-    setMedia([]);
-    setEscalation(false);
-    try {
+  if (askingName) {
+    // User is providing their name
+    if (!nameInput.trim()) return;
+    setUser({ name: nameInput });
+    setMessages(msgs => [...msgs, { role: 'user', content: nameInput }]);
+    setAskingName(false);
+    setNameInput('');
+    return;
+  }
+  const userInput = suggestion || input;
+  if (!userInput.trim()) return;
+  setMessages(msgs => [...msgs, { role: 'user', content: userInput }]);
+  setLoading(true);
+  setError('');
+  setSuggestions([]);
+  setMedia([]);
+  setEscalation(false);
+  try {
       const res = await fetch('/api/max-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
