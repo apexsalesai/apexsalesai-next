@@ -307,22 +307,46 @@ const handleUserActive = () => setLastActive(Date.now());
         </div>
       )}
       <div style={{ display: 'flex', gap: 8 }}>
-        <input
-          type="text"
-          value={input}
-          onChange={e => { setInput(e.target.value); handleUserActive(); }}
-          onKeyDown={e => { if (e.key === 'Enter') { sendMessage(); handleUserActive(); } }}
-          placeholder="Type your message to Max... 💬"
-          style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', outline: 'none', background: '#23272f', color: '#fff' }}
-          disabled={loading}
-        />
-        <button
-          onClick={() => { sendMessage(); handleUserActive(); }}
-          disabled={loading || !input.trim()}
-          style={{ background: '#00c2cb', color: '#181c20', border: 'none', borderRadius: 8, padding: '0 20px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}
-        >
-          {loading ? '...' : 'Send'}
-        </button>
+        {askingName ? (
+          <>
+            <input
+              type="text"
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { sendMessage(); handleUserActive(); } }}
+              placeholder="Enter your name to start..."
+              style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', outline: 'none', background: '#23272f', color: '#fff' }}
+              disabled={loading}
+              autoFocus
+            />
+            <button
+              onClick={() => { sendMessage(); handleUserActive(); }}
+              disabled={loading || !nameInput.trim()}
+              style={{ background: '#00c2cb', color: '#181c20', border: 'none', borderRadius: 8, padding: '0 20px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}
+            >
+              {loading ? '...' : 'Send'}
+            </button>
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              value={input}
+              onChange={e => { setInput(e.target.value); handleUserActive(); }}
+              onKeyDown={e => { if (e.key === 'Enter') { sendMessage(); handleUserActive(); } }}
+              placeholder="Type your message to Max... 💬"
+              style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', outline: 'none', background: '#23272f', color: '#fff' }}
+              disabled={loading}
+            />
+            <button
+              onClick={() => { sendMessage(); handleUserActive(); }}
+              disabled={loading || !input.trim()}
+              style={{ background: '#00c2cb', color: '#181c20', border: 'none', borderRadius: 8, padding: '0 20px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}
+            >
+              {loading ? '...' : 'Send'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
