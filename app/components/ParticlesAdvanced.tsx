@@ -30,10 +30,12 @@ export default function ParticlesAdvanced() {
       o: 0.12 + Math.random() * 0.15
     }));
     function draw() {
+      if (!ctx) return;
       ctx.clearRect(0, 0, w, h);
       // Draw connections
       for (let i = 0; i < NODES; ++i) {
         for (let j = i + 1; j < NODES; ++j) {
+          if (!ctx) return;
           const a = nodes[i], b = nodes[j];
           const dist = Math.hypot(a.x - b.x, a.y - b.y);
           if (dist < 120) {
@@ -48,6 +50,7 @@ export default function ParticlesAdvanced() {
       }
       // Draw nodes
       for (const n of nodes) {
+        if (!ctx) return;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(0,194,203,${n.o})`;
