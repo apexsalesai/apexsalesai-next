@@ -23,6 +23,7 @@ export default function Particles() {
       o: 0.08 + Math.random() * 0.14
     }));
     function draw() {
+      if (!ctx) return;
       ctx.clearRect(0, 0, w, h);
       for (const p of particles) {
         ctx.beginPath();
