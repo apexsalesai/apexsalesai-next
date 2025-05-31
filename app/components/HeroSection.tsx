@@ -47,8 +47,8 @@ export default function HeroSection() {
                 "AI Agents. Real Results. Always On."
               ]}
               className="inline"
-              speed={55}
-              delay={1200}
+              speed={80} // slower typing speed
+              delay={1600} // slightly longer delay
             />
           </motion.h1>
           <motion.p
@@ -69,27 +69,24 @@ export default function HeroSection() {
             <a href="/contact" aria-label="Contact sales" className="btn-secondary text-lg py-3 px-8 rounded-xl font-bold border border-[#00c2cb] text-[#00c2cb] bg-transparent hover:bg-[#00c2cb]/10 transition-all duration-300 shadow">Contact Sales</a>
           </motion.div>
           <motion.div
-            className="flex gap-10 mt-8"
-            initial={{ opacity: 0, y: 30 }}
+            className="flex flex-row flex-nowrap justify-center items-baseline gap-2 mt-2 mb-1"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.45 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            style={{background:'none', border:'none', boxShadow:'none', padding:0, minHeight:0, height:'24px'}}
           >
-            <div>
-              <div className="text-4xl font-extrabold text-[#00c2cb] drop-shadow">99.99%</div>
-              <div className="text-[#a0aec0] text-base">Uptime</div>
-            </div>
-            <div>
-              <div className="text-4xl font-extrabold text-[#00c2cb] drop-shadow">SOC2 & GDPR</div>
-              <div className="text-[#a0aec0] text-base">Compliant</div>
-            </div>
-            <div>
-              <div className="text-4xl font-extrabold text-[#00c2cb] drop-shadow">API-First</div>
-              <div className="text-[#a0aec0] text-base">Integration</div>
-            </div>
-            <div>
-              <div className="text-4xl font-extrabold text-[#00c2cb] drop-shadow">Enterprise</div>
-              <div className="text-[#a0aec0] text-base">Support</div>
-            </div>
+            {[
+              { value: '99.99%', label: 'uptime' },
+              { value: 'SOC2 & GDPR', label: 'compliant' },
+              { value: 'API-First', label: 'integration' },
+              { value: 'Enterprise', label: 'support' }
+            ].map((stat, i) => (
+              <div key={stat.label} className="flex flex-col items-center px-0 min-w-[72px]">
+                <span className="text-[20px] text-white font-normal leading-tight whitespace-nowrap text-center" style={{lineHeight:'24px', minWidth:'72px', display:'inline-block'}}>{stat.value}</span>
+                <span className="text-[16px] text-[#a0aec0] font-normal opacity-60 mt-0.5 whitespace-nowrap text-center" style={{lineHeight:'18px'}}>{stat.label}</span>
+                {i < 3 && <span className="mx-1 text-[#23272f] opacity-30 select-none text-[10px]" aria-hidden="true">|</span>}
+              </div>
+            ))}
           </motion.div>
         </motion.div>
         {/* Animated/hero visual with mascot */}
