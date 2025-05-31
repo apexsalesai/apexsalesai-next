@@ -66,7 +66,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.35 }}
           >
             <AnimatedCTA href="/demo" aria-label="See production demo">See Production Demo</AnimatedCTA>
-            <a href="/docs" aria-label="Explore documentation" className="btn-secondary text-lg py-3 px-8 rounded-xl font-bold border border-[#00c2cb] text-[#00c2cb] bg-transparent hover:bg-[#00c2cb]/10 transition-all duration-300 shadow">Explore Documentation</a>
+            <a href="/contact" aria-label="Contact sales" className="btn-secondary text-lg py-3 px-8 rounded-xl font-bold border border-[#00c2cb] text-[#00c2cb] bg-transparent hover:bg-[#00c2cb]/10 transition-all duration-300 shadow">Contact Sales</a>
           </motion.div>
           <motion.div
             className="flex gap-10 mt-8"

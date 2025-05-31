@@ -47,7 +47,7 @@ export default async function KnowledgeBasePage() {
       {docs.map(doc => (
         <section key={doc.name} id={doc.name} style={{ marginBottom: 48 }}>
           <h2 style={{ color: '#00c2cb', borderBottom: '1px solid #23272f', paddingBottom: 8 }}>{doc.title}</h2>
-          <div dangerouslySetInnerHTML={{ __html: doc.content }} />
+          <div dangerouslySetInnerHTML={{ __html: typeof doc.content === 'string' ? doc.content : '' }} />
         </section>
       ))}
     </div>
