@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Only one set of helpers above. No duplicates below.
 
@@ -71,6 +72,8 @@ export default function DemoPage() {
         <section id="demo-form" className="mb-20">
           <div className="bg-[#052438] rounded-2xl shadow-lg p-8 md:p-12">
             <div className="md:flex md:items-center md:gap-12">
+
+              {/* Demo Form Section */}
               <div className="flex-1 mb-8 md:mb-0">
                 <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">Request Early Access to the Demo</h2>
                 <p className="text-[#a0aec0] mb-6">Sign up to be among the first to experience Max in action. Our team will reach out as soon as the live demo is available.</p>

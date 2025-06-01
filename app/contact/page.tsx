@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 // To enable live chat, insert your Intercom (or other provider) snippet in _app.tsx or _document.tsx.
 // For TypeScript, declare Intercom on window:
@@ -75,7 +76,20 @@ export default function Contact() {
       </section>
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Team Mascot Image */}
+            <div className="flex flex-col items-center justify-center mb-8 md:mb-0">
+              <Image
+                src="/images/team-mascot.jpg"
+                alt="ApexSalesAI Team Mascot"
+                width={360}
+                height={240}
+                className="rounded-2xl shadow-2xl object-cover border-4 border-[#00c2cb]/30 bg-white max-w-full h-auto"
+                priority
+              />
+              <div className="mt-4 text-[#00c2cb] font-semibold text-lg text-center">Our team is here for you.</div>
+            </div>
+            {/* Contact Form Section */}
             <div>
               <h2 className="text-2xl font-bold mb-6">Request a Callback</h2>
 <form className="mb-8 bg-[#e0f7fa] border border-[#00c2cb] rounded-lg p-6 flex flex-col items-center" onSubmit={async e => {

@@ -90,9 +90,11 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
         {/* Animated/hero visual with mascot */}
-        <div className="hidden md:flex items-center justify-center relative">
+        <div className="hidden md:flex items-center justify-center relative min-h-[420px]">
+          {/* Glowing ring background */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-[210px] h-[210px] bg-gradient-to-tr from-[#00c2cb33] via-[#00c2cb77] to-[#fff0] blur-2xl z-10" style={{boxShadow: '0 0 64px 16px #00c2cb44'}} />
+          {/* Mascot with animation */}
           <MascotAnimated />
-          <Image src="/images/hero-ai-visual.svg" alt="AI Agent Visual" width={420} height={420} className="drop-shadow-2xl animate-float" onError={(e: any) => { e.target.src = '/images/placeholder.svg'; }} />
         </div>
       </div>
     </section>

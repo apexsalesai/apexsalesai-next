@@ -5,17 +5,29 @@ import Image from 'next/image';
 export default function About() {
   return (
     <>
-      <section className="pt-20 pb-16 relative">
-        <div className="absolute inset-0 overflow-hidden">
+      <section className="pt-20 pb-16 relative bg-white dark:bg-[#0d1321]">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           <div className="absolute top-1/3 left-1/4 w-[30vw] h-[30vw] rounded-full bg-[#00c2cb] opacity-10 filter blur-[100px] z-0"></div>
           <div className="absolute top-1/2 right-1/4 w-[25vw] h-[25vw] rounded-full bg-[#005f6b] opacity-10 filter blur-[80px] z-0"></div>
         </div>
-        
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Revolutionizing the Way the World Works</h1>
-<p className="text-xl text-[#00c2cb] font-semibold max-w-3xl mx-auto mb-2">
-  ApexSalesAI brings next-generation AI agents to every corner of your organization—empowering teams to move faster, serve smarter, and unlock new growth in every interaction.
-</p>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10 text-center md:text-left">
+            <div className="w-full md:w-1/2 flex justify-center">
+              <Image
+                src="/images/team-mascot.jpg"
+                alt="ApexSalesAI Team Mascot"
+                width={420}
+                height={280}
+                className="rounded-2xl shadow-2xl object-cover border-4 border-[#00c2cb]/30 bg-white max-w-full h-auto"
+                priority
+              />
+            </div>
+            <div className="w-full md:w-1/2">
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-[#052438] dark:text-white">The ApexSalesAI Team: Your Partners in AI-Powered Growth.</h1>
+              <p className="text-xl md:text-2xl text-[#00c2cb] font-semibold mb-4">Real people. Real expertise. Real results.</p>
+              <p className="text-lg text-[#374151] dark:text-[#cbd5e0] max-w-xl">ApexSalesAI brings next-generation AI agents to every corner of your organization—empowering teams to move faster, serve smarter, and unlock new growth in every interaction.</p>
+            </div>
+          </div>
         </div>
       </section>
 
