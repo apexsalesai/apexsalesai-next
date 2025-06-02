@@ -37,7 +37,7 @@ export default function RetailSolutionsPage() {
                 <rect x="15" y="4" width="4" height="16" rx="1" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2"> />
+            <div className="flex gap-6 mb-2">
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Powered Dynamic Pricing & Promotions</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Machine learning adjusts prices in real time based on demand, inventory, and competitor signals—maximizing revenue.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -61,7 +61,7 @@ export default function RetailSolutionsPage() {
                 <path d="M21 16v2a4 4 0 0 1-4 4h-5" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2"> />
+            <div className="flex gap-6 mb-2">
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">Computer Vision for Checkout-Free Stores</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Camera networks and deep learning enable grab-and-go payments, reducing theft and boosting throughput.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -86,7 +86,7 @@ export default function RetailSolutionsPage() {
                 <path d="M19 13a3 3 0 0 0-3-3V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a3 3 0 0 0 3 3z" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2"> />
+            <div className="flex gap-6 mb-2">
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Driven Personalized Recommendations</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Deep learning analyzes browsing, purchase, and in-store data to serve hyper-relevant offers and boost conversions.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -111,7 +111,7 @@ export default function RetailSolutionsPage() {
                 <rect x="15" y="4" width="4" height="16" rx="1" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2"> />
+            <div className="flex gap-6 mb-2">
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Powered Inventory Management for Boutiques</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Predictive analytics syncs POS data, weather, and trends to forecast demand and automate reordering.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -135,7 +135,7 @@ export default function RetailSolutionsPage() {
                 <path d="M21 16v2a4 4 0 0 1-4 4h-5" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2"> />
+            <div className="flex gap-6 mb-2">
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI Chatbots for 24/7 Customer Service</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Conversational AI handles FAQs, tracks orders, and processes returns via SMS, WhatsApp, or web chat.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -160,7 +160,7 @@ export default function RetailSolutionsPage() {
                 <path d="M19 13a3 3 0 0 0-3-3V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a3 3 0 0 0 3 3z" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2"> />
+            <div className="flex gap-6 mb-2">
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI Visual Search for Local Stores</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Camera-based search lets shoppers snap photos to instantly find similar products and store locations.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
