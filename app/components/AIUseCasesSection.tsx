@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { FaRobot } from "react-icons/fa";
 
-const useCases = [
+const useCases = [ // <-- open array
   {
     icon: "/images/ai-nurture.svg",
     label: "Autonomous Lead Nurturing",
@@ -267,20 +267,8 @@ const useCases = [
         </div>
       </div>
     ),
-  },
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">Enterprise Success Stories</h5>
-          <ol className="list-decimal ml-6">
-            <li className="mb-2">
-              <b>Global SaaS Company Reduces Forecast Errors by 60% with AI</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Inaccurate quarterly forecasts, missed targets, inefficient resource allocation.</li>
-                <li><b>AI Solution:</b> ML models analyze historical deals, win/loss patterns, external signals. Automated real-time pipeline health scoring.</li>
-                <li><b>Results:</b> 60% reduction in variance, 25% better quota attainment, faster market adjustment.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Predictive Revenue Engine provides forecasts with 90%+ accuracy—so you can plan with confidence.</div>
-            </li>
-            <li className="mb-2">
+  }
+]; // end of useCases array            <li className="mb-2">
               <b>Fortune 500 Manufacturer Boosts Revenue Predictability by 40%</b>
               <ul className="list-disc ml-6">
                 <li><b>Challenge:</b> Inconsistent projections due to complex B2B cycles.</li>
@@ -438,11 +426,45 @@ const useCases = [
           <a href="/demo" className="inline-block bg-[#00c2cb] text-white font-bold px-8 py-3 rounded-full shadow-lg hover:bg-[#00e0e6] transition">Experience ApexSalesAI Conversational Support</a>
           <div className="mt-2 text-[#0d1321] font-semibold">Deliver instant, exceptional support—day or night—without scaling your team.</div>
         </div>
-// Keeping an empty export to avoid build errors.
+import React, { useState } from "react";
 
-export default () => {
-  return <div />;
-};
+const useCases = [ // <-- open array
+  {
+    icon: "/images/ai-nurture.svg",
+    label: "Autonomous Lead Nurturing",
+    summary: "AI agents engage, qualify, and nurture leads 24/7, ensuring no opportunity slips through the cracks.",
+    stats: [
+      { value: "+35%", label: "Reply Rate" },
+      { value: "-50%", label: "Manual Effort" }
+    ],
+    details: (
+      <div className="text-left">
+        {/* ...details content... */}
+      </div>
+    ),
+  },
+  {
+    icon: "/images/ai-forecast.svg",
+    label: "Predictive Revenue Forecasting",
+    summary: "AI delivers real-time, highly accurate revenue forecasts so you can plan and scale with confidence.",
+    stats: [
+      { value: "+40%", label: "Forecast Accuracy" },
+      { value: "-80%", label: "Manual Forecasting" }
+    ],
+    details: (
+      <div className="text-left">
+        {/* ...details content... */}
+      </div>
+    ),
+  }
+]; // end of useCases array
+
+const AIUseCasesSection = () => {
+  const [modalIdx, setModalIdx] = useState<number | null>(null);
+
+  return (
+    <section className="py-16 bg-[#f8fafc]">
+      <div className="container mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-[#00c2cb] to-[#a0aec0] bg-clip-text text-transparent">AI Agent Use Cases</h2>
         <p className="text-lg text-[#0d1321] mb-12 max-w-2xl mx-auto">See how ApexSalesAI delivers real business results with autonomous, intelligent sales agents.</p>
         <div className="grid md:grid-cols-2 gap-10 mb-8">
@@ -485,4 +507,6 @@ export default () => {
       </div>
     </section>
   );
-}
+};
+
+export default AIUseCasesSection;
