@@ -37,7 +37,7 @@ export default function RetailSolutionsPage() {
                 <rect x="15" y="4" width="4" height="16" rx="1" />
               </svg>
             </span>
-            <div className="flex gap-6 mb-2">
+            <div className="flex gap-6 mb-2"></div>
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Powered Dynamic Pricing & Promotions</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Machine learning adjusts prices in real time based on demand, inventory, and competitor signals—maximizing revenue.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -50,6 +50,7 @@ export default function RetailSolutionsPage() {
               </ul>
             </div>
             <div className="text-xs text-[#a0aec0] italic">AI pricing turns missed markdowns into profit—at scale.</div>
+          </div>
           </div>
 
           {/* 2. Computer Vision for Checkout-Free Stores */}
@@ -74,6 +75,7 @@ export default function RetailSolutionsPage() {
               </ul>
             </div>
             <div className="text-xs text-[#a0aec0] italic">Checkout-free tech is now affordable for mid-sized chains.</div>
+          </div>
           </div>
 
           {/* 3. AI-Driven Personalized Recommendations */}
@@ -100,6 +102,7 @@ export default function RetailSolutionsPage() {
             </div>
             <div className="text-xs text-[#a0aec0] italic">Personalization drives 35% of Amazon's revenue—AI lets SMBs compete.</div>
           </div>
+          </div>
 
           {/* 4. AI-Powered Inventory Management for Boutiques */}
           <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
@@ -125,6 +128,7 @@ export default function RetailSolutionsPage() {
             </div>
             <div className="text-xs text-[#a0aec0] italic">AI keeps shelves stocked and cash flowing for small retailers.</div>
           </div>
+          </div>
 
           {/* 5. AI Chatbots for 24/7 Customer Service */}
           <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
@@ -148,6 +152,7 @@ export default function RetailSolutionsPage() {
               </ul>
             </div>
             <div className="text-xs text-[#a0aec0] italic">AI delivers 24/7 service—no missed sales after hours.</div>
+          </div>
           </div>
 
           {/* 6. AI Visual Search for Local Stores */}
@@ -173,6 +178,7 @@ export default function RetailSolutionsPage() {
               </ul>
             </div>
             <div className="text-xs text-[#a0aec0] italic">AI visual search bridges online inspiration to in-store sales.</div>
+          </div>
           </div>
 
         </div>
