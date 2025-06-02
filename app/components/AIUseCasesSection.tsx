@@ -267,23 +267,6 @@ const useCases = [ // <-- open array
         </div>
       </div>
     ),
-  }
-]; // end of useCases array            <li className="mb-2">
-              <b>Fortune 500 Manufacturer Boosts Revenue Predictability by 40%</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Inconsistent projections due to complex B2B cycles.</li>
-                <li><b>AI Solution:</b> Deal scoring to predict closes, integrated external signals for smarter forecasting.</li>
-                <li><b>Results:</b> 40% more accurate forecasts, 15% higher win rates, fewer revenue surprises.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our AI Opportunity Scoring finds hidden risks and upside in your pipeline.</div>
-            </li>
-            <li className="mb-2">
-              <b>Financial Services Firm Cuts Month-End Crunch with Real-Time Forecasting</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Manual, time-consuming forecast adjustments.</li>
-                <li><b>AI Solution:</b> Self-updating AI forecasts, scenario modeling for best/worst-case outcomes.</li>
-                <li><b>Results:</b> 80% less time spent, real-time revenue visibility, more accurate board reporting.</li>
-              </ul>
               <div className="italic text-[#00c2cb] mt-1">Our Automated Forecasting Dashboard gives your team always-on insights.</div>
             </li>
           </ol>
@@ -426,38 +409,10 @@ const useCases = [ // <-- open array
           <a href="/demo" className="inline-block bg-[#00c2cb] text-white font-bold px-8 py-3 rounded-full shadow-lg hover:bg-[#00e0e6] transition">Experience ApexSalesAI Conversational Support</a>
           <div className="mt-2 text-[#0d1321] font-semibold">Deliver instant, exceptional support—day or night—without scaling your team.</div>
         </div>
-import React, { useState } from "react";
-
-const useCases = [ // <-- open array
-  {
-    icon: "/images/ai-nurture.svg",
-    label: "Autonomous Lead Nurturing",
-    summary: "AI agents engage, qualify, and nurture leads 24/7, ensuring no opportunity slips through the cracks.",
-    stats: [
-      { value: "+35%", label: "Reply Rate" },
-      { value: "-50%", label: "Manual Effort" }
-    ],
-    details: (
-      <div className="text-left">
-        {/* ...details content... */}
       </div>
     ),
   },
-  {
-    icon: "/images/ai-forecast.svg",
-    label: "Predictive Revenue Forecasting",
-    summary: "AI delivers real-time, highly accurate revenue forecasts so you can plan and scale with confidence.",
-    stats: [
-      { value: "+40%", label: "Forecast Accuracy" },
-      { value: "-80%", label: "Manual Forecasting" }
-    ],
-    details: (
-      <div className="text-left">
-        {/* ...details content... */}
-      </div>
-    ),
-  }
-]; // end of useCases array
+];
 
 const AIUseCasesSection = () => {
   const [modalIdx, setModalIdx] = useState<number | null>(null);
