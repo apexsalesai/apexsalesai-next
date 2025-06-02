@@ -89,206 +89,49 @@ const useCases = [ // <-- open array
         </div>
         <div className="text-center mt-6">
           <a href="/demo" className="inline-block bg-[#00c2cb] text-white font-bold px-8 py-3 rounded-full shadow-lg hover:bg-[#00e0e6] transition">Get a Free Demo</a>
-    ],
-    details: (
-      <div className="text-left">
-        <h4 className="font-bold text-xl mb-2 text-[#00c2cb]">AI-Powered Customer Retention Automation: Turn At-Risk Customers Into Loyal Advocates</h4>
-        <p className="mb-4">Losing customers is costly—studies show acquiring a new customer is 5-25x more expensive than retaining an existing one. ApexSalesAI’s Customer Retention Automation uses machine learning to predict churn risks before they happen and trigger personalized retention campaigns—autonomously.</p>
-        <p className="mb-4">Here’s how leading companies are reducing churn with AI, and how ApexSalesAI can do the same for your business.</p>
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">Enterprise Success Stories</h5>
-          <ol className="list-decimal ml-6">
-            <li className="mb-2">
-              <b>Global SaaS Company Reduces Churn by 30% with AI-Powered Retention</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Unexpected customer cancellations, hurting recurring revenue.</li>
-                <li><b>AI Solution:</b> Predictive churn scoring using 50+ behavioral signals. Automated win-back campaigns for at-risk accounts.</li>
-                <li><b>Results:</b> 30% reduction in churn, 22% increase in expansion revenue, fully automated retention system.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Churn Prediction Engine identifies at-risk customers with 92% accuracy—then triggers hyper-targeted save campaigns automatically.</div>
-            </li>
-            <li className="mb-2">
-              <b>Fortune 500 Telecom Cuts Cancellations by $4M Annually</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Rising cancellations after promotions ended.</li>
-                <li><b>AI Solution:</b> AI flags customers nearing contract end dates, triggers automated retention offers via SMS and email.</li>
-                <li><b>Results:</b> $4M+ in annual saved revenue, 40% improvement in offer acceptance, 18% higher ARPU from retained customers.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Contract Renewal AI predicts expiration risks and auto-delivers the perfect retention offer—just like this telecom giant.</div>
-            </li>
-            <li className="mb-2">
-              <b>Financial Services Firm Boosts Retention 25% with Real-Time Intervention</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Couldn’t proactively address silent attrition (accounts going inactive).</li>
-                <li><b>AI Solution:</b> Machine learning detects disengagement signals, triggers check-ins from relationship managers.</li>
-                <li><b>Results:</b> 25% improvement in retention, 50% faster response to at-risk accounts, 17% more referrals from reactivated clients.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Silent Attrition Detector spots disengagement before it’s visible—then triggers human or automated re-engagement.</div>
-            </li>
-          </ol>
-        </div>
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">SMB Success Stories</h5>
-          <ol className="list-decimal ml-6">
-            <li className="mb-2">
-              <b>Subscription Box Company Saves 300+ Customers Monthly</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> 8% monthly churn from credit card declines and disengagement.</li>
-                <li><b>AI Solution:</b> Predicts cancellation risks 30 days in advance, automates win-back flows and payment retries.</li>
-                <li><b>Results:</b> 300+ customers saved monthly, 65% payment recovery, 22% higher LTV from retained subs.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Subscription Rescue Module automatically recovers failed payments and re-engages lapsing customers—perfect for recurring revenue businesses.</div>
-            </li>
-            <li className="mb-2">
-              <b>Local MSP Retains 40% More Clients with Proactive AI Alerts</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Losing clients to competitors without warning.</li>
-                <li><b>AI Solution:</b> AI monitors service ticket patterns, triggers CSAT surveys and account manager alerts for unhappy clients.</li>
-                <li><b>Results:</b> 40% improvement in retention, 50% faster resolution on at-risk accounts, 9.1 average CSAT score.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Client Health Monitoring system gives SMBs enterprise-grade retention tools—without the complexity.</div>
-            </li>
-            <li className="mb-2">
-              <b>E-Commerce Brand Slashes Returns & Increases Loyalty</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> High return rates hurting profitability.</li>
-                <li><b>AI Solution:</b> Identifies "serial returners" and predicts future returns, automates sizing guides and early exchange offers.</li>
-                <li><b>Results:</b> 28% reduction in return rates, 15% increase in repeat purchases, higher margins from fewer returns.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Returns Prediction AI helps product businesses improve satisfaction while protecting profits.</div>
-            </li>
-          </ol>
-        </div>
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">Why ApexSalesAI for Customer Retention?</h5>
-          <ul className="list-disc ml-6">
-            <li>✔ Predict Churn Before It Happens – 90%+ accuracy in identifying at-risk customers</li>
-            <li>✔ Autonomous Retention Campaigns – Email, SMS, in-app and more—triggered automatically</li>
-            <li>✔ Seamless Integration – Works with your CRM, helpdesk, and payment systems</li>
-            <li>✔ Proven ROI – Clients typically see 3-6x ROI from saved revenue</li>
-          </ul>
-        </div>
-        <div className="text-center mt-6">
-          <a href="/demo" className="inline-block bg-[#00c2cb] text-white font-bold px-8 py-3 rounded-full shadow-lg hover:bg-[#00e0e6] transition">Discover ApexSalesAI Retention Automation – Book your free demo today.</a>
-          <div className="mt-2 text-[#0d1321] font-semibold">Turn customer retention into your competitive advantage with AI.</div>
         </div>
       </div>
     ),
   },
   {
     icon: "/images/ai-forecast.svg",
-    label: "Predictive Revenue Forecasting",
-    summary: "AI delivers real-time, highly accurate revenue forecasts so you can plan and scale with confidence.",
+    label: "Predictive Forecasting",
+    summary: "Accurately forecast revenue with AI-driven pipeline analysis.",
     stats: [
-      { value: "+40%", label: "Forecast Accuracy" },
-      { value: "-80%", label: "Manual Forecasting" }
+      { value: "+20%", label: "Forecast Accuracy" },
+      { value: "-30%", label: "Manual Forecasting Effort" }
     ],
     details: (
       <div className="text-left">
-        <h4 className="font-bold text-xl mb-2 text-[#00c2cb]">AI-Powered Predictive Revenue Forecasting: Drive Smarter Growth</h4>
-        <p className="mb-4">Accurate revenue forecasting is critical for scaling businesses—yet most companies rely on guesswork or outdated spreadsheets. ApexSalesAI’s Predictive Revenue Forecasting uses machine learning to analyze your pipeline in real time, delivering actionable insights to maximize revenue and minimize risk.</p>
-        <p className="mb-4">Here’s how leading companies leverage AI-driven forecasting—and how ApexSalesAI can do the same for you.</p>
+        <h4 className="font-bold text-xl mb-2 text-[#00c2cb]">Predictive Forecasting: Unlock Data-Driven Revenue Growth</h4>
+        <p className="mb-4">Accurate forecasting is key to driving business growth, but manual forecasting methods are often inaccurate and time-consuming. ApexSalesAI’s Predictive Forecasting uses machine learning to analyze your pipeline and deliver precise revenue predictions—automatically.</p>
+        <p className="mb-4">Here’s how leading companies are leveraging AI to transform their forecasting, and how ApexSalesAI can help you make data-driven decisions.</p>
         <div className="mb-4">
           <h5 className="font-semibold text-[#0d1321]">Enterprise Success Stories</h5>
           <ol className="list-decimal ml-6">
             <li className="mb-2">
-              <b>Global SaaS Company Reduces Forecast Errors by 60% with AI</b>
+              <b>Global Software Company Boosts Forecast Accuracy by 20% with AI</b>
               <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Inaccurate quarterly forecasts, missed targets, inefficient resource allocation.</li>
-                <li><b>AI Solution:</b> ML models analyze historical deals, win/loss patterns, external signals. Automated real-time pipeline health scoring.</li>
-                <li><b>Results:</b> 60% reduction in variance, 25% better quota attainment, faster market adjustment.</li>
+                <li><b>Challenge:</b> Inaccurate forecasting led to missed revenue targets.</li>
+                <li><b>AI Solution:</b> Predictive pipeline analysis, automated deal scoring.</li>
+                <li><b>Results:</b> 20% more accurate forecasts, 30% less manual effort, 15% higher revenue.</li>
               </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Predictive Revenue Engine provides forecasts with 90%+ accuracy—so you can plan with confidence.</div>
+              <div className="italic text-[#00c2cb] mt-1">Our Predictive Forecasting Engine analyzes your pipeline to deliver precise revenue predictions.</div>
             </li>
             <li className="mb-2">
-              <b>Fortune 500 Manufacturer Boosts Revenue Predictability by 40%</b>
+              <b>Fortune 500 Manufacturer Reduces Forecasting Time by 75% with AI</b>
               <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Inconsistent projections due to complex B2B cycles.</li>
-                <li><b>AI Solution:</b> Deal scoring to predict closes, integrated external signals for smarter forecasting.</li>
-                <li><b>Results:</b> 40% more accurate forecasts, 15% higher win rates, fewer revenue surprises.</li>
+                <li><b>Challenge:</b> Manual forecasting took weeks, delaying business decisions.</li>
+                <li><b>AI Solution:</b> Automated pipeline analysis, real-time forecasting updates.</li>
+                <li><b>Results:</b> 75% less time spent forecasting, 25% higher forecast accuracy, 10% more revenue.</li>
               </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our AI Opportunity Scoring finds hidden risks and upside in your pipeline.</div>
+              <div className="italic text-[#00c2cb] mt-1">Our AI Forecasting Module streamlines your forecasting process, freeing up more time for strategy.</div>
             </li>
             <li className="mb-2">
-              <b>Financial Services Firm Cuts Month-End Crunch with Real-Time Forecasting</b>
+              <b>B2B SaaS Company Eliminates "Hopeful" Forecasting with AI-Driven Insights</b>
               <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Manual, time-consuming forecast adjustments.</li>
-                <li><b>AI Solution:</b> Self-updating AI forecasts, scenario modeling for best/worst-case outcomes.</li>
-                <li><b>Results:</b> 80% less time spent, real-time revenue visibility, more accurate board reporting.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Automated Forecasting Dashboard gives your team always-on insights.</div>
-            </li>
-          </ol>
-        </div>
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">SMB Success Stories</h5>
-          <ol className="list-decimal ml-6">
-            <li className="mb-2">
-              <b>Mid-Sized Tech Agency Grows Revenue 30% with AI Pipeline Insights</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Lacked visibility into which deals would close, cash flow gaps.</li>
-                <li><b>AI Solution:</b> AI-powered pipeline analytics, automated alerts for stalled deals.</li>
-                <li><b>Results:</b> 30% revenue growth, 50% fewer surprise misses, better hiring/timing decisions.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Pipeline Intelligence System helps SMBs forecast like enterprises.</div>
-            </li>
-            <li className="mb-2">
-              <b>Local Commercial Contractor Wins 20% More Bids with AI Probability Scoring</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Overestimating project wins, resource mismanagement.</li>
-                <li><b>AI Solution:</b> ML analysis of historical bid outcomes, real-time win probability for each opportunity.</li>
-                <li><b>Results:</b> 20% more successful bids, 30% better resource planning, eliminated "hopeful" forecasting.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Deal Probability AI helps you bet on the right opportunities.</div>
-            </li>
-            <li className="mb-2">
-              <b>E-Commerce Brand Cuts Inventory Costs by 25% with AI Demand Forecasting</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Seasonal demand spikes, overstock/stockouts.</li>
-                <li><b>AI Solution:</b> Unified sales/inventory forecasting, 6-month demand prediction based on marketing spend/trends.</li>
-                <li><b>Results:</b> 25% lower inventory costs, 18% fewer stockouts, optimized ad spend.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Demand Forecasting Module connects sales pipelines to operational planning.</div>
-            </li>
-          </ol>
-        </div>
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">Why ApexSalesAI for Predictive Forecasting?</h5>
-          <ul className="list-disc ml-6">
-            <li>✔ 90%+ Forecast Accuracy – Machine learning adapts to your business patterns</li>
-            <li>✔ Real-Time Anomaly Detection – Get alerts before deals go off track</li>
-            <li>✔ Seamless CRM Integration – Works with Salesforce, HubSpot, Pipedrive & more</li>
-            <li>✔ No Data Science Team Needed – Get enterprise-grade AI in minutes</li>
-          </ul>
-        </div>
-        <div className="text-center mt-6">
-          <a href="/demo" className="inline-block bg-[#00c2cb] text-white font-bold px-8 py-3 rounded-full shadow-lg hover:bg-[#00e0e6] transition">See ApexSalesAI Forecasting in Action</a>
-          <div className="mt-2 text-[#0d1321] font-semibold">Turn your pipeline into predictable revenue with AI.</div>
-        </div>
-      </div>
-    ),
-              <div className="italic text-[#00c2cb] mt-1">Our Automated Forecasting Dashboard gives your team always-on insights.</div>
-            </li>
-          </ol>
-        </div>
-        <div className="mb-4">
-          <h5 className="font-semibold text-[#0d1321]">SMB Success Stories</h5>
-          <ol className="list-decimal ml-6">
-            <li className="mb-2">
-              <b>Mid-Sized Tech Agency Grows Revenue 30% with AI Pipeline Insights</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Lacked visibility into which deals would close, cash flow gaps.</li>
-                <li><b>AI Solution:</b> AI-powered pipeline analytics, automated alerts for stalled deals.</li>
-                <li><b>Results:</b> 30% revenue growth, 50% fewer surprise misses, better hiring/timing decisions.</li>
-              </ul>
-              <div className="italic text-[#00c2cb] mt-1">Our Pipeline Intelligence System helps SMBs forecast like enterprises.</div>
-            </li>
-            <li className="mb-2">
-              <b>Local Commercial Contractor Wins 20% More Bids with AI Probability Scoring</b>
-              <ul className="list-disc ml-6">
-                <li><b>Challenge:</b> Overestimating project wins, resource mismanagement.</li>
-                <li><b>AI Solution:</b> ML analysis of historical bid outcomes, real-time win probability for each opportunity.</li>
-                <li><b>Results:</b> 20% more successful bids, 30% better resource planning, eliminated "hopeful" forecasting.</li>
+                <li><b>Challenge:</b> Forecasting relied on intuition, leading to inaccurate predictions.</li>
+                <li><b>AI Solution:</b> Data-driven forecasting, automated deal health analysis.</li>
               </ul>
               <div className="italic text-[#00c2cb] mt-1">Our Deal Probability AI helps you bet on the right opportunities.</div>
             </li>
