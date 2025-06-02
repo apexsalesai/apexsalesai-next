@@ -28,8 +28,16 @@ export default function RetailSolutionsPage() {
         <div className="grid md:grid-cols-2 gap-8">
 
           {/* 1. AI-Powered Dynamic Pricing & Promotions */}
-          <div className="bg-[#181c20] rounded-lg p-6 border border-[#00c2cb]/20 shadow flex flex-col items-center">
-            <Image src="/images/happy-matu-magic-nqte.jpeg" alt="Max AI Mascot" width={40} height={40} className="rounded-full border-2 border-[#00c2cb] mb-2" />
+          <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
+            {/* Heroicons chart-bar as analytics icon */}
+            <span className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00c2cb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="12" width="4" height="8" rx="1" />
+                <rect x="9" y="8" width="4" height="12" rx="1" />
+                <rect x="15" y="4" width="4" height="16" rx="1" />
+              </svg>
+            </span>
+            <div className="flex gap-6 mb-2"> />
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Powered Dynamic Pricing & Promotions</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Machine learning adjusts prices in real time based on demand, inventory, and competitor signals—maximizing revenue.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -45,8 +53,15 @@ export default function RetailSolutionsPage() {
           </div>
 
           {/* 2. Computer Vision for Checkout-Free Stores */}
-          <div className="bg-[#181c20] rounded-lg p-6 border border-[#00c2cb]/20 shadow flex flex-col items-center">
-            <Image src="/images/happy-matu-magic-nqte.jpeg" alt="Max AI Mascot" width={40} height={40} className="rounded-full border-2 border-[#00c2cb] mb-2" />
+          <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
+            {/* Lucide handshake icon */}
+            <span className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00c2cb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z" />
+                <path d="M21 16v2a4 4 0 0 1-4 4h-5" />
+              </svg>
+            </span>
+            <div className="flex gap-6 mb-2"> />
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">Computer Vision for Checkout-Free Stores</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Camera networks and deep learning enable grab-and-go payments, reducing theft and boosting throughput.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -62,8 +77,16 @@ export default function RetailSolutionsPage() {
           </div>
 
           {/* 3. AI-Driven Personalized Recommendations */}
-          <div className="bg-[#181c20] rounded-lg p-6 border border-[#00c2cb]/20 shadow flex flex-col items-center">
-            <Image src="/images/happy-matu-magic-nqte.jpeg" alt="Max AI Mascot" width={40} height={40} className="rounded-full border-2 border-[#00c2cb] mb-2" />
+          <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
+            {/* Lucide heart-handshake icon */}
+            <span className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00c2cb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z" />
+                <path d="M21 16v2a4 4 0 0 1-4 4h-5" />
+                <path d="M19 13a3 3 0 0 0-3-3V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a3 3 0 0 0 3 3z" />
+              </svg>
+            </span>
+            <div className="flex gap-6 mb-2"> />
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Driven Personalized Recommendations</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Deep learning analyzes browsing, purchase, and in-store data to serve hyper-relevant offers and boost conversions.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -79,8 +102,16 @@ export default function RetailSolutionsPage() {
           </div>
 
           {/* 4. AI-Powered Inventory Management for Boutiques */}
-          <div className="bg-[#181c20] rounded-lg p-6 border border-[#00c2cb]/20 shadow flex flex-col items-center">
-            <Image src="/images/happy-matu-magic-nqte.jpeg" alt="Max AI Mascot" width={40} height={40} className="rounded-full border-2 border-[#00c2cb] mb-2" />
+          <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
+            {/* Heroicons chart-bar as analytics icon */}
+            <span className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00c2cb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="12" width="4" height="8" rx="1" />
+                <rect x="9" y="8" width="4" height="12" rx="1" />
+                <rect x="15" y="4" width="4" height="16" rx="1" />
+              </svg>
+            </span>
+            <div className="flex gap-6 mb-2"> />
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI-Powered Inventory Management for Boutiques</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Predictive analytics syncs POS data, weather, and trends to forecast demand and automate reordering.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -96,8 +127,15 @@ export default function RetailSolutionsPage() {
           </div>
 
           {/* 5. AI Chatbots for 24/7 Customer Service */}
-          <div className="bg-[#181c20] rounded-lg p-6 border border-[#00c2cb]/20 shadow flex flex-col items-center">
-            <Image src="/images/happy-matu-magic-nqte.jpeg" alt="Max AI Mascot" width={40} height={40} className="rounded-full border-2 border-[#00c2cb] mb-2" />
+          <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
+            {/* Lucide headset icon */}
+            <span className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00c2cb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z" />
+                <path d="M21 16v2a4 4 0 0 1-4 4h-5" />
+              </svg>
+            </span>
+            <div className="flex gap-6 mb-2"> />
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI Chatbots for 24/7 Customer Service</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Conversational AI handles FAQs, tracks orders, and processes returns via SMS, WhatsApp, or web chat.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">
@@ -113,8 +151,16 @@ export default function RetailSolutionsPage() {
           </div>
 
           {/* 6. AI Visual Search for Local Stores */}
-          <div className="bg-[#181c20] rounded-lg p-6 border border-[#00c2cb]/20 shadow flex flex-col items-center">
-            <Image src="/images/happy-matu-magic-nqte.jpeg" alt="Max AI Mascot" width={40} height={40} className="rounded-full border-2 border-[#00c2cb] mb-2" />
+          <div className="bg-white rounded-xl p-6 border border-[#00c2cb]/10 shadow-lg flex flex-col items-center min-h-[370px]">
+            {/* Lucide heart-handshake icon */}
+            <span className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00c2cb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z" />
+                <path d="M21 16v2a4 4 0 0 1-4 4h-5" />
+                <path d="M19 13a3 3 0 0 0-3-3V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a3 3 0 0 0 3 3z" />
+              </svg>
+            </span>
+            <div className="flex gap-6 mb-2"> />
             <h3 className="text-lg font-semibold text-[#00c2cb] mb-2 text-center">AI Visual Search for Local Stores</h3>
             <p className="text-[#a0aec0] mb-2 text-sm text-center">Camera-based search lets shoppers snap photos to instantly find similar products and store locations.</p>
             <div className="bg-[#23272f] rounded p-3 mb-2 w-full">

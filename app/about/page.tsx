@@ -53,7 +53,7 @@ export default function About() {
             <div className="bg-[#2d3748] rounded-xl p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="w-32 h-32 rounded-full border-4 border-[#00c2cb] overflow-hidden mx-auto mb-6">
                 <Image 
-                  src="/max-avatar.png" 
+                  src="/images/max-avatar.png" 
                   alt="Tim Bryant, CEO"
                   width={128}
                   height={128}
