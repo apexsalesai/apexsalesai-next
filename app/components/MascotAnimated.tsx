@@ -96,7 +96,7 @@ export default function MascotAnimated() {
         className="relative z-20"
       >
         {/* Mascot image */}
-        <Image src="/images/mascot-avatar.png" alt="Max Mascot" width={220} height={220} className="rounded-full shadow-2xl border-4 border-[#00c2cb] bg-white" priority />
+        <Image src="/images/apex-logo.png" alt="Apex Logo Test" width={220} height={220} className="rounded-full shadow-2xl border-4 border-[#00c2cb] bg-white" priority />
 
         {/* Premium greeting speech bubble (fade/slide in, no typewriter) */}
         <motion.div
