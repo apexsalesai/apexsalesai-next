@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { getJWT } from './jwt';
 
 // Stub: Replace this with your real user session/auth integration
 function getUserInfo() {
@@ -15,6 +16,93 @@ function getUserInfo() {
 
 
 export default function MaxChatWidget() {
+  // Tooltip state for clear chat button
+  const [showClearTooltip, setShowClearTooltip] = useState(false);
+
+  // Inject premium styles for the chat widget
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (!document.getElementById('maxchat-premium-styles')) {
+        const style = document.createElement('style');
+        style.id = 'maxchat-premium-styles';
+        style.innerHTML = `
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+          .maxchat-premium-card {
+            background: rgba(24,28,32,0.85);
+            backdrop-filter: blur(18px) saturate(140%);
+            border-radius: 22px;
+            box-shadow: 0 8px 32px 0 rgba(0,194,203,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.13);
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            border: 1.5px solid rgba(0,194,203,0.14);
+            overflow: hidden;
+            transition: box-shadow 0.22s cubic-bezier(.4,0,.2,1);
+          }
+          .maxchat-premium-header {
+            display: flex; align-items: center; gap: 13px;
+            padding: 22px 24px 10px 24px;
+            background: rgba(0,194,203,0.07);
+            border-bottom: 1.5px solid rgba(0,194,203,0.13);
+          }
+          .maxchat-premium-avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #fff; object-fit: cover;
+            border: 2.5px solid #00c2cb;
+            box-shadow: 0 2px 8px #00c2cb33;
+          }
+          .maxchat-premium-title {
+            font-size: 1.22rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;
+          }
+          .maxchat-premium-subtitle {
+            font-size: 0.99rem; font-weight: 500; color: #00c2cb; margin-top: 2px;
+          }
+          .maxchat-premium-signin {
+            margin: 0 0 12px 0; text-align: center;
+          }
+          .maxchat-premium-signin-btn {
+            margin-left: 8px; color: #fff; background: linear-gradient(90deg,#00c2cb 10%,#0c8fff 90%);
+            padding: 7px 22px; border-radius: 8px; font-weight: 700;
+            text-decoration: none; box-shadow: 0 2px 12px #00c2cb33;
+            border: none; outline: none; font-size: 1rem;
+            transition: background 0.18s, box-shadow 0.18s;
+            display: inline-block;
+          }
+          .maxchat-premium-signin-btn:hover {
+            background: linear-gradient(90deg,#0c8fff 10%,#00c2cb 90%);
+            box-shadow: 0 4px 18px #00c2cb55;
+          }
+          .maxchat-premium-input {
+            flex: 1; padding: 13px; border-radius: 10px; border: none; outline: none;
+            background: rgba(35,39,47,0.96); color: #fff; font-size: 1.08rem;
+            box-shadow: 0 1px 4px 0 rgba(0,0,0,0.08);
+            margin-right: 8px;
+            transition: box-shadow 0.18s;
+          }
+          .maxchat-premium-input:focus {
+            box-shadow: 0 2px 8px #00c2cb55;
+          }
+          .maxchat-premium-send-btn {
+            background: linear-gradient(90deg,#00c2cb 10%,#0c8fff 90%);
+            color: #181c20; border: none; border-radius: 10px; padding: 0 28px;
+            font-weight: 700; font-size: 1.08rem; cursor: pointer;
+            transition: background 0.18s, box-shadow 0.18s;
+          }
+          .maxchat-premium-send-btn:disabled {
+            opacity: 0.6; cursor: not-allowed;
+          }
+          .maxchat-premium-send-btn:hover:not(:disabled) {
+            background: linear-gradient(90deg,#0c8fff 10%,#00c2cb 90%);
+            box-shadow: 0 2px 12px #00c2cb33;
+          }
+          .maxchat-premium-messages {
+            padding: 20px 24px 10px 24px; max-height: 340px; overflow-y: auto;
+            background: transparent;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+  }, []);
+
   const [minimized, setMinimized] = useState(true);
   const [lastActive, setLastActive] = useState(Date.now());
   const [user, setUser] = useState(getUserInfo());
@@ -24,8 +112,12 @@ const [nameInput, setNameInput] = useState('');
 // Restore chat history from localStorage
 const [messages, setMessages] = useState(() => {
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('maxchat_history');
-    if (stored) return JSON.parse(stored);
+    const jwt = getJWT();
+    if (!jwt) {
+      const stored = localStorage.getItem('maxchat_history');
+      if (stored) return JSON.parse(stored);
+    }
+    // If logged in, optionally fetch persistent history from backend (future enhancement)
   }
   // Initial greeting
   return [{
@@ -73,7 +165,12 @@ const [feedbackGiven, setFeedbackGiven] = useState([]);
   // Store chat history in localStorage on change
 useEffect(() => {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('maxchat_history', JSON.stringify(messages));
+    const jwt = getJWT();
+    if (!jwt) {
+      localStorage.setItem('maxchat_history', JSON.stringify(messages));
+    } else {
+      // Optionally: POST to /api/max-chat-history to persist for logged-in users (future enhancement)
+    }
   }
 }, [messages]);
 
@@ -106,9 +203,13 @@ const handleUserActive = () => setLastActive(Date.now());
   setMedia([]);
   setEscalation(false);
   try {
+      const jwt = getJWT();
       const res = await fetch('/api/max-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(jwt ? { 'Authorization': `Bearer ${jwt}` } : {})
+        },
         body: JSON.stringify({
           messages: [
             ...messages,
@@ -118,6 +219,10 @@ const handleUserActive = () => setLastActive(Date.now());
         })
       });
       const data = await res.json();
+      if (res.status === 401) {
+        setError('Session expired. Please log in again for secure access.');
+        return;
+      }
       if (res.ok && data.answer) {
         setMessages(msgs => [...msgs, { role: 'assistant', content: data.answer, suggestions: data.suggestions, media: data.media, escalation: data.escalation, feedback: data.feedback }]);
         setSuggestions(data.suggestions || []);
@@ -230,12 +335,77 @@ const handleUserActive = () => setLastActive(Date.now());
       onClick={handleUserActive}
     >
       <button
-        onClick={() => setMinimized(true)}
-        style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', color: '#fff', fontSize: 22, cursor: 'pointer' }}
-        aria-label="Minimize Chat"
-      >
-        &minus;
-      </button>
+         onClick={() => setMinimized(true)}
+         style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', color: '#fff', fontSize: 22, cursor: 'pointer' }}
+         aria-label="Minimize Chat"
+       >
+         &minus;
+       </button>
+       {/* Clear Chat Button */}
+       <button
+         aria-label="Clear chat history"
+         style={{ position: 'absolute', top: 10, right: 48, background: 'rgba(0,194,203,0.14)', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.18s', outline: 'none', boxShadow: '0 1.5px 8px 0 rgba(0,0,0,0.10)' }}
+         onClick={() => {
+           if (typeof window !== 'undefined') {
+             localStorage.removeItem('maxchat_history');
+             setMessages([{
+               role: 'assistant',
+               content: user?.name
+                 ? `Hi ${user.name}! I'm Max, your executive AI assistant. How can I help you today?`
+                 : "Hi! I'm Max, your executive AI assistant. What's your name?",
+               suggestions: [], media: [], escalation: false, feedback: false
+             }]);
+           }
+         }}
+         onMouseEnter={() => setShowClearTooltip(true)}
+         onMouseLeave={() => setShowClearTooltip(false)}
+       >
+         {/* Trash icon SVG */}
+         <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+           <path d="M7.5 9V14" stroke="#00c2cb" strokeWidth="1.7" strokeLinecap="round"/>
+           <path d="M12.5 9V14" stroke="#00c2cb" strokeWidth="1.7" strokeLinecap="round"/>
+           <rect x="4.5" y="5.5" width="11" height="11" rx="2.5" stroke="#00c2cb" strokeWidth="1.7"/>
+           <path d="M2 5.5H18" stroke="#00c2cb" strokeWidth="1.7" strokeLinecap="round"/>
+           <path d="M8.5 2.5H11.5" stroke="#00c2cb" strokeWidth="1.7" strokeLinecap="round"/>
+         </svg>
+       </button>
+       {/* Login Icon Button */}
+       {!getJWT() && (
+         <button
+           aria-label="Sign in to save history"
+           style={{ position: 'absolute', top: 10, right: 86, background: 'rgba(0,194,203,0.14)', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.18s', outline: 'none', boxShadow: '0 1.5px 8px 0 rgba(0,0,0,0.10)' }}
+           onClick={e => { e.stopPropagation(); window.open('/api/auth/login', '_blank'); }}
+           onMouseEnter={() => setShowClearTooltip('login')}
+           onMouseLeave={() => setShowClearTooltip(false)}
+         >
+           {/* User icon SVG */}
+           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+             <circle cx="10" cy="7" r="4" stroke="#00c2cb" strokeWidth="1.7"/>
+             <path d="M3.5 16c1.5-3 11.5-3 13 0" stroke="#00c2cb" strokeWidth="1.7" strokeLinecap="round"/>
+           </svg>
+         </button>
+       )}
+       {/* Tooltip for clear/login */}
+       {showClearTooltip && (
+         <div style={{
+           position: 'absolute',
+           top: 6,
+           right: showClearTooltip === 'login' ? 126 : 88,
+           background: 'rgba(24,28,32,0.97)',
+           color: '#fff',
+           padding: '7px 14px',
+           borderRadius: 7,
+           fontSize: 13,
+           fontWeight: 500,
+           boxShadow: '0 2px 12px #00c2cb33',
+           pointerEvents: 'none',
+           zIndex: 10000,
+           whiteSpace: 'nowrap',
+           transition: 'opacity 0.18s',
+         }}>
+           {showClearTooltip === 'login' ? 'Sign in to save history' : 'Clear chat'}
+         </div>
+       )}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
         <img src="/images/happy-matu-magic-nqte.jpeg" alt="Max" style={{ width: 48, height: 48, borderRadius: '50%', marginRight: 14, border: '2.5px solid #00c2cb', objectFit: 'cover', boxShadow: '0 2px 8px #00c2cb44' }} />
         <div>
@@ -306,6 +476,7 @@ const handleUserActive = () => setLastActive(Date.now());
           Max is typing...
         </div>
       )}
+
       <div style={{ display: 'flex', gap: 8 }}>
         {askingName ? (
           <>

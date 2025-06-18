@@ -2,7 +2,14 @@ import { NextResponse } from 'next/server';
 import { sendEmailWithAlert } from '../../lib/sendEmailWithAlert';
 import { logSubmission } from '../../lib/submissionLogger';
 
+import { verifyAuth } from '../_auth';
+
 export async function POST(request: Request) {
+  // JWT authentication
+  const auth = verifyAuth(request as any);
+  if (!auth.valid) {
+    return NextResponse.json({ error: auth.message || 'Unauthorized' }, { status: auth.status || 401 });
+  }
   try {
     const data = await request.json();
     const { name, email, company, jobTitle, phone, teamSize, industry, message } = data;

@@ -6,7 +6,14 @@ export async function GET() {
   return NextResponse.json({ status: 'API is working' });
 }
 
+import { verifyAuth } from '../_auth';
+
 export async function POST(req: NextRequest) {
+  // JWT authentication
+  const auth = verifyAuth(req);
+  if (!auth.valid) {
+    return NextResponse.json({ error: auth.message || 'Unauthorized' }, { status: auth.status || 401 });
+  }
   // Load company info dynamically
   let companyInfo = null;
   try {

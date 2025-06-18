@@ -8,7 +8,14 @@ const FROM_EMAIL = 'info@apexsalesai.com';
 
 const resend = new Resend(RESEND_API_KEY);
 
+import { verifyAuth } from '../_auth';
+
 export async function POST(request: Request) {
+  // JWT authentication
+  const auth = verifyAuth(request as any);
+  if (!auth.valid) {
+    return NextResponse.json({ error: auth.message || 'Unauthorized' }, { status: auth.status || 401 });
+  }
   try {
     const data = await request.json();
     // Compose HTML email

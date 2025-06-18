@@ -4,6 +4,95 @@ import { FaRobot } from "react-icons/fa";
 
 const useCases = [ // <-- open array
   {
+    icon: "/images/ai-revenue.svg",
+    label: "Fast-Track Revenue Solutions",
+    summary: "Jumpstart your sales with rapid AI audits, agent bundles, and scalable SaaS plans. Generate revenue in days, not months.",
+    stats: [
+      { value: "$1,500+", label: "Audit Fee" },
+      { value: "$2.5k+", label: "Agent Bundle" }
+    ],
+    details: (
+      <div className="text-left">
+        <h4 className="font-bold text-xl mb-2 text-[#00c2cb]">Fast-Track Revenue: Apex Quickstart Offers</h4>
+        <p className="mb-4">Get revenue flowing fast with these proven, high-impact solutions. Perfect for businesses who want results now while building for the future.</p>
+        <div className="mb-6">
+          <h5 className="font-semibold text-[#0d1321] mb-1">1. AI Audit + Revamp Package</h5>
+          <ul className="list-disc ml-6 mb-2">
+            <li><b>Offer:</b> "In 72 hours, we’ll audit your sales stack and deploy an Apex AI Agent that closes gaps."</li>
+            <li><b>Price:</b> $1,500+ per audit</li>
+            <li><b>Deployment:</b> $5k–$20k per agent + consulting</li>
+            <li><b>How it works:</b> Discovery call, templated playbook, rapid deployment, repeatable & scalable.</li>
+          </ul>
+          <a href="/demo" className="inline-block bg-[#00c2cb] text-white font-bold px-6 py-2 rounded-full shadow hover:bg-[#00e0e6] transition">Book Your Audit</a>
+        </div>
+        <div className="mb-6">
+          <h5 className="font-semibold text-[#0d1321] mb-1">2. Website + AI Sales Agent Bundle</h5>
+          <ul className="list-disc ml-6 mb-2">
+            <li><b>Offer:</b> “Enterprise Website + Live AI SDR Agent in 14 Days”</li>
+            <li><b>Target:</b> SMBs, real estate, agencies, SaaS startups</li>
+            <li><b>Stack:</b> Vercel + Next.js + Max agent preinstalled</li>
+            <li><b>Price:</b> $2,500–$7,500 per deployment</li>
+            <li><b>Margin:</b> 70%+ (prebuilt templates, light customizations)</li>
+          </ul>
+          <a href="/contact" className="inline-block bg-[#0d1321] text-white font-bold px-6 py-2 rounded-full shadow hover:bg-[#2d3748] transition">Request Bundle Info</a>
+        </div>
+        <div className="mb-6">
+          <h5 className="font-semibold text-[#0d1321] mb-1">3. SaaS Platform: Modular Agents & Add-Ons</h5>
+          <table className="min-w-full mb-4 border text-sm">
+            <thead>
+              <tr className="bg-[#e6f7fa]">
+                <th className="p-2 border">Add-on</th>
+                <th className="p-2 border">Description</th>
+                <th className="p-2 border">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td className="p-2 border">AI Summary Reports</td><td className="p-2 border">Auto-email weekly exec summary from Max</td><td className="p-2 border">$29/mo</td></tr>
+              <tr><td className="p-2 border">CRM Sync</td><td className="p-2 border">Real-time Microsoft 365 or Salesforce sync</td><td className="p-2 border">$99/mo</td></tr>
+              <tr><td className="p-2 border">Voice + Avatar Max</td><td className="p-2 border">Premium voice + Synthesia or D-ID avatar</td><td className="p-2 border">$149/mo</td></tr>
+              <tr><td className="p-2 border">White-label Branding</td><td className="p-2 border">Client name + domain + colors</td><td className="p-2 border">$499 setup</td></tr>
+              <tr><td className="p-2 border">AI Email Writer</td><td className="p-2 border">Smart templates + auto-personalization</td><td className="p-2 border">$39/mo</td></tr>
+            </tbody>
+          </table>
+          <div className="text-[#00c2cb] font-semibold mb-2">Per-Agent Pricing Model (like Slack per-seat) + Usage-Based Add-ons (GPT-4o, voice, data integrations)</div>
+          <a href="/pricing" className="inline-block bg-[#00c2cb] text-white font-bold px-6 py-2 rounded-full shadow hover:bg-[#00e0e6] transition">See SaaS Pricing</a>
+        </div>
+        <div className="mb-6">
+          <h5 className="font-semibold text-[#0d1321] mb-1">4. Custom AI Agent Builds</h5>
+          <ul className="list-disc ml-6 mb-2">
+            <li><b>Offer:</b> “We build an AI employee to your exact specs.”</li>
+            <li><b>Price:</b> $5k–$50k depending on use case</li>
+            <li><b>Includes:</b> persona design, workflow mapping, integration, and support</li>
+            <li><b>Delivered:</b> 14–30 days using our framework + OpenAI + Botpress + RAG</li>
+          </ul>
+          <a href="/contact" className="inline-block bg-[#0d1321] text-white font-bold px-6 py-2 rounded-full shadow hover:bg-[#2d3748] transition">Request Custom Build</a>
+        </div>
+        <div className="mb-6">
+          <h5 className="font-semibold text-[#0d1321] mb-1">5. AI-Infused Coaching & Workshops</h5>
+          <ul className="list-disc ml-6 mb-2">
+            <li><b>Offer:</b> “AI for Sales Teams” or “How to Build AI into Your Workflow”</li>
+            <li><b>Format:</b> Webinars (free lead gen), coaching, or workshops</li>
+          </ul>
+          <a href="/contact" className="inline-block bg-[#00c2cb] text-white font-bold px-6 py-2 rounded-full shadow hover:bg-[#00e0e6] transition">Request Workshop Info</a>
+        </div>
+        <div className="p-4 bg-[#e6f7fa] rounded-lg mb-4">
+          <div className="font-bold text-[#0d1321] mb-1">🟢 What to do now:</div>
+          <ul className="list-disc ml-6">
+            <li>Offer pre-launch discounts or a lifetime deal to build urgency</li>
+            <li>Create a demo-to-deal funnel — trial a single agent (Max) for 7 days</li>
+            <li>Add one-click monthly upgrade prompts inside dashboard</li>
+          </ul>
+        </div>
+        <div className="p-4 bg-[#fffbe6] rounded-lg">
+          <div className="font-bold text-[#b7791f] mb-1">🧠 Bonus:</div>
+          <ul className="list-disc ml-6">
+            <li>Turn every deployment into a case study for inbound demand and social proof</li>
+          </ul>
+        </div>
+      </div>
+    ),
+  },
+  {
     icon: "/images/ai-nurture.svg",
     label: "Autonomous Lead Nurturing",
     summary: "AI agents engage, qualify, and nurture leads 24/7, ensuring no opportunity slips through the cracks.",
