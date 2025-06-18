@@ -44,11 +44,7 @@ export async function POST(req: NextRequest) {
     });
   }
   try {
-    const { messages, user } = await req.json();
-    if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: 'Invalid request: messages array required.' }, { status: 400 });
-    }
-
+    // Use already-parsed body and user info
     // Prepare Azure OpenAI API call
     const apiKey = process.env.AZURE_OPENAI_API_KEY;
     const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
