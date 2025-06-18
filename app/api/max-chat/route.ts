@@ -9,10 +9,20 @@ export async function GET() {
 import { verifyAuth } from '../_auth';
 
 export async function POST(req: NextRequest) {
-  // JWT authentication
-  const auth = verifyAuth(req);
-  if (!auth.valid) {
-    return NextResponse.json({ error: auth.message || 'Unauthorized' }, { status: auth.status || 401 });
+  // JWT authentication (optional, robust)
+  let user = null;
+  try {
+    const auth = verifyAuth(req);
+    if (auth && auth.valid && auth.decoded && typeof auth.decoded === 'object' && 'name' in auth.decoded) {
+      user = { name: auth.decoded.name, email: auth.decoded.email };
+    }
+  } catch (e) {
+    user = null;
+  }
+  // Only parse messages from request body, ignore any user field
+  const { messages } = await req.json();
+  if (!messages || !Array.isArray(messages)) {
+    return NextResponse.json({ error: 'Invalid request: messages array required.' }, { status: 400 });
   }
   // Load company info dynamically
   let companyInfo = null;
