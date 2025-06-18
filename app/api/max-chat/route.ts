@@ -19,8 +19,9 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     user = null;
   }
-  // Only parse messages from request body, ignore any user field
-  const { messages } = await req.json();
+  // Only parse messages from request body ONCE, ignore any user field
+  const body = await req.json();
+  const { messages } = body;
   if (!messages || !Array.isArray(messages)) {
     return NextResponse.json({ error: 'Invalid request: messages array required.' }, { status: 400 });
   }
