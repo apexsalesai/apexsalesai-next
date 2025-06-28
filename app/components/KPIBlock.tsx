@@ -5,11 +5,12 @@ interface KPIBlockProps {
   value: string;
   trend: string;
   badgeColor?: string;
+  highlight?: boolean; // Add highlight property for high-impact KPIs
 }
 
 import { useEffect, useRef, useState } from 'react';
 
-export const KPIBlock = ({ title, value, trend, badgeColor = 'green' }: KPIBlockProps) => {
+export const KPIBlock = ({ title, value, trend, badgeColor = 'green', highlight = false }: KPIBlockProps) => {
   // Count-up animation for numbers (supports numbers with commas, %, $)
   const parseValue = (val: string) => {
     const n = parseFloat(val.replace(/[^\d.-]+/g, ''));
@@ -45,16 +46,17 @@ export const KPIBlock = ({ title, value, trend, badgeColor = 'green' }: KPIBlock
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.04, boxShadow: '0 0 32px 0 #38bdf8cc' }}
       transition={{ duration: 0.5, type: 'spring' }}
-      className="bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-slate-700 hover:shadow-cyan-500/30 transition cursor-pointer focus-visible:outline-none"
+      className={`bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl shadow-xl border ${highlight ? 'border-cyan-500' : 'border-slate-700'} ${highlight ? 'shadow-cyan-500/20' : ''} hover:shadow-cyan-500/30 transition cursor-pointer focus-visible:outline-none`}
       tabIndex={0}
     >
       <p className="text-sm uppercase tracking-wide text-slate-400 mb-1">{title}</p>
       <motion.p
-        className="text-3xl font-bold text-cyan-300 drop-shadow"
+        className={`${value.length > 10 ? 'text-2xl' : 'text-3xl'} font-bold text-cyan-300 drop-shadow truncate`}
         key={value}
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
+        title={formatValue(displayValue)} // Add tooltip for truncated values
       >
         {formatValue(displayValue)}
       </motion.p>

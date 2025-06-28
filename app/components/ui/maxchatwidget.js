@@ -220,7 +220,12 @@ const handleUserActive = () => setLastActive(Date.now());
       });
       const data = await res.json();
       if (res.status === 401) {
-        setError('Session expired. Please log in again for secure access.');
+        // Only show session expired if the user is supposed to be authenticated
+        if (user) {
+          setError('Session expired. Please log in again for secure access.');
+        } else {
+          setError('Anonymous chat is temporarily unavailable. Please try again or log in.');
+        }
         return;
       }
       if (res.ok && data.answer) {

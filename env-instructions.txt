@@ -1,0 +1,13 @@
+# Instructions for creating your .env.local file
+
+# Copy the contents below into a new file named .env.local in the root of your project
+# This will enable database connections and fix the dashboard rendering issues
+
+# PostgreSQL Database URL - Replace with your actual database credentials
+DATABASE_URL="postgresql://username:password@localhost:5432/apexsalesai?schema=public"
+
+# If you don't have a PostgreSQL database set up, you can use a mock URL for development
+# DATABASE_URL="postgresql://mock:mock@localhost:5432/mock?schema=public"
+
+# Additional environment variables
+NEXT_PUBLIC_API_URL="http://localhost:3001/api"

@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id           Int      @id @default(autoincrement())
+  name         String
+  orgId        String   @unique
+  domain       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  users        User[]
+  leads        Lead[]
+  featureFlags FeatureFlag[]
+  auditLogs    AuditLog[]
+  observabilityEvents ObservabilityEvent[]
+  sequenceDefinitions SequenceDefinition[]
+}
+
+model User {
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
+  name          String
+  role          String   // e.g. 'admin', 'agent', 'manager'
+  tenant        Tenant     @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId      Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  agent         Agent?
+  assignedLeads Lead[]     @relation("AssignedToUser")
+  auditLogs     AuditLog[]
+}
+
+model Lead {
+  id               Int           @id @default(autoincrement())
+  tenant           Tenant        @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId         Int
+  name             String
+  email            String
+  industry         String
+  stage            String
+  confidence_score Float
+  source           String?
+  assignedTo       User?         @relation("AssignedToUser", fields: [assignedToId], references: [id])
+  assignedToId     Int?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  agentActions     AgentAction[]
+  gdprRequests     GDPRRequest[]
+  sequenceStates   SequenceState[]
+}
+
+model Agent {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
+  model     String   // e.g. 'gpt-4o', 'custom'
+  status    String   // e.g. 'active', 'inactive'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  actions   AgentAction[]
+}
+
+model AgentAction {
+  id                Int                @id @default(autoincrement())
+  agent             Agent              @relation(fields: [agentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  agentId           Int
+  lead              Lead               @relation(fields: [leadId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  leadId            Int
+  action            String             // e.g. 'book_meeting', 'send_email', 'escalate', 'nurture'
+  priority          String             // e.g. 'high', 'low'
+  confidence        Float
+  reason            String?
+  createdAt         DateTime           @default(now())
+  executionResult   String?            // JSON string of execution result
+  status            String             @default("executed") // 'executed', 'pending', 'overridden'
+  overrideReason    String?            // Reason if action was overridden by human
+  overriddenBy      Int?               // User ID who overrode the action
+  executionDuration Int?               // Duration in milliseconds
+  roiImpact         Float?             // Estimated ROI impact
+  sequenceExecution SequenceExecution? @relation(fields: [sequenceExecutionId], references: [id])
+  sequenceExecutionId Int?
+}
+
+model FeatureFlag {
+  id        Int      @id @default(autoincrement())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId  Int
+  name      String
+  enabled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId  Int
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model AuthToken {
+  id            Int      @id @default(autoincrement())
+  provider      String   // e.g., 'hubspot', 'salesforce'
+  access_token  String
+  refresh_token String?
+  expires_at    DateTime
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  userId        Int
+  tenantId      Int
+}
+
+model ObservabilityEvent {
+  id        Int      @id @default(autoincrement())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId  Int
+  type      String   // e.g. 'API_CALL', 'ERROR', 'METRIC', 'ALERT'
+  message   String
+  meta      String?
+  createdAt DateTime @default(now())
+}
+
+model GDPRRequest {
+  id        Int      @id @default(autoincrement())
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  leadId    Int
+  type      String   // 'forget' or 'export'
+  status    String   // 'pending', 'completed', 'failed'
+  requestedAt DateTime @default(now())
+  completedAt DateTime?
+}
+
+// Sequence Engine Models
+model SequenceDefinition {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String?
+  type        String          // e.g., 'real_estate_lead_qualification', 'mortgage_doc_chase'
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId    Int
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  isActive    Boolean         @default(true)
+  steps       SequenceStep[]
+  states      SequenceState[]
+}
+
+model SequenceStep {
+  id                 Int               @id @default(autoincrement())
+  sequence           SequenceDefinition @relation(fields: [sequenceDefinitionId], references: [id])
+  sequenceDefinitionId Int
+  stepId             String            // e.g., 'intake', 'qualification'
+  name               String
+  description        String?
+  action             String            // Action to execute
+  conditions         Json?             // JSON conditions for branching logic
+  nextSteps          Json?             // JSON array of possible next steps
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  executions         SequenceExecution[]
+}
+
+model SequenceState {
+  id                 Int               @id @default(autoincrement())
+  sequence           SequenceDefinition @relation(fields: [sequenceDefinitionId], references: [id])
+  sequenceDefinitionId Int
+  lead               Lead              @relation(fields: [leadId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  leadId             Int
+  currentStepId      String
+  context            Json              // JSON object with sequence context
+  status             String            // 'active', 'completed', 'failed'
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  executions         SequenceExecution[]
+}
+
+model SequenceExecution {
+  id                 Int               @id @default(autoincrement())
+  state              SequenceState     @relation(fields: [sequenceStateId], references: [id])
+  sequenceStateId    Int
+  step               SequenceStep      @relation(fields: [sequenceStepId], references: [id])
+  sequenceStepId     Int
+  executionTime      DateTime          @default(now())
+  result             Json?             // JSON result of execution
+  nextStepId         String?
+  agentActions       AgentAction[]
+  metrics            SequenceMetrics?
+}
+
+model SequenceMetrics {
+  id                 Int               @id @default(autoincrement())
+  execution          SequenceExecution @relation(fields: [sequenceExecutionId], references: [id])
+  sequenceExecutionId Int               @unique
+  timeSavedMinutes   Float?
+  revenueImpact      Float?
+  costSavings        Float?
+  confidenceScore    Float?
+  createdAt          DateTime          @default(now())
+}

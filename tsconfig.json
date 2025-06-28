@@ -11,7 +11,7 @@
     "strict": true,
     "noEmit": true,
     "incremental": true,
-    "module": "esnext",
+    "module": "CommonJS",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -20,7 +20,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["app/*"],
-      "@components/*": ["app/components/*"]
+      "@components/*": ["app/components/*", "components/*"]
     },
     "plugins": [
       {

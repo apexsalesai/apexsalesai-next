@@ -13,6 +13,24 @@ const nextConfig = {
       },
     ],
   },
+  // Enable App Directory feature
+  experimental: {},
+  // Redirect dashboard routes to the Pages Router implementation
+  async rewrites() {
+    return [
+      {
+        source: '/dashboard/:path*',
+        destination: '/dashboard/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'x-use-pages-router',
+            value: 'true',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
