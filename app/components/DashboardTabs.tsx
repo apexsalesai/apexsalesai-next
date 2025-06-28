@@ -11,8 +11,11 @@ import FinanceDashboard from './FinanceDashboard';
 import ProductDashboard from './ProductDashboard';
 import { dataStore } from '../lib/dataStore';
 
+import PipelineAI from '../dashboard/PipelineAI';
+
 const tabs = [
   { id: 'executive', label: 'Executive', icon: '🏢', component: ExecutiveDashboard },
+  { id: 'pipeline', label: 'Pipeline AI', icon: '🤖', component: PipelineAI },
   { id: 'sales', label: 'Sales & Marketing', icon: '📈', component: SalesDashboard },
   { id: 'support', label: 'Customer Success', icon: '🎧', component: SupportDashboard },
   { id: 'ops', label: 'Ops & IT', icon: '💻', component: OpsDashboard },

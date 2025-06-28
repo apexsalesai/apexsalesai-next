@@ -1,0 +1,444 @@
+// Autonomous Sequence Engine V2 for Apex AI Revenue Operator
+import { Lead } from '../types/agent';
+import { 
+  SequenceStep, 
+  SequenceState, 
+  SequenceStepExecution,
+  SequenceExecutionMetrics,
+  SequenceDefinition
+} from '../types/sequence';
+import { SequenceStorage } from './sequence-storage';
+import { AgentTools } from './agent-tools';
+import { 
+  getSequenceDefinition, 
+  getSequenceAction 
+} from './sequences/sequence-integration';
+
+// Import vertical-specific logic
+import {
+  determineVerticalForLead,
+  determineSequenceForLead,
+  getActionHandler
+} from './agent/vertical-integration';
+
+/**
+ * SequenceEngine V2 - Enhanced core logic for executing autonomous multi-step sequences
+ * This version integrates with the new sequence registry system and supports dynamic sequence loading
+ */
+export class SequenceEngineV2 {
+  private storage: SequenceStorage;
+  private tools: AgentTools;
+  
+  constructor() {
+    this.storage = new SequenceStorage();
+    this.tools = new AgentTools();
+  }
+  
+  /**
+   * Calculate initial intent score based on lead data
+   */
+  private calculateInitialIntentScore(lead: Lead): number {
+    // In a real implementation, this would use a more sophisticated algorithm
+    // For now, we'll use a simple calculation based on confidence score if available
+    if (typeof lead.confidence_score === 'number') {
+      return Math.min(lead.confidence_score * 1.2, 1.0);
+    }
+    return 0.5; // Default medium intent
+  }
+  
+  /**
+   * Initialize a new sequence for a lead
+   */
+  async initializeSequence(lead: Lead, sequenceId?: string): Promise<SequenceState> {
+    // Check if we already have a sequence for this lead
+    const existingState = await this.storage.getSequenceState(lead.id);
+    if (existingState && existingState.status === 'active') {
+      console.log(`Resuming existing sequence for lead ${lead.id}`);
+      return existingState;
+    }
+    
+    // Determine the vertical domain for this lead
+    const verticalDomain = determineVerticalForLead(lead);
+    console.log(`Determined vertical domain: ${verticalDomain} for lead ${lead.id}`);
+    
+    // If no sequence ID is provided, determine the appropriate sequence based on lead data and vertical
+    let sequenceDefinition: SequenceDefinition | undefined;
+    
+    if (sequenceId) {
+      // If a specific sequence ID was requested, try to get it from the registry
+      sequenceDefinition = getSequenceDefinition(sequenceId);
+    } else {
+      // Otherwise determine the best sequence for this lead based on its vertical and properties
+      sequenceDefinition = determineSequenceForLead(lead);
+    }
+    
+    if (!sequenceDefinition) {
+      throw new Error(`Could not determine appropriate sequence for lead ${lead.id}`);
+    }
+    
+    // Validate the sequence definition
+    if (!sequenceDefinition.steps || sequenceDefinition.steps.length === 0) {
+      throw new Error(`Sequence ${sequenceDefinition.id} has no steps`);
+    }
+    
+    // Start with the first step in the sequence
+    const firstStep = sequenceDefinition.steps[0];
+    
+    const newState: SequenceState = {
+      lead,
+      current_step_id: firstStep.id,
+      history: [],
+      context: {
+        // Initialize context with lead data and any other relevant info
+        lead_data: lead,
+        intent_score: this.calculateInitialIntentScore(lead),
+        days_since_contact: 0,
+        is_engaged: true,
+        vertical_domain: verticalDomain
+      },
+      status: 'active' as const,
+      sequence_type: sequenceDefinition.id,
+      domain: verticalDomain
+    };
+    
+    // Save the new state to persistent storage
+    await this.storage.saveSequenceState(lead.id, newState);
+    
+    return newState;
+  }
+  
+  /**
+   * Get sequence state for a lead
+   */
+  async getSequenceState(leadId: number): Promise<SequenceState | null> {
+    return this.storage.getSequenceState(leadId);
+  }
+  
+  /**
+   * Get all active sequence states
+   */
+  async getAllSequenceStates(): Promise<Record<number, SequenceState>> {
+    return this.storage.getAllSequenceStates();
+  }
+  
+  /**
+   * Process the current step in a sequence
+   */
+  async processCurrentStep(state: SequenceState): Promise<SequenceState> {
+    // If we don't have a sequence type or domain, try to determine them
+    if (!state.sequence_type || !state.domain) {
+      const verticalDomain = state.domain || determineVerticalForLead(state.lead);
+      const sequenceDefinition = determineSequenceForLead(state.lead);
+      
+      if (!sequenceDefinition) {
+        throw new Error(`Could not determine appropriate sequence for lead ${state.lead.id}`);
+      }
+      
+      state.domain = verticalDomain;
+      state.sequence_type = sequenceDefinition.id;
+    }
+    
+    // Get the sequence definition
+    const sequenceDefinition = getSequenceDefinition(state.sequence_type);
+    if (!sequenceDefinition) {
+      throw new Error(`Could not find sequence definition for ${state.sequence_type}`);
+    }
+    
+    // Find the current step in the sequence
+    const currentStep = sequenceDefinition.steps.find(step => step.id === state.current_step_id);
+    if (!currentStep) {
+      throw new Error(`Could not find step ${state.current_step_id} in sequence ${state.sequence_type}`);
+    }
+    
+    console.log(`Processing step ${currentStep.id} (${currentStep.name || 'unnamed'}) for lead ${state.lead.id}`);
+    
+    // Execute the action for this step
+    const result = await this.executeAction(state.sequence_type, currentStep.action, state);
+    
+    // Create a record of this execution
+    const execution: SequenceStepExecution = {
+      step_id: currentStep.id,
+      action: currentStep.action,
+      result,
+      timestamp: new Date().toISOString(),
+      metrics: {
+        time_saved_minutes: 15, // Default placeholder
+        revenue_impact: 100     // Default placeholder
+      }
+    };
+    
+    // Determine the next step based on conditions
+    let nextStepId: string | undefined;
+    
+    if (currentStep.next_steps && currentStep.next_steps.length > 0) {
+      if (currentStep.conditions && currentStep.conditions.length > 0) {
+        // Evaluate conditions to determine the next step
+        const condition = currentStep.conditions[0]; // For now, just use the first condition
+        
+        // Get the attribute value from the result or context
+        const attributeValue = result && typeof result === 'object' && condition.attribute in result 
+          ? result[condition.attribute] 
+          : state.context[condition.attribute];
+        
+        // Evaluate the condition
+        let conditionMet = false;
+        
+        switch (condition.operator) {
+          case 'equals':
+            conditionMet = attributeValue === condition.value;
+            break;
+          case 'not_equals':
+            conditionMet = attributeValue !== condition.value;
+            break;
+          case 'contains':
+            conditionMet = typeof attributeValue === 'string' && 
+                          attributeValue.includes(String(condition.value));
+            break;
+          case 'greater_than':
+            conditionMet = Number(attributeValue) > Number(condition.value);
+            break;
+          case 'less_than':
+            conditionMet = Number(attributeValue) < Number(condition.value);
+            break;
+          default:
+            console.warn(`Unknown condition operator: ${condition.operator}`);
+            break;
+        }
+        
+        // Set the next step based on the condition result
+        if (conditionMet) {
+          nextStepId = currentStep.next_steps[0]; // True path
+        } else if (currentStep.next_steps.length > 1) {
+          nextStepId = currentStep.next_steps[1]; // False path
+        }
+      } else {
+        // No conditions, just take the first next step
+        nextStepId = currentStep.next_steps[0];
+      }
+    }
+    
+    // Extract metrics from the result if available
+    if (result && typeof result === 'object' && 'metrics' in result) {
+      execution.metrics = result.metrics as SequenceExecutionMetrics;
+    }
+    
+    // Create updated state with new history entry
+    const updatedState: SequenceState = {
+      ...state,
+      history: [...state.history, execution],
+      current_step_id: nextStepId || state.current_step_id,
+      status: nextStepId ? 'active' : 'completed',
+      context: {
+        ...state.context,
+        last_result: result,
+        last_step_id: currentStep.id,
+        last_action: currentStep.action,
+        last_execution_time: execution.timestamp
+      }
+    };
+    
+    // Save the updated state
+    await this.storage.saveSequenceState(state.lead.id, updatedState);
+    
+    return updatedState;
+  }
+  
+  /**
+   * Execute a specific action for a sequence step
+   */
+  async executeAction(sequenceId: string, actionId: string, state: SequenceState): Promise<any> {
+    console.log(`Executing action ${actionId} for sequence ${sequenceId}`);
+    
+    // First check if this action is handled by the vertical-specific handler
+    if (state.domain) {
+      try {
+        const verticalActionHandler = getActionHandler(actionId, state.domain);
+        if (verticalActionHandler) {
+          console.log(`Using vertical-specific action handler for ${actionId} in domain ${state.domain}`);
+          return await verticalActionHandler(state);
+        }
+      } catch (error) {
+        console.error(`Error executing vertical action ${actionId}:`, error);
+        // Continue to next handler on error
+      }
+    }
+    
+    // Then check if this action is registered in the sequence integration
+    try {
+      const registeredAction = getSequenceAction(sequenceId, actionId);
+      if (registeredAction) {
+        console.log(`Using registered action handler for ${actionId} in sequence ${sequenceId}`);
+        return await registeredAction(state);
+      }
+    } catch (error) {
+      console.error(`Error executing registered action ${actionId}:`, error);
+      // Continue to fallback on error
+    }
+    
+    // Map common action names to legacy implementations
+    // This is crucial for backward compatibility and fixing the sequence engine failure after step 1
+    const actionMap: Record<string, string> = {
+      'send_greeting_email': 'greet_lead',
+      'send_qualification_questions': 'ask_qualification_questions',
+      'check_mortgage_preapproval': 'evaluate_lead_intent',
+      'send_showing_calendar': 'book_showing'
+    };
+    
+    // Use mapped action ID if available
+    const mappedActionId = actionMap[actionId] || actionId;
+    console.log(`Using fallback implementation for action ${actionId} (mapped to ${mappedActionId})`);
+    
+    // Fallback to built-in action implementations
+    switch (mappedActionId) {
+      case 'greet_lead':
+        // Send a greeting email to the lead
+        const emailResult = await this.tools.sendEmail(
+          state.lead.email,
+          `Hi ${state.lead.name}, nice to connect!`,
+          `Hello ${state.lead.name},\n\nThank you for your interest. I'm your AI assistant and I'll be helping you through the process. What questions can I answer for you today?\n\nBest regards,\nYour Apex AI Assistant`,
+          'greeting'
+        );
+        
+        // Update CRM with the greeting activity
+        await this.tools.updateCRMLead(state.lead.id, {
+          greeted: true,
+          last_contact: new Date().toISOString()
+        });
+        
+        return {
+          email_sent: true,
+          email_result: emailResult
+        };
+        
+      case 'ask_qualification_questions':
+        // Generate qualification questions based on the vertical
+        const questions = state.domain === 'real_estate' 
+          ? [
+              "Are you looking to buy or sell a property?",
+              "What's your timeline for moving?",
+              "Have you been pre-approved for a mortgage?",
+              "What's your budget range?",
+              "What areas are you interested in?"
+            ]
+          : [
+              "What type of mortgage are you looking for?",
+              "What's your credit score range?",
+              "How much are you looking to borrow?",
+              "Do you have a down payment saved?",
+              "When are you looking to close?"
+            ];
+        
+        // Send the questions via email
+        const questionEmailResult = await this.tools.sendEmail(
+          state.lead.email,
+          "A few questions to better assist you",
+          `Hello ${state.lead.name},\n\nTo help us better understand your needs, could you please answer the following questions:\n\n${questions.map((q, i) => `${i+1}. ${q}`).join('\n')}\n\nYour responses will help us provide you with the most relevant assistance.\n\nBest regards,\nYour Apex AI Assistant`,
+          'qualification_questions'
+        );
+        
+        // Update CRM with the qualification activity
+        await this.tools.updateCRMLead(state.lead.id, {
+          qualification_questions_sent: true,
+          qualification_questions_sent_date: new Date().toISOString(),
+          stage: 'Qualification'
+        });
+        
+        return {
+          questions_sent: true,
+          questions,
+          email_result: questionEmailResult
+        };
+        
+      case 'evaluate_lead_intent':
+        // In a real implementation, this would analyze responses
+        // For now, we'll use the intent score from context
+        const intentScore = state.context.intent_score || 0.5;
+        return {
+          intent_score: intentScore,
+          is_high_intent: intentScore > 0.7
+        };
+        
+      case 'book_showing':
+        const showingDate = new Date(Date.now() + 86400000); // Tomorrow
+        const showingEndDate = new Date(showingDate.getTime() + 3600000); // 1 hour later
+        
+        const calendarResult = await this.tools.bookCalendarEvent(
+          'Property Showing - 123 Main St',
+          showingDate.toISOString(),
+          showingEndDate.toISOString(),
+          [state.lead.email, 'agent@apexsales.ai'],
+          'Property showing for the 3-bedroom house at 123 Main St.'
+        );
+        
+        // Send confirmation email
+        const confirmationResult = await this.tools.sendEmail(
+          state.lead.email,
+          'Your property showing is confirmed!',
+          `Hi ${state.lead.name},\n\nYour showing for 123 Main St has been confirmed for ${showingDate.toLocaleString()}. Looking forward to seeing you there!\n\nBest regards,\nYour Apex AI Assistant`,
+          'showing_confirmation'
+        );
+        
+        // Update CRM with the showing
+        await this.tools.updateCRMLead(state.lead.id, {
+          showing_scheduled: true,
+          showing_date: showingDate.toISOString(),
+          property_id: 12345,
+          stage: 'Meeting Scheduled'
+        });
+        
+        return {
+          showing_booked: true,
+          property_id: 12345,
+          date: showingDate.toISOString(),
+          calendar_event_created: true,
+          calendar_result: calendarResult,
+          confirmation_result: confirmationResult
+        };
+        
+      default:
+        return { error: `Unknown action: ${actionId}` };
+    }
+  }
+  
+  /**
+   * Calculate ROI metrics for a sequence execution
+   */
+  calculateROI(state: SequenceState): {
+    time_saved_minutes: number;
+    revenue_impact: number;
+    tasks_automated: number;
+    deals_rescued: number;
+  } {
+    // Sum up metrics from all step executions
+    let totalTimeSaved = 0;
+    let totalRevenueImpact = 0;
+    let tasksAutomated = 0;
+    let dealsRescued = 0;
+    
+    state.history.forEach(execution => {
+      if (execution.metrics) {
+        totalTimeSaved += execution.metrics.time_saved_minutes || 0;
+        totalRevenueImpact += execution.metrics.revenue_impact || 0;
+        
+        // Count each successful execution as an automated task
+        if (execution.result && execution.result.success) {
+          tasksAutomated++;
+        }
+        
+        // Count deal rescues (when a cold lead is re-engaged)
+        if (execution.result && 
+            execution.result.context_updates && 
+            execution.result.context_updates.status_change === 'cold_to_active') {
+          dealsRescued++;
+        }
+      }
+    });
+    
+    return {
+      time_saved_minutes: totalTimeSaved,
+      revenue_impact: totalRevenueImpact,
+      tasks_automated: tasksAutomated,
+      deals_rescued: dealsRescued
+    };
+  }
+}
