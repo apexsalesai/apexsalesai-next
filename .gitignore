@@ -19,8 +19,17 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Local env files
-.env*.local
+# Environment files - secure all env files except templates
+.env
+.env.local*
+.env.production
+.env.staging
+.env.development
+test.env
+
+# Keep only templates for reference
+!.env.template
+!.env.local.template
 
 # Vercel
 .vercel
