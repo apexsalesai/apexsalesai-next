@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run tests if they exist
+if [ -f "package.json" ] && grep -q "\"test\"" package.json; then
+  npm test
+fi
+
+# Add entry to dev-journal.md with the commit message
+COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "Initial commit")
+echo "- ✅ $(date +%Y-%m-%d): $COMMIT_MSG" >> dev-journal.md
+
+# Add the updated dev-journal.md to the commit
+git add dev-journal.md

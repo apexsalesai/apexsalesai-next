@@ -5,6 +5,8 @@ import { Line, Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { useEffect } from 'react';
 import { ChartGlowPlugin } from './ChartGlowPlugin';
+import { AgentActivityFeed } from '../../components/dashboard/AgentActivityFeed';
+import { demoAgentActions } from '../../lib/services/agent/demoAgentActions';
 
 // Custom plugin to show value label on latest data point
 const ValueLabelPlugin = {
@@ -45,6 +47,16 @@ const SalesDashboard = () => {
       Chart.register(ValueLabelPlugin);
       (Chart as any)._valueLabelRegistered = true;
     }
+    
+    // Start demo agent actions for wow factor
+    if (!demoAgentActions.isActive) {
+      demoAgentActions.startDemo(4000); // Generate action every 4 seconds
+    }
+    
+    return () => {
+      // Cleanup on unmount
+      demoAgentActions.stopDemo();
+    };
   }, []);
 
   const kpis = [
@@ -245,22 +257,14 @@ const SalesDashboard = () => {
         </div>
       </div>
 
-      <div className="panel max-w-5xl mx-auto">
-        <h3 className="heading-lg">🔄 Max's Sales Activity</h3>
-        <ul className="space-y-2 text-sm text-slate-300">
-          {activity.map((entry: string, i: number) => (
-            <li key={i} className="bg-slate-800/60 p-3 rounded-xl border border-slate-700 hover:bg-slate-700 transition">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                {entry}
-              </motion.div>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs text-slate-500 mt-4">Last updated 30s ago by Max • AI Agent ID #001</p>
+      {/* Real-time Agent Activity Feed - The WOW Factor */}
+      <div className="max-w-5xl mx-auto">
+        <AgentActivityFeed 
+          maxEvents={25}
+          showFilters={true}
+          autoRefresh={true}
+          className="shadow-lg"
+        />
       </div>
 
       {/* Add interactive features */}

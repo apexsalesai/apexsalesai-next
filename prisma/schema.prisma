@@ -110,7 +110,7 @@ model AuditLog {
 
 model AuthToken {
   id            Int      @id @default(autoincrement())
-  provider      String   // e.g., 'hubspot', 'salesforce'
+  provider      String   // e.g., 'dataverse', 'hubspot', 'salesforce'
   access_token  String
   refresh_token String?
   expires_at    DateTime
@@ -118,6 +118,7 @@ model AuthToken {
   updated_at    DateTime @updatedAt
   userId        Int
   tenantId      Int
+  metadata      String?  // JSON string for additional provider-specific data
 }
 
 model ObservabilityEvent {

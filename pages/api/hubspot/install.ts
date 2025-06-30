@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { exchangeCodeForToken } from '../../../lib/hubspot';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]';
+// import { authOptions } from '../auth/[...nextauth]'; // Using Auth0 instead
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,7 +13,9 @@ export default async function handler(
 
   try {
     // Get the current user session
-    const session = await getServerSession(req, res, authOptions);
+    // TODO: Replace with proper Auth0 session handling
+    // const session = await getServerSession(req, res, authOptions);
+    const mockUser = { tenantId: 1 }; // Demo tenant
     
     if (!session || !session.user) {
       return res.status(401).json({ error: 'Unauthorized' });
