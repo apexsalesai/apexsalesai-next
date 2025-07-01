@@ -139,3 +139,4 @@ echo "- ✅ $(date +%Y-%m-%d): [Your commit message here]" >> dev-journal.md
 - ✅ 2025-06-28: Initial commit with Level 3+ agent plan and Dataverse integration
 - ✅ 2025-06-30: Release v0.3.0: Implemented Dataverse OAuth integration with Prisma workaround and error logging
 - ✅ 2025-07-01: Finalizing environment + token cleanup
+- ✅ 2025-07-01: fix: install date-fns dependency to resolve build error
