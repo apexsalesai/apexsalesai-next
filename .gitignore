@@ -39,3 +39,5 @@ test.env
 .vscode/
 *.swp
 *.swo
+
+.vercel

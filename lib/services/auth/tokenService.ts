@@ -375,3 +375,12 @@ export class TokenService {
     }
   }
 }
+
+// Export convenience functions for backwards compatibility
+export const getAuthToken = (provider: string, userId: number = 1) => {
+  return TokenService.getValidToken(userId, provider);
+};
+
+export const refreshAuthToken = async (token: AuthToken) => {
+  return TokenService.refreshToken(token);
+};

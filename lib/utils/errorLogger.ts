@@ -1,6 +1,16 @@
-import fs from 'fs';
-import path from 'path';
 import { format } from 'date-fns';
+
+// Dynamic imports for server-side only modules
+let fs: any;
+let path: any;
+
+try {
+  fs = require('fs');
+  path = require('path');
+} catch (e) {
+  // Client-side fallback - no file system access
+  console.warn('ErrorLogger: File system access not available in client environment');
+}
 
 /**
  * Error Logger Utility for Apex AI Revenue Operator
