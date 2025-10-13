@@ -141,3 +141,4 @@ echo "- ✅ $(date +%Y-%m-%d): [Your commit message here]" >> dev-journal.md
 - ✅ 2025-10-12: Merge pull request #1 from apexsalesai/apexsalesai-admin-patch-1
 
 Delete pages/api/kpis.ts
+- ✅ 2025-10-12: chore: trigger redeploy after removing pages/api/kpis.ts
