@@ -6,6 +6,8 @@ import { AgentROIPanel } from '@components/AgentROIPanel';
 import { AccountabilityPanel } from '@components/AccountabilityPanel';
 import { DevToolsPanel } from '@components/DevToolsPanel';
 import { DashboardChart } from '@components/DashboardChart';
+import { MaxContentAgent } from '@components/MaxContentAgent';
+import { ContentGeneratorPanel } from '@components/ContentGeneratorPanel';
 
 // Mock hooks for fetching data
 const useKPIStats = () => {
@@ -321,6 +323,24 @@ const OperatorAgentDashboard: React.FC = () => {
           <DashboardChart type="agentImpact" />
           <DevToolsPanel decision={agentData?.decision ?? null} />
         </div>
+      </div>
+      
+      {/* Max Content Engine Section */}
+      <div style={{ marginTop: 24 }}>
+        <MaxContentAgent 
+          onContentCreated={(content) => {
+            console.log('Content created:', content);
+          }}
+        />
+      </div>
+      
+      {/* Alternative: Simple Content Generator */}
+      <div style={{ marginTop: 24 }}>
+        <ContentGeneratorPanel 
+          onContentGenerated={(content) => {
+            console.log('Content generated:', content);
+          }}
+        />
       </div>
     </div>
   );
