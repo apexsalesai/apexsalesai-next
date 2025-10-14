@@ -173,3 +173,10 @@ FIXES:
 - Remove orderBy from query options (not supported)
 
 RESULT: Build compiles successfully, zero type errors
+- ✅ 2025-10-14: fix(prisma): add postinstall script for Vercel deployment
+
+- Add 'prisma generate' to postinstall script
+- Update build script to run prisma generate before next build
+- Resolves Prisma Client outdated cache issue on Vercel
+
+This ensures Prisma Client is regenerated after npm install on Vercel
