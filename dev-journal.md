@@ -188,3 +188,16 @@ This ensures Prisma Client is regenerated after npm install on Vercel
 
 This allows the build to complete even if Auth0 env vars aren't set,
 while still providing clear error messages at runtime.
+- ✅ 2025-10-14: fix(auth): lazy initialize MSAL client to prevent build errors
+
+CRITICAL FIX:
+- MSAL ConfidentialClientApplication was initializing at module load time
+- This caused 'invalid_client_credential' errors during Vercel build
+- Changed to lazy initialization using getter pattern
+
+CHANGES:
+- Convert msalClient from static property to lazy-loaded getter
+- Only initializes when actually accessed (runtime, not build time)
+- Prevents build failures when DATAVERSE env vars not set
+
+This is the root cause of the deployment failures.
