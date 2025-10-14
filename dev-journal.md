@@ -201,3 +201,4 @@ CHANGES:
 - Prevents build failures when DATAVERSE env vars not set
 
 This is the root cause of the deployment failures.
+- ✅ 2025-10-14: feat(agent): add AI-powered content generation system
