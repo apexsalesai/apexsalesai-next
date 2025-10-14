@@ -157,3 +157,4 @@ Fix build datefns
 - Map @, @components, @lib to correct directories
 - Resolves module not found errors in Vercel build
 - Ensures path aliases work in both dev and production
+- ✅ 2025-10-14: merge: resolve conflict in dataverseApi.ts

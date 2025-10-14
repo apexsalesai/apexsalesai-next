@@ -8,10 +8,9 @@ import { KPIData, ChartData } from './types';
 import { ErrorLogger } from '@lib/utils/errorLogger';
 
 export class LeadKpiService {
-  private dataverseApi: DataverseApiService;
-
-  constructor(dataverseApi: DataverseApiService) {
-    this.dataverseApi = dataverseApi;
+  // Using static methods from DataverseApiService
+  constructor() {
+    // No instance needed - using static methods
   }
 
   /**
@@ -126,12 +125,12 @@ export class LeadKpiService {
   }> {
     try {
       // Query total leads from Dataverse
-      const currentMonth = await this.dataverseApi.query('leads', {
+      const currentMonth = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfMonthFilter()}`,
         select: ['leadid']
       });
 
-      const previousMonth = await this.dataverseApi.query('leads', {
+      const previousMonth = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfPreviousMonthFilter()} and createdon lt ${this.getStartOfMonthFilter()}`,
         select: ['leadid']
       });
@@ -177,12 +176,12 @@ export class LeadKpiService {
   }> {
     try {
       // Query qualified leads from Dataverse
-      const currentMonth = await this.dataverseApi.query('leads', {
+      const currentMonth = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and statuscode eq 3 and createdon ge ${this.getStartOfMonthFilter()}`,
         select: ['leadid']
       });
 
-      const previousMonth = await this.dataverseApi.query('leads', {
+      const previousMonth = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and statuscode eq 3 and createdon ge ${this.getStartOfPreviousMonthFilter()} and createdon lt ${this.getStartOfMonthFilter()}`,
         select: ['leadid']
       });
@@ -241,13 +240,13 @@ export class LeadKpiService {
         const endDateStr = endDate.toISOString();
         
         // Query total leads for this month
-        const totalLeads = await this.dataverseApi.query('leads', {
+        const totalLeads = await DataverseApiService.query('leads', {
           filter: `_new_vertical eq '${vertical}' and createdon ge ${startDateStr} and createdon le ${endDateStr}`,
           select: ['leadid']
         });
         
         // Query converted leads for this month
-        const convertedLeads = await this.dataverseApi.query('leads', {
+        const convertedLeads = await DataverseApiService.query('leads', {
           filter: `_new_vertical eq '${vertical}' and statuscode eq 3 and createdon ge ${startDateStr} and createdon le ${endDateStr}`,
           select: ['leadid']
         });
@@ -316,12 +315,12 @@ export class LeadKpiService {
     try {
       // Query response time data from Dataverse
       // This assumes there's a custom field tracking response time
-      const currentMonth = await this.dataverseApi.query('leads', {
+      const currentMonth = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfMonthFilter()}`,
         select: ['leadid', '_new_firstresponsetime']
       });
 
-      const previousMonth = await this.dataverseApi.query('leads', {
+      const previousMonth = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfPreviousMonthFilter()} and createdon lt ${this.getStartOfMonthFilter()}`,
         select: ['leadid', '_new_firstresponsetime']
       });
@@ -387,7 +386,7 @@ export class LeadKpiService {
   }>> {
     try {
       // Query leads by source from Dataverse
-      const result = await this.dataverseApi.query('leads', {
+      const result = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfMonthFilter()}`,
         select: ['leadid', 'leadsourcecode']
       });

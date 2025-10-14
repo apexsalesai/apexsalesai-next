@@ -82,7 +82,8 @@ class DataverseQATester {
    */
   async testApiServiceInit(): Promise<void> {
     await this.runTest('API Service Initialization', async () => {
-      const apiService = new DataverseApiService(this.config);
+      // DataverseApiService now uses static methods - no instantiation needed
+      const apiService = DataverseApiService;
       if (!apiService) {
         throw new Error('Failed to initialize DataverseApiService');
       }

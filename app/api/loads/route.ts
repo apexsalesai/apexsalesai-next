@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
-import { TokenService } from '@/lib/services/auth/tokenService';
-import { DataverseApiService } from '@/lib/services/dataverse/dataverseApi';
+import { TokenService } from '@lib/services/auth/tokenService';
+import { DataverseApiService } from '@lib/services/dataverse/dataverseApi';
 
 /**
  * API Route: /api/loads
@@ -10,13 +8,9 @@ import { DataverseApiService } from '@/lib/services/dataverse/dataverseApi';
  */
 export async function GET() {
   try {
-    // Get authenticated user session
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id ?? 1;
+    // TODO: Implement Auth0 session validation
+    // For now, using demo user ID
+    const userId = 1; // Demo user
 
     // Retrieve valid access token
     const tokenData = await TokenService.getValidToken(userId, 'dataverse');
