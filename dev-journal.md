@@ -158,3 +158,18 @@ Fix build datefns
 - Resolves module not found errors in Vercel build
 - Ensures path aliases work in both dev and production
 - ✅ 2025-10-14: merge: resolve conflict in dataverseApi.ts
+- ✅ 2025-10-14: fix(dataverse): refactor to static methods and fix import paths
+
+BREAKING CHANGES:
+- DataverseApiService now uses static methods instead of instance methods
+- All KPI services updated to use static DataverseApiService.query()
+
+FIXES:
+- Fix @/lib path alias to @lib for correct webpack resolution
+- Remove NextAuth dependencies (app uses Auth0)
+- Fix app/api/loads/route.ts to use correct imports
+- Update all KPI services to use static methods
+- Add type annotations for implicit any errors
+- Remove orderBy from query options (not supported)
+
+RESULT: Build compiles successfully, zero type errors
