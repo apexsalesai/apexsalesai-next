@@ -151,3 +151,9 @@ Fix build datefns
 - ✅ 2025-10-13: chore: trigger prod deploy
 - ✅ 2025-10-13: build: ignore Node-only modules in client bundle
 - ✅ 2025-10-14: build: ignore Node-only modules in client bundle
+- ✅ 2025-10-14: fix(build): add webpack path aliases for Vercel deployment
+
+- Configure webpack resolve.alias in next.config.js
+- Map @, @components, @lib to correct directories
+- Resolves module not found errors in Vercel build
+- Ensures path aliases work in both dev and production
