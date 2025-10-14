@@ -265,3 +265,31 @@ FEATURES:
 USAGE:
 Visit /dashboard/operator-agent-fixed to see Max in action
 Follow QUICKSTART.md for 5-minute setup
+- ✅ 2025-10-14: feat(security): add admin-only content engine with API protection
+
+MAJOR CHANGES:
+1. Created /admin/content-engine - Auth0-protected dashboard
+2. Added middleware.ts for API key protection
+3. Updated content generator to support main site publishing
+4. Removed public content generators from operator dashboard
+
+SECURITY:
+- All content generation APIs now require API key
+- Admin dashboard requires Auth0 authentication
+- No public access to content generation
+
+NEW FEATURES:
+- Admin-only content dashboard at /admin/content-engine
+- Support for publishing to apexsalesai.com/blog
+- GitHub/CMS integration points ready
+- Schedule management UI
+
+USAGE:
+1. Visit /admin/content-engine (requires login)
+2. Generate content on-demand
+3. Manage schedules
+4. View content history
+
+API Protection:
+- Add CONTENT_API_KEY to Vercel environment variables
+- All API calls require x-api-key header
