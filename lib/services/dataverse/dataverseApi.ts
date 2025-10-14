@@ -1,288 +1,126 @@
+import axios from 'axios';
+import { TokenService } from '../auth/tokenService';
+import { decrypt } from '../crypto/encryption';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
 /**
- * Microsoft Dataverse API Service
- * Handles authentication and data retrieval from Dataverse CRM
+ * Dataverse API service for handling authenticated requests using stored tokens
  */
-
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { 
-  DataverseToken, 
-  DataverseConfig, 
-  DataverseRecord, 
-  DataverseQueryOptions, 
-  DataverseQueryResponse 
-} from './types';
-import { TokenService } from '@lib/services/auth/tokenService';
-import { ErrorLogger } from '@lib/utils/errorLogger';
-
 export class DataverseApiService {
-  private axiosInstance: AxiosInstance;
-  private config: DataverseConfig;
-  private token: DataverseToken | null = null;
-  private baseUrl: string;
-  private userId: number;
-
-  constructor(config: DataverseConfig) {
-    this.config = config;
-    // Use provided userId or default to system user (ID: 1)
-    this.userId = config.userId ?? 1;
-    this.baseUrl = `${config.resourceUrl}/api/data/v${config.apiVersion}`;
-    
-    this.axiosInstance = axios.create({
-      baseURL: this.baseUrl,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'OData-MaxVersion': '4.0',
-        'OData-Version': '4.0'
-      }
-    });
-
-    // Add request interceptor to handle token refresh
-    this.axiosInstance.interceptors.request.use(
-      async (config) => {
-        // Ensure we have a valid token
-        const token = await this.getValidToken();
-        if (token) {
-          config.headers['Authorization'] = `Bearer ${token.access_token}`;
-        }
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
-    // Add response interceptor to handle errors
-    this.axiosInstance.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-        
-        // If error is 401 Unauthorized and we haven't already tried to refresh
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          
-          try {
-            // Force token refresh
-            const token = await this.getValidToken(true);
-            if (token) {
-              originalRequest.headers['Authorization'] = `Bearer ${token.access_token}`;
-              return this.axiosInstance(originalRequest);
-            }
-          } catch (refreshError) {
-            ErrorLogger.logWindsurfError(
-              'DataverseApiService', 
-              'Token refresh failed', 
-              { error: refreshError }
-            );
-          }
-        }
-        
-        return Promise.reject(error);
-      }
-    );
-  }
+  private static readonly DATAVERSE_URL = process.env.DATAVERSE_URL!;
+  private static readonly CLIENT_ID = process.env.DATAVERSE_CLIENT_ID!;
+  private static readonly CLIENT_SECRET = process.env.DATAVERSE_CLIENT_SECRET!;
+  private static readonly TENANT_ID = process.env.DATAVERSE_TENANT_ID!;
+  private static readonly SCOPE = process.env.DATAVERSE_SCOPE || 'https://*.crm.dynamics.com/.default';
 
   /**
-   * Get a valid token, refreshing if necessary
+   * Get a valid access token for the given user
    */
-  private async getValidToken(forceRefresh = false): Promise<DataverseToken | null> {
+  static async getAccessToken(userId: number): Promise<string> {
     try {
-      // TokenService.getValidToken handles both retrieval and automatic refresh
-      const tokenData = await TokenService.getValidToken(this.userId, 'dataverse');
-      
-      // Map TokenService response to DataverseToken format
-      this.token = {
-        access_token: tokenData.accessToken,
-        refresh_token: '', // Not needed as TokenService manages this internally
-        expires_in: Math.floor((tokenData.expiresAt.getTime() - Date.now()) / 1000),
-        expires_at: tokenData.expiresAt.getTime(),
-        token_type: 'Bearer',
-        scope: tokenData.environmentUrl || this.config.resourceUrl,
-      };
-      
-      return this.token;
+      const tokenData = await TokenService.getValidToken(userId, 'dataverse');
+
+      if (!tokenData || !tokenData.accessToken) {
+        throw new Error('No valid Dataverse access token found');
+      }
+
+      return tokenData.accessToken;
     } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        'Failed to get valid token', 
-        { error }
-      );
-      return null;
+      console.error('Failed to retrieve Dataverse token:', error);
+      throw error;
     }
   }
 
   /**
-   * Query Dataverse entities
+   * Generic Dataverse GET query
    */
-  async query<T = DataverseRecord>(
-    entitySetName: string, 
-    options: DataverseQueryOptions = {}
-  ): Promise<DataverseQueryResponse<T>> {
+  static async query(entity: string, options?: { top?: number; select?: string[]; filter?: string }) {
     try {
-      // Build query parameters
-      const params: Record<string, string> = {};
-      
-      if (options.select && options.select.length > 0) {
-        params['$select'] = options.select.join(',');
+      // Default to system user if needed
+      const userId = 1;
+      const accessToken = await this.getAccessToken(userId);
+
+      let url = `${this.DATAVERSE_URL}/api/data/v9.2/${entity}`;
+      const params: string[] = [];
+
+      if (options?.top) params.push(`$top=${options.top}`);
+      if (options?.select) params.push(`$select=${options.select.join(',')}`);
+      if (options?.filter) params.push(`$filter=${options.filter}`);
+
+      if (params.length > 0) {
+        url += `?${params.join('&')}`;
       }
-      
-      if (options.filter) {
-        params['$filter'] = options.filter;
-      }
-      
-      if (options.orderBy) {
-        params['$orderby'] = options.orderBy;
-      }
-      
-      if (options.top) {
-        params['$top'] = options.top.toString();
-      }
-      
-      if (options.skip) {
-        params['$skip'] = options.skip.toString();
-      }
-      
-      if (options.expand && options.expand.length > 0) {
-        params['$expand'] = options.expand.join(',');
-      }
-      
-      // Make API request
-      const response = await this.axiosInstance.get<DataverseQueryResponse<T>>(
-        `/${entitySetName}`,
-        { params }
+
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      return response.data.value || [];
+    } catch (error) {
+      console.error('Error querying Dataverse:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new record in Dataverse
+   */
+  static async createRecord(entity: string, data: Record<string, any>) {
+    try {
+      const userId = 1;
+      const accessToken = await this.getAccessToken(userId);
+
+      const response = await axios.post(
+        `${this.DATAVERSE_URL}/api/data/v9.2/${entity}`,
+        data,
+        { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
       );
-      
+
       return response.data;
     } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        `Failed to query ${entitySetName}`, 
-        { error, options }
-      );
+      console.error('Error creating record in Dataverse:', error);
       throw error;
     }
   }
 
   /**
-   * Get a single record by ID
+   * Update an existing record in Dataverse
    */
-  async getById<T = DataverseRecord>(
-    entitySetName: string, 
-    id: string, 
-    select?: string[]
-  ): Promise<T> {
+  static async updateRecord(entity: string, id: string, data: Record<string, any>) {
     try {
-      const params: Record<string, string> = {};
-      
-      if (select && select.length > 0) {
-        params['$select'] = select.join(',');
-      }
-      
-      const response = await this.axiosInstance.get<T>(
-        `/${entitySetName}(${id})`,
-        { params }
+      const userId = 1;
+      const accessToken = await this.getAccessToken(userId);
+
+      await axios.patch(
+        `${this.DATAVERSE_URL}/api/data/v9.2/${entity}(${id})`,
+        data,
+        { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
       );
-      
-      return response.data;
+
+      return { success: true };
     } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        `Failed to get ${entitySetName} by ID ${id}`, 
-        { error }
-      );
+      console.error('Error updating record in Dataverse:', error);
       throw error;
     }
   }
 
   /**
-   * Create a new record
+   * Delete a record in Dataverse
    */
-  async create<T = DataverseRecord>(
-    entitySetName: string, 
-    data: Partial<T>
-  ): Promise<T> {
+  static async deleteRecord(entity: string, id: string) {
     try {
-      const response = await this.axiosInstance.post<T>(
-        `/${entitySetName}`,
-        data
-      );
-      
-      return response.data;
-    } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        `Failed to create ${entitySetName}`, 
-        { error, data }
-      );
-      throw error;
-    }
-  }
+      const userId = 1;
+      const accessToken = await this.getAccessToken(userId);
 
-  /**
-   * Update an existing record
-   */
-  async update<T = DataverseRecord>(
-    entitySetName: string, 
-    id: string, 
-    data: Partial<T>
-  ): Promise<void> {
-    try {
-      await this.axiosInstance.patch(
-        `/${entitySetName}(${id})`,
-        data
-      );
-    } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        `Failed to update ${entitySetName} with ID ${id}`, 
-        { error, data }
-      );
-      throw error;
-    }
-  }
+      await axios.delete(`${this.DATAVERSE_URL}/api/data/v9.2/${entity}(${id})`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
 
-  /**
-   * Delete a record
-   */
-  async delete(
-    entitySetName: string, 
-    id: string
-  ): Promise<void> {
-    try {
-      await this.axiosInstance.delete(
-        `/${entitySetName}(${id})`
-      );
+      return { success: true };
     } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        `Failed to delete ${entitySetName} with ID ${id}`, 
-        { error }
-      );
-      throw error;
-    }
-  }
-
-  /**
-   * Execute a custom action
-   */
-  async executeAction<TRequest, TResponse>(
-    actionName: string,
-    data: TRequest
-  ): Promise<TResponse> {
-    try {
-      const response = await this.axiosInstance.post<TResponse>(
-        `/${actionName}`,
-        data
-      );
-      
-      return response.data;
-    } catch (error) {
-      ErrorLogger.logWindsurfError(
-        'DataverseApiService', 
-        `Failed to execute action ${actionName}`, 
-        { error, data }
-      );
+      console.error('Error deleting record in Dataverse:', error);
       throw error;
     }
   }
