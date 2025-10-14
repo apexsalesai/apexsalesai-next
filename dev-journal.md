@@ -202,3 +202,50 @@ CHANGES:
 
 This is the root cause of the deployment failures.
 - ✅ 2025-10-14: feat(agent): add AI-powered content generation system
+- ✅ 2025-10-14: feat(max): add Max Content Engine with scheduling and video generation
+
+MAJOR FEATURES:
+- Max Content Agent UI component with ChatKit integration
+- Automated content scheduling (daily social, weekly blogs)
+- Video generation service with AI script creation
+- Schedule management API endpoints
+- Comprehensive documentation
+
+NEW FILES:
+- app/components/MaxContentAgent.tsx - Dashboard UI for Max agent
+- lib/services/agent/contentScheduler.ts - Automated scheduling system
+- lib/services/agent/videoGenerator.ts - Video script and generation
+- app/api/agent/schedule/route.ts - Schedule management API
+- docs/MAX_CONTENT_ENGINE.md - Complete integration guide
+
+CAPABILITIES:
+1. Daily Social Media Automation
+   - LinkedIn, Twitter, Facebook posts at 9:00 AM EST
+   - Platform-specific optimization
+   - Auto-publishing
+
+2. Weekly Blog Posts
+   - Every Monday at 10:00 AM EST
+   - SEO-optimized content
+   - Auto-save to markdown
+
+3. Video Content (Ready for Integration)
+   - AI script generation with GPT-4o
+   - Integration points for Synthesia, D-ID, Runway ML
+   - YouTube upload automation
+   - ElevenLabs voiceover support
+
+4. Schedule Management
+   - Enable/disable schedules
+   - Manual execution
+   - Next run tracking
+   - Status monitoring
+
+INTEGRATION:
+- Works with OpenAI Agent Builder (ChatKit)
+- Embeddable in dashboard
+- API-driven architecture
+- Webhook support
+
+This enables autonomous marketing content creation aligned with
+Phase 2 goals: Multi-agent orchestration and enterprise capabilities.
