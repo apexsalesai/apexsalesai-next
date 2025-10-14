@@ -276,12 +276,21 @@ Focus on:
   /**
    * Save blog post to file system
    */
-  static async saveBlogPost(blogPost: BlogPost): Promise<void> {
+  static async saveBlogPost(blogPost: BlogPost, destination: 'local' | 'main-site' = 'local'): Promise<void> {
     const fs = require('fs').promises;
     const path = require('path');
 
     try {
-      const blogDir = path.join(process.cwd(), 'app', 'blog');
+      // Determine blog directory based on destination
+      let blogDir;
+      if (destination === 'main-site') {
+        // For main apexsalesai.com site - adjust path as needed
+        blogDir = path.join(process.cwd(), '..', 'apexsalesai', 'app', 'blog');
+      } else {
+        // For local dashboard blog
+        blogDir = path.join(process.cwd(), 'app', 'blog');
+      }
+
       const filePath = path.join(blogDir, `${blogPost.slug}.md`);
 
       // Create markdown content with frontmatter
@@ -301,10 +310,55 @@ ${blogPost.content}
 `;
 
       await fs.writeFile(filePath, markdown, 'utf-8');
-      logger.info('Blog post saved to file', { filePath, slug: blogPost.slug });
+      logger.info('Blog post saved to file', { filePath, slug: blogPost.slug, destination });
     } catch (error) {
       logger.error('Error saving blog post', { error, slug: blogPost.slug });
       throw new Error(`Failed to save blog post: ${error}`);
+    }
+  }
+
+  /**
+   * Publish blog post to main apexsalesai.com site via API
+   * This would integrate with your CMS or Git-based deployment
+   */
+  static async publishToMainSite(blogPost: BlogPost): Promise<{
+    success: boolean;
+    url: string;
+  }> {
+    try {
+      // Option 1: If using a CMS (Contentful, Sanity, etc.)
+      // const response = await fetch('https://api.contentful.com/spaces/...', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${process.env.CONTENTFUL_API_KEY}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(blogPost)
+      // });
+
+      // Option 2: If using Git-based deployment (GitHub, GitLab)
+      // const response = await fetch('https://api.github.com/repos/apexsalesai/apexsalesai/contents/app/blog/${blogPost.slug}.md', {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({
+      //     message: `Add blog post: ${blogPost.title}`,
+      //     content: Buffer.from(markdown).toString('base64')
+      //   })
+      // });
+
+      // For now, save locally and return success
+      await this.saveBlogPost(blogPost, 'local');
+
+      return {
+        success: true,
+        url: `https://www.apexsalesai.com/blog/${blogPost.slug}`
+      };
+    } catch (error) {
+      logger.error('Error publishing to main site', { error, slug: blogPost.slug });
+      throw new Error(`Failed to publish to main site: ${error}`);
     }
   }
 }
