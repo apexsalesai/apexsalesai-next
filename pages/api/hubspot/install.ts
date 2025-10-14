@@ -17,9 +17,10 @@ export default async function handler(
     // const session = await getServerSession(req, res, authOptions);
     const mockUser = { tenantId: 1 }; // Demo tenant
     
-    if (!session || !session.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    // TODO: Implement proper session validation with Auth0
+    // if (!session || !session.user) {
+    //   return res.status(401).json({ error: 'Unauthorized' });
+    // }
 
     const { code } = req.body;
     
@@ -33,7 +34,7 @@ export default async function handler(
     
     // Get the user ID from the session
     // For demo purposes, we'll use user ID 1 if not available
-    const userId = session.user.id || 1;
+    const userId = 1; // TODO: Get from Auth0 session
 
     // Exchange the code for a token
     const tokenData = await exchangeCodeForToken(code, tenantId, userId);

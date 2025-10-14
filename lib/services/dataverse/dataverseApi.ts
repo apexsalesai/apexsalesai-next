@@ -11,17 +11,20 @@ import {
   DataverseQueryOptions, 
   DataverseQueryResponse 
 } from './types';
-import { getAuthToken, refreshAuthToken } from '../auth/tokenService';
-import { ErrorLogger } from '../../utils/errorLogger';
+import { TokenService } from '@lib/services/auth/tokenService';
+import { ErrorLogger } from '@lib/utils/errorLogger';
 
 export class DataverseApiService {
   private axiosInstance: AxiosInstance;
   private config: DataverseConfig;
   private token: DataverseToken | null = null;
   private baseUrl: string;
+  private userId: number;
 
   constructor(config: DataverseConfig) {
     this.config = config;
+    // Use provided userId or default to system user (ID: 1)
+    this.userId = config.userId ?? 1;
     this.baseUrl = `${config.resourceUrl}/api/data/v${config.apiVersion}`;
     
     this.axiosInstance = axios.create({
@@ -85,20 +88,18 @@ export class DataverseApiService {
    */
   private async getValidToken(forceRefresh = false): Promise<DataverseToken | null> {
     try {
-      if (!this.token || forceRefresh) {
-        // Get token from token service
-        this.token = await getAuthToken('dataverse') as DataverseToken;
-      }
+      // TokenService.getValidToken handles both retrieval and automatic refresh
+      const tokenData = await TokenService.getValidToken(this.userId, 'dataverse');
       
-      // Check if token is expired or about to expire (within 5 minutes)
-      const now = Date.now();
-      const expiresAt = this.token.expires_at;
-      const isExpired = now >= expiresAt - 5 * 60 * 1000; // 5 minutes buffer
-      
-      if (isExpired) {
-        // Refresh token
-        this.token = await refreshAuthToken('dataverse', this.token.refresh_token) as DataverseToken;
-      }
+      // Map TokenService response to DataverseToken format
+      this.token = {
+        access_token: tokenData.accessToken,
+        refresh_token: '', // Not needed as TokenService manages this internally
+        expires_in: Math.floor((tokenData.expiresAt.getTime() - Date.now()) / 1000),
+        expires_at: tokenData.expiresAt.getTime(),
+        token_type: 'Bearer',
+        scope: tokenData.environmentUrl || this.config.resourceUrl,
+      };
       
       return this.token;
     } catch (error) {

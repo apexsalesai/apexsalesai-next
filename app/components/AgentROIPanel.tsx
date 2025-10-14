@@ -109,7 +109,7 @@ const ROIMetricCard = ({
 };
 
 export const AgentROIPanel = () => {
-  const { data, loading, error } = useAgentROI();
+  const { data, isLoading: loading, error } = useAgentROI();
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.100', 'gray.700');
 
@@ -148,12 +148,12 @@ export const AgentROIPanel = () => {
 
   const heatmapData = generateHeatmapData();
 
-  // In a real implementation, these would come from the API
+  // Calculate metrics from agent data or use defaults
   const roiMetrics = {
-    revenueDelta: data?.ai_driven_revenue || 11400,
-    timeSaved: data?.time_saved_hours || 18,
-    leadsRescued: data?.leads_rescued || 12,
-    actionsPerformed: 37, // This would be calculated from agent actions
+    revenueDelta: data?.agentData?.reduce((sum, agent) => sum + agent.revenue, 0) || 11400,
+    timeSaved: 18, // TODO: Add time_saved to API response
+    leadsRescued: data?.agentData?.reduce((sum, agent) => sum + agent.deals, 0) || 12,
+    actionsPerformed: 37, // TODO: Add actions count to API response
   };
 
   return (

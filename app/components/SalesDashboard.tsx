@@ -6,7 +6,7 @@ import Chart from 'chart.js/auto';
 import { useEffect } from 'react';
 import { ChartGlowPlugin } from './ChartGlowPlugin';
 import { AgentActivityFeed } from '../../components/dashboard/AgentActivityFeed';
-import { demoAgentActions } from '../../lib/services/agent/demoAgentActions';
+import { demoAgentActions } from '@lib/services/agent/demoAgentActions';
 
 // Custom plugin to show value label on latest data point
 const ValueLabelPlugin = {

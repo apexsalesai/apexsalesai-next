@@ -5,7 +5,7 @@
  * These presets are used to dynamically switch LangGraph node paths based on loan application status.
  */
 
-import { SequenceDefinition, SequenceStep, SequenceCondition } from '../../../types/sequence';
+import { SequenceDefinition, SequenceStep, SequenceCondition } from 'types/sequence';
 
 /**
  * Mortgage Document Chase Sequence

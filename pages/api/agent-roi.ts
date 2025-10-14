@@ -27,44 +27,9 @@ export default async function handler(
     // In a real implementation, we would fetch this data from the database
     // For now, we'll generate realistic sample data for real estate/mortgage agents
     
-    // Fetch agents from database if available, otherwise use sample data
-    let agents;
-    try {
-      // This assumes you have an Agent model in your Prisma schema
-      // If not, this will fail gracefully and use the sample data
-      agents = await prisma.agent.findMany({
-        include: {
-          leads: true,
-          actions: true,
-        },
-      });
-    } catch (dbError) {
-      console.log('Using sample agent data instead of database:', dbError);
-      agents = null;
-    }
-
-    const agentData = agents?.length 
-      ? agents.map(agent => {
-          // Calculate metrics based on actual database data
-          const totalLeads = agent.leads?.length || 0;
-          const totalActions = agent.actions?.length || 0;
-          
-          // Calculate revenue based on closed deals
-          const closedDeals = agent.leads?.filter(lead => lead.status === 'CLOSED_WON') || [];
-          const totalRevenue = closedDeals.reduce((sum, deal) => sum + (deal.value || 0), 0);
-          
-          // Estimate cost based on actions (in a real system, this would be more sophisticated)
-          const estimatedCost = totalActions * 5; // $5 per action as a simple estimate
-          
-          return {
-            name: agent.name,
-            revenue: totalRevenue,
-            cost: estimatedCost,
-            deals: closedDeals.length,
-            roi: estimatedCost > 0 ? (totalRevenue - estimatedCost) / estimatedCost : 0,
-          };
-        })
-      : getSampleAgentData();
+    // TODO: Integrate with actual agent metrics from database
+    // For now, using sample data for demo purposes
+    const agentData = getSampleAgentData();
 
     res.status(200).json({ agentData });
   } catch (error) {

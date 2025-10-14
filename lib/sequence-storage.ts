@@ -1,5 +1,5 @@
 // Persistent storage service for the Sequence Engine
-import { SequenceState } from '../types/sequence';
+import { SequenceState } from 'types/sequence';
 import { SequenceStorageDB } from './sequence-storage-db';
 
 /**

@@ -35,7 +35,7 @@ import {
   Filter,
   RefreshCw
 } from 'lucide-react';
-import { agentBehaviorTracker, AgentBehaviorEvent, AgentActionType, AgentVertical } from '../../lib/services/agent/agentBehaviorTracker';
+import { agentBehaviorTracker, AgentBehaviorEvent, AgentActionType, AgentVertical } from '@lib/services/agent/agentBehaviorTracker';
 
 interface AgentActivityFeedProps {
   maxEvents?: number;

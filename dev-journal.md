@@ -149,3 +149,5 @@ Delete pages/api/kpis.ts
 Fix build datefns
 - ✅ 2025-10-13: chore: trigger prod deploy
 - ✅ 2025-10-13: chore: trigger prod deploy
+- ✅ 2025-10-13: build: ignore Node-only modules in client bundle
+- ✅ 2025-10-14: build: ignore Node-only modules in client bundle

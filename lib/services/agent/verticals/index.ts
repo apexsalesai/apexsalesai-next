@@ -2,7 +2,7 @@
  * Vertical-specific prompt management for the LangGraph agent
  */
 
-import { IndustryVertical } from '../langgraph/types';
+import { IndustryVertical } from '@lib/services/agent/langgraph/types';
 import { realEstatePrompts } from './realEstate';
 import { mortgagePrompts } from './mortgage';
 import { mspPrompts } from './msp';

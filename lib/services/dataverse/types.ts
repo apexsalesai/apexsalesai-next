@@ -24,6 +24,7 @@ export interface DataverseConfig {
   resourceUrl: string;
   apiVersion: string;
   environment: string;
+  userId?: number; // Optional: User ID for token management (defaults to system user)
 }
 
 /**
@@ -69,6 +70,7 @@ export interface KPIData {
 
 /**
  * Chart data structure for dashboard
+ * Compatible with Chart.js API - supports both single colors and color arrays
  */
 export interface ChartData {
   labels: string[];
@@ -76,9 +78,9 @@ export interface ChartData {
     label: string;
     data: number[];
     fill?: boolean;
-    backgroundColor?: string;
-    borderColor?: string;
-    pointBackgroundColor?: string;
+    backgroundColor?: string | string[]; // Support both single color and array for multi-segment charts
+    borderColor?: string | string[];
+    pointBackgroundColor?: string | string[];
     tension?: number;
     borderDash?: number[];
   }>;
@@ -91,6 +93,8 @@ export interface DashboardData {
   kpis: KPIData[];
   charts: Record<string, ChartData>;
   activity: string[];
+  lastUpdated?: string; // ISO timestamp of last data refresh
+  vertical?: string; // Industry vertical (realEstate, mortgage, etc.)
 }
 
 /**

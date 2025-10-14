@@ -1,5 +1,5 @@
 // Agent Tools - External API integrations for the Autonomous Sequence Engine
-import { Lead } from '../types/agent';
+import { Lead } from 'types/agent';
 import { TokenRefreshService } from './token-refresh-service';
 import { logger } from './logger';
 import { withRetry, DEFAULT_RETRY_CONFIG } from './error-handling';

@@ -1,7 +1,7 @@
 // API endpoint to test the CRM write-back functionality
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { AgentTools } from '../../lib/agent-tools';
-import { logger } from '../../lib/logger';
+import { AgentTools } from '@lib/agent-tools';
+import { logger } from '@lib/logger';
 
 type TestResponse = {
   success: boolean;

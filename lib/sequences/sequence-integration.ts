@@ -1,6 +1,6 @@
 // Sequence Integration - Connects sequence definitions and actions to the SequenceEngine
-import { SequenceDefinition } from '../../types/sequence';
-import { Lead } from '../../types/agent';
+import { SequenceDefinition } from 'types/sequence';
+import { Lead } from 'types/agent';
 import { realEstateLeadQualificationSequence, realEstateLeadQualificationActions } from './real-estate-lead-qualification';
 
 /**

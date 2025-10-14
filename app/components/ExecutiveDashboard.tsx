@@ -69,34 +69,34 @@ const ExecutiveDashboard = () => {
     realEstate: [
       { 
         title: 'Leads Captured', 
-        value: `${kpiData.dashboard_kpis.leads_captured || 42}`, 
+        value: `${kpiData.dashboard_kpis?.leads_captured || 42}`, 
         trend: 'Past 30 days', 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Response Time', 
-        value: `${kpiData.dashboard_kpis.response_time_seconds || 30}s`, 
+        value: `${kpiData.dashboard_kpis?.response_time_seconds || 30}s`, 
         trend: 'Avg. lead response', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'Showings Booked', 
-        value: `${kpiData.dashboard_kpis.showings_booked || 28}`, 
+        value: `${kpiData.dashboard_kpis?.showings_booked || 28}`, 
         trend: 'Auto-scheduled', 
         badgeColor: 'purple',
         highlight: true
       },
       { 
         title: 'Deals Closed', 
-        value: `${kpiData.dashboard_kpis.closed_deals || 8}`, 
+        value: `${kpiData.dashboard_kpis?.closed_deals || 8}`, 
         trend: 'Past 30 days', 
         badgeColor: 'teal'
       },
       { 
         title: 'Time Saved', 
-        value: `${kpiData.dashboard_kpis.time_saved_hours || 24}h`, 
+        value: `${kpiData.dashboard_kpis?.time_saved_hours || 24}h`, 
         trend: 'Admin work', 
         badgeColor: 'cyan'
       },
@@ -106,34 +106,34 @@ const ExecutiveDashboard = () => {
     mortgage: [
       { 
         title: 'Apps Completed', 
-        value: `${kpiData.dashboard_kpis.applications_completed || 31}`, 
+        value: `${kpiData.dashboard_kpis?.applications_completed || 31}`, 
         trend: 'Past 30 days', 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Doc Follow-ups', 
-        value: `${kpiData.dashboard_kpis.doc_followups || 86}`, 
+        value: `${kpiData.dashboard_kpis?.doc_followups || 86}`, 
         trend: 'Auto-sent', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'Closing Rate', 
-        value: `${kpiData.dashboard_kpis.closing_rate || 68}%`, 
+        value: `${kpiData.dashboard_kpis?.closing_rate || 68}%`, 
         trend: '+12% with AI', 
         badgeColor: 'purple',
         highlight: true
       },
       { 
         title: 'Avg Loan Value', 
-        value: formatCurrency(kpiData.dashboard_kpis.avg_loan_value || 380000), 
+        value: formatCurrency(kpiData.dashboard_kpis?.avg_loan_value || 380000), 
         trend: 'Past 30 days', 
         badgeColor: 'teal'
       },
       { 
         title: 'Compliance Flags', 
-        value: `${kpiData.dashboard_kpis.compliance_flags || 7}`, 
+        value: `${kpiData.dashboard_kpis?.compliance_flags || 7}`, 
         trend: 'Issues prevented', 
         badgeColor: 'red'
       },
@@ -143,35 +143,35 @@ const ExecutiveDashboard = () => {
     executive: [
       { 
         title: 'AI-Driven Revenue', 
-        value: formatCurrency(kpiData.dashboard_kpis.ai_driven_revenue), 
-        trend: `${kpiData.dashboard_kpis.closed_deals} deals closed`, 
+        value: formatCurrency(kpiData.dashboard_kpis?.ai_driven_revenue || 0), 
+        trend: `${kpiData.dashboard_kpis?.closed_deals} deals closed`, 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Sales Cycle Reduction', 
-        value: `${kpiData.dashboard_kpis.sales_cycle_reduction}%`, 
+        value: `${kpiData.dashboard_kpis?.sales_cycle_reduction}%`, 
         trend: 'Time to close', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'Operational Cost Savings', 
-        value: formatCurrency(kpiData.dashboard_kpis.cost_savings), 
+        value: formatCurrency(kpiData.dashboard_kpis?.cost_savings || 0), 
         trend: 'Automation efficiency', 
         badgeColor: 'cyan',
         highlight: true
       },
       { 
         title: 'AI Investment ROI', 
-        value: `${kpiData.dashboard_kpis.roi_percentage}%`, 
+        value: `${kpiData.dashboard_kpis?.roi_percentage}%`, 
         trend: 'Return on investment', 
         badgeColor: 'teal',
         highlight: true
       },
       { 
         title: 'Conversion Rate Lift', 
-        value: `+${kpiData.dashboard_kpis.conversion_lift}%`, 
+        value: `+${kpiData.dashboard_kpis?.conversion_lift}%`, 
         trend: 'vs. industry average', 
         badgeColor: 'purple',
         highlight: true
@@ -182,34 +182,34 @@ const ExecutiveDashboard = () => {
     sales: [
       { 
         title: 'Win Rate with AI', 
-        value: `${kpiData.dashboard_kpis.win_rate}%`, 
+        value: `${kpiData.dashboard_kpis?.win_rate}%`, 
         trend: 'vs. 41% industry avg', 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Forecast Accuracy', 
-        value: `${kpiData.dashboard_kpis.forecast_accuracy}%`, 
+        value: `${kpiData.dashboard_kpis?.forecast_accuracy}%`, 
         trend: 'AI-powered predictions', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'Deal Size Increase', 
-        value: `+${kpiData.dashboard_kpis.deal_size_increase}%`, 
+        value: `+${kpiData.dashboard_kpis?.deal_size_increase}%`, 
         trend: 'With AI assistance', 
         badgeColor: 'teal',
         highlight: true
       },
       { 
         title: 'Closed Deals', 
-        value: `${kpiData.dashboard_kpis.closed_deals}`, 
+        value: `${kpiData.dashboard_kpis?.closed_deals}`, 
         trend: 'This quarter', 
         badgeColor: 'purple'
       },
       { 
         title: 'Meetings Booked', 
-        value: `${kpiData.dashboard_kpis.meetings_booked}`, 
+        value: `${kpiData.dashboard_kpis?.meetings_booked}`, 
         trend: 'By AI agent', 
         badgeColor: 'cyan'
       },
@@ -219,34 +219,34 @@ const ExecutiveDashboard = () => {
     marketing: [
       { 
         title: 'Lead Quality Score', 
-        value: formatDecimal(kpiData.dashboard_kpis.lead_quality_score), 
+        value: formatDecimal(kpiData.dashboard_kpis?.lead_quality_score || 0), 
         trend: 'Out of 10', 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Campaign Optimization', 
-        value: `+${kpiData.dashboard_kpis.campaign_optimization}%`, 
+        value: `+${kpiData.dashboard_kpis?.campaign_optimization}%`, 
         trend: 'Performance lift', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'Conversion Rate Lift', 
-        value: `+${kpiData.dashboard_kpis.conversion_lift}%`, 
+        value: `+${kpiData.dashboard_kpis?.conversion_lift}%`, 
         trend: 'With AI targeting', 
         badgeColor: 'purple',
         highlight: true
       },
       { 
         title: 'Leads Rescued', 
-        value: `${kpiData.dashboard_kpis.leads_rescued}`, 
+        value: `${kpiData.dashboard_kpis?.leads_rescued}`, 
         trend: 'By AI intervention', 
         badgeColor: 'orange'
       },
       { 
         title: 'Leads Per Dollar', 
-        value: formatDecimal(kpiData.dashboard_kpis.leads_per_dollar), 
+        value: formatDecimal(kpiData.dashboard_kpis?.leads_per_dollar || 0), 
         trend: 'Marketing efficiency', 
         badgeColor: 'cyan'
       },
@@ -256,34 +256,34 @@ const ExecutiveDashboard = () => {
     customerSuccess: [
       { 
         title: 'Churn Reduction', 
-        value: `${kpiData.dashboard_kpis.churn_reduction}%`, 
+        value: `${kpiData.dashboard_kpis?.churn_reduction}%`, 
         trend: 'Year over year', 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Expansion Revenue', 
-        value: formatCurrency(kpiData.dashboard_kpis.expansion_revenue), 
+        value: formatCurrency(kpiData.dashboard_kpis?.expansion_revenue || 0), 
         trend: 'AI-driven upsells', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'CSAT Improvement', 
-        value: `+${kpiData.dashboard_kpis.csat_improvement}%`, 
+        value: `+${kpiData.dashboard_kpis?.csat_improvement}%`, 
         trend: 'With AI support', 
         badgeColor: 'purple',
         highlight: true
       },
       { 
         title: 'Pipeline At Risk', 
-        value: `${kpiData.dashboard_kpis.pipeline_at_risk}`, 
+        value: `${kpiData.dashboard_kpis?.pipeline_at_risk}`, 
         trend: 'Flagged by AI', 
         badgeColor: 'red'
       },
       { 
         title: 'Time Saved (hrs/wk)', 
-        value: `${kpiData.dashboard_kpis.time_saved_hours}`, 
+        value: `${kpiData.dashboard_kpis?.time_saved_hours}`, 
         trend: 'Per CS agent', 
         badgeColor: 'cyan'
       },
@@ -293,35 +293,35 @@ const ExecutiveDashboard = () => {
     smb: [
       { 
         title: 'Time Saved (hrs/wk)', 
-        value: `${kpiData.dashboard_kpis.time_saved_hours}`, 
+        value: `${kpiData.dashboard_kpis?.time_saved_hours}`, 
         trend: 'Per employee', 
         badgeColor: 'green',
         highlight: true
       },
       { 
         title: 'Leads Per Dollar', 
-        value: formatDecimal(kpiData.dashboard_kpis.leads_per_dollar), 
+        value: formatDecimal(kpiData.dashboard_kpis?.leads_per_dollar || 0), 
         trend: 'Marketing efficiency', 
         badgeColor: 'blue',
         highlight: true
       },
       { 
         title: 'Deal Size Increase', 
-        value: `+${kpiData.dashboard_kpis.deal_size_increase}%`, 
+        value: `+${kpiData.dashboard_kpis?.deal_size_increase}%`, 
         trend: 'With AI assistance', 
         badgeColor: 'purple',
         highlight: true
       },
       { 
         title: 'Operational Cost Savings', 
-        value: formatCurrency(kpiData.dashboard_kpis.cost_savings), 
+        value: formatCurrency(kpiData.dashboard_kpis?.cost_savings || 0), 
         trend: 'Automation efficiency', 
         badgeColor: 'cyan',
         highlight: true
       },
       { 
         title: 'AI Investment ROI', 
-        value: `${kpiData.dashboard_kpis.roi_percentage}%`, 
+        value: `${kpiData.dashboard_kpis?.roi_percentage}%`, 
         trend: 'Return on investment', 
         badgeColor: 'teal',
         highlight: true
@@ -342,7 +342,7 @@ const ExecutiveDashboard = () => {
     labels: ['AI Gains', 'Cost of AI'],
     datasets: [
       {
-        data: kpiData ? [kpiData.dashboard_kpis.roi_percentage, 100] : [368, 100],
+        data: kpiData ? [kpiData.dashboard_kpis?.roi_percentage, 100] : [368, 100],
         backgroundColor: ['#22d3ee', '#94A3B8'],
         hoverOffset: 6,
       },

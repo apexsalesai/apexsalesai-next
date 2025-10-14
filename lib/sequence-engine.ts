@@ -1,11 +1,11 @@
 // Autonomous Sequence Engine for Apex AI Revenue Operator
-import { Lead } from '../types/agent';
+import { Lead } from 'types/agent';
 import { 
   SequenceStep, 
   SequenceState, 
   SequenceStepExecution,
   REAL_ESTATE_LEAD_QUALIFICATION
-} from '../types/sequence';
+} from 'types/sequence';
 import { SequenceStorage } from './sequence-storage';
 import { AgentTools } from './agent-tools';
 
@@ -101,7 +101,7 @@ export class SequenceEngine {
       step_id: currentStep.id,
       timestamp: new Date().toISOString(),
       result,
-      next_step_id: null // Will be set below
+      next_step_id: undefined // Will be set below
     };
     
     // Determine the next step based on conditions
@@ -119,7 +119,7 @@ export class SequenceEngine {
       nextStepId = currentStep.next_steps[0];
     } else {
       // Multiple possible next steps, evaluate conditions
-      for (const condition of currentStep.conditions) {
+      for (const condition of currentStep.conditions || []) {
         const { attribute, operator, value } = condition;
         const contextValue = state.context[attribute];
         
@@ -152,7 +152,7 @@ export class SequenceEngine {
     }
     
     // Update the execution with the next step
-    execution.next_step_id = nextStepId;
+    execution.next_step_id = nextStepId ?? undefined;
     
     // Create updated state
     const updatedState: SequenceState = {

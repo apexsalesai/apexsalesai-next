@@ -1,6 +1,6 @@
 // Production-ready database storage service for the Sequence Engine
-import { SequenceState, SequenceStepExecution, SequenceExecutionMetrics } from '../types/sequence';
-import { Lead } from '../types/agent';
+import { SequenceState, SequenceStepExecution, SequenceExecutionMetrics } from 'types/sequence';
+import { Lead } from 'types/agent';
 import { PrismaClient } from '@prisma/client';
 
 // Type-safe wrapper for Prisma client

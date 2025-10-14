@@ -6,8 +6,8 @@
  * based on lead type and industry.
  */
 
-import { Lead } from '../../types/agent';
-import { SequenceDefinition } from '../../types/sequence';
+import { Lead } from 'types/agent';
+import { SequenceDefinition } from 'types/sequence';
 import * as RealEstate from './presets/realestate';
 import * as Mortgage from './presets/mortgage';
 

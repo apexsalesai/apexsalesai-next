@@ -40,6 +40,7 @@ export interface AgentBehaviorEvent {
     dealId?: string;
     outcome?: 'success' | 'failure' | 'pending';
     metadata?: Record<string, any>;
+    [key: string]: any; // Allow additional properties for flexibility
   };
   duration?: number; // milliseconds
   confidence?: number; // 0-1 scale
@@ -109,7 +110,7 @@ class AgentBehaviorTracker extends EventEmitter {
       actionType,
       vertical,
       description: `${description} (started)`,
-      details: { ...details, status: 'started' }
+      details: { ...details, metadata: { ...details.metadata, status: 'started' } }
     });
 
     // Return completion function

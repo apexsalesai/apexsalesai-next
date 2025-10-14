@@ -5,19 +5,19 @@
  * using a LangGraph-inspired architecture.
  */
 
-import { OpenAIApi, Configuration } from 'openai';
+import { OpenAI } from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import { AgentState, AgentMessage, AgentTask, IndustryVertical, AgentNodeType, AgentBehaviorEvent } from './types';
-import { ErrorLogger } from '../../../utils/errorLogger';
-import { getVerticalPrompt } from '../verticals';
+import { ErrorLogger } from '@lib/utils/errorLogger';
+import { getVerticalPrompt } from '@lib/services/agent/verticals';
 
 // Initialize OpenAI with Azure configuration
-const configuration = new Configuration({
-  apiKey: process.env.AZURE_OPENAI_KEY,
-  basePath: process.env.AZURE_OPENAI_ENDPOINT + '/openai/deployments/gpt-4o',
+const openai = new OpenAI({
+  apiKey: process.env.AZURE_OPENAI_KEY || '',
+  baseURL: process.env.AZURE_OPENAI_ENDPOINT 
+    ? `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/gpt-4o`
+    : undefined,
 });
-
-const openai = new OpenAIApi(configuration);
 
 /**
  * Agent Behavior Tracker
@@ -188,7 +188,8 @@ export class LangGraphAgent {
       const verticalPrompt = getVerticalPrompt(this.state.vertical);
       
       // Call OpenAI to determine intent
-      const response = await openai.createChatCompletion({
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o', // Will use Azure deployment
         messages: [
           { role: 'system', content: `You are Max, an AI sales assistant for ${this.state.vertical} professionals. ${verticalPrompt.systemPrompt}` },
           { role: 'user', content: message },
@@ -197,7 +198,7 @@ export class LangGraphAgent {
         max_tokens: 1000,
       });
 
-      return response.data.choices[0].message?.content || "I'm sorry, I couldn't process your request.";
+      return response.choices[0].message?.content || "I'm sorry, I couldn't process your request.";
     } catch (error) {
       return this.handleError(error as Error);
     }
@@ -212,7 +213,8 @@ export class LangGraphAgent {
       const verticalPrompt = getVerticalPrompt(this.state.vertical);
       
       // Call OpenAI to create a plan
-      const response = await openai.createChatCompletion({
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: `You are a planning agent for ${this.state.vertical} sales workflows. ${verticalPrompt.planningPrompt}` },
           { role: 'user', content: message },
@@ -222,7 +224,7 @@ export class LangGraphAgent {
       });
 
       // Extract tasks from the response
-      const planText = response.data.choices[0].message?.content || '';
+      const planText = response.choices[0].message?.content || '';
       
       // Create tasks based on the plan
       this.createTasksFromPlan(planText);
@@ -241,14 +243,15 @@ export class LangGraphAgent {
       // Get vertical-specific prompt
       const verticalPrompt = getVerticalPrompt(this.state.vertical);
       
-      // Prepare conversation history
+      // Prepare conversation history (map agent role to assistant for OpenAI)
       const conversationHistory = this.state.messages.map(m => ({
-        role: m.role,
+        role: m.role === 'agent' ? 'assistant' as const : m.role as 'user' | 'system',
         content: m.content,
       }));
       
       // Call OpenAI with vertical-specific prompt
-      const response = await openai.createChatCompletion({
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: verticalPrompt.specialistPrompt },
           ...conversationHistory,
@@ -257,7 +260,7 @@ export class LangGraphAgent {
         max_tokens: 1000,
       });
 
-      return response.data.choices[0].message?.content || "I'm sorry, I couldn't process your request.";
+      return response.choices[0].message?.content || "I'm sorry, I couldn't process your request.";
     } catch (error) {
       return this.handleError(error as Error);
     }

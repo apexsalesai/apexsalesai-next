@@ -9,7 +9,35 @@ export type RealEstateDecisionNode =
   | 'listing_stale'
   | 'buyer_qualified'
   | 'showing_scheduled'
-  | 'follow_up_needed';
+  | 'follow_up_needed'
+  // Real Estate Lead Qualification nodes
+  | 'initial_contact'
+  | 'qualify_intent'
+  | 'check_preapproval'
+  | 'refer_to_lender'
+  | 'follow_up_financing'
+  | 'schedule_showing'
+  | 'post_showing_followup'
+  | 'schedule_more_showings'
+  | 'gauge_offer_interest'
+  | 'prepare_offer'
+  | 'schedule_listing_appointment'
+  | 'prepare_cma'
+  | 'listing_presentation'
+  // Real Estate Follow-up nodes
+  | 'check_response'
+  | 'send_followup'
+  | 'check_response_again'
+  | 'mark_as_cold'
+  | 'schedule_long_term_nurture'
+  | 'mark_as_responsive'
+  // Real Estate Listing Management nodes
+  | 'monitor_listing_activity'
+  | 'continue_monitoring'
+  | 'suggest_price_reduction'
+  | 'check_price_reduction_approval'
+  | 'implement_price_reduction'
+  | 'notify_interested_buyers';
 
 // Domain-specific decision nodes for Mortgage
 export type MortgageDecisionNode = 
@@ -17,7 +45,31 @@ export type MortgageDecisionNode =
   | 'preapproval_ready'
   | 'rate_change'
   | 'application_stalled'
-  | 'closing_approaching';
+  | 'closing_approaching'
+  // Mortgage Document Chase nodes
+  | 'initial_doc_request'
+  | 'check_document_status'
+  | 'send_reminder'
+  | 'check_reminder_response'
+  | 'escalate_reminder'
+  | 'check_escalated_response'
+  | 'alert_loan_officer'
+  | 'all_docs_received'
+  // Mortgage Loan Progress nodes
+  | 'monitor_loan_status'
+  | 'continue_monitoring'
+  | 'send_milestone_update'
+  | 'check_milestone_type'
+  | 'request_additional_docs'
+  | 'schedule_next_steps'
+  | 'prepare_closing'
+  // Mortgage Rate Watch nodes
+  | 'monitor_rates'
+  | 'identify_refi_candidates'
+  | 'send_refi_alerts'
+  | 'track_responses'
+  | 'send_followup'
+  | 'schedule_refi_consultation';
 
 // Combined decision node types
 export type DecisionNodeType = RealEstateDecisionNode | MortgageDecisionNode;

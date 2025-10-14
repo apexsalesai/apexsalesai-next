@@ -1,9 +1,10 @@
 import React from 'react';
+import { Box, Flex, Heading, Text, useColorModeValue } from '@chakra-ui/react';
 
 // Simple heatmap component for ROI visualization
 const ROIHeatmap = () => {
-  const bgColor = useColorModeValue('gray.50', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const bgColor = 'gray.50';
+  const borderColor = 'gray.200';
   
   // Mock data for heatmap cells (value between 0-1 representing intensity)
   const heatmapData = [

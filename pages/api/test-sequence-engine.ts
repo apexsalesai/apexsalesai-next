@@ -1,9 +1,9 @@
 // API endpoint to test the SequenceEngineV2 with error handling and retry logic
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { SequenceEngineV2 } from '../../lib/sequence-engine-v2';
-import { Lead } from '../../types/agent';
-import { logger } from '../../lib/logger';
-import { SequenceStorage } from '../../lib/sequence-storage';
+import { SequenceEngineV2 } from '@lib/sequence-engine-v2';
+import { Lead } from 'types/agent';
+import { logger } from '@lib/logger';
+import { SequenceStorage } from '@lib/sequence-storage';
 
 type TestResponse = {
   success: boolean;
