@@ -5,7 +5,7 @@
  * These presets are used to dynamically switch LangGraph node paths based on lead type and status.
  */
 
-import { SequenceDefinition, SequenceStep, SequenceCondition } from '../../../types/sequence';
+import { SequenceDefinition, SequenceStep, SequenceCondition } from 'types/sequence';
 
 /**
  * Real Estate Lead Qualification Sequence

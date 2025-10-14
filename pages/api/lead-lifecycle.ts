@@ -154,7 +154,7 @@ function generateStageDataFromLeads(leads: any[]) {
 // Function to generate timeline data from actual leads
 function generateTimelineDataFromLeads(leads: any[]) {
   // Get date range (last 7 days)
-  const dates = [];
+  const dates: string[] = [];
   for (let i = 6; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);

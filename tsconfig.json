@@ -20,7 +20,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["app/*"],
-      "@components/*": ["app/components/*", "components/*"]
+      "@components/*": ["app/components/*", "components/*"],
+      "@lib/*": ["lib/*"]
     },
     "plugins": [
       {

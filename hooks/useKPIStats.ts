@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { KPIsResponse } from '../types/api';
 import { mockKPIStats } from '../app/hooks/mockData';
-import { getKpiService } from '../lib/services/dataverse/kpiService';
-import type { DashboardData } from '../lib/services/dataverse/types';
+import { getKpiService } from '@lib/services/dataverse/kpiService';
+import type { DashboardData } from '@lib/services/dataverse/types';
 
 interface UseKPIStatsOptions {
   vertical?: string;

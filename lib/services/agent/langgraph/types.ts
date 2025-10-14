@@ -78,7 +78,7 @@ export interface AgentError {
  * Agent behavior tracking event
  */
 export interface AgentBehaviorEvent {
-  eventType: 'action' | 'fallback' | 'handoff' | 'decision';
+  eventType: 'action' | 'fallback' | 'handoff' | 'decision' | 'error';
   timestamp: Date;
   vertical: IndustryVertical;
   details: Record<string, any>;

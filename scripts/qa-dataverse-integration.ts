@@ -3,9 +3,9 @@
  * Tests OAuth token refresh, connection failures, and refresh functionality
  */
 
-import { DataverseApiService } from '../lib/services/dataverse/dataverseApi';
-import { getKpiService } from '../lib/services/dataverse/kpiService';
-import { ErrorLogger } from '../lib/utils/errorLogger';
+import { DataverseApiService } from '@lib/services/dataverse/dataverseApi';
+import { getKpiService } from '@lib/services/dataverse/kpiService';
+import { ErrorLogger } from '@lib/utils/errorLogger';
 
 interface QATestResult {
   testName: string;
@@ -108,7 +108,7 @@ class DataverseQATester {
 
       // Validate KPI structure
       const firstKpi = dashboardData.kpis[0];
-      const requiredFields = ['title', 'value', 'trend', 'badgeColor'];
+      const requiredFields: (keyof typeof firstKpi)[] = ['title', 'value', 'trend', 'badgeColor'];
       const missingFields = requiredFields.filter(field => !firstKpi[field]);
       
       if (missingFields.length > 0) {

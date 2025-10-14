@@ -1,5 +1,5 @@
 // Real Estate Lead Qualification Sequence
-import { SequenceDefinition, SequenceStep } from '../../types/sequence';
+import { SequenceDefinition, SequenceStep } from 'types/sequence';
 
 /**
  * Real Estate Lead Qualification Sequence

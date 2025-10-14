@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { TriggerAgentResponse } from '../../types/api';
-import { SequenceEngineV2 } from '../../lib/sequence-engine-v2';
+import { SequenceEngineV2 } from '@lib/sequence-engine-v2';
 import { AgentDecision, AgentAction, TriggerAgentRequest } from '../../types/agent';
 import { AgentROIMetrics } from '../../types/sequence';
 

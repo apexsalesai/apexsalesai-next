@@ -1,8 +1,8 @@
 // API endpoint to test the new SequenceEngineV2 with vertical-specific sequences
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { SequenceEngineV2 } from '../../lib/sequence-engine-v2';
-import { Lead } from '../../types/agent';
-import { determineVerticalForLead } from '../../lib/agent/vertical-integration';
+import { SequenceEngineV2 } from '@lib/sequence-engine-v2';
+import { Lead } from 'types/agent';
+import { determineVerticalForLead } from '@lib/agent/vertical-integration';
 
 type TestResponse = {
   success: boolean;

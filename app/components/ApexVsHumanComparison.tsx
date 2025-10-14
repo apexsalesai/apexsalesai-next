@@ -311,7 +311,7 @@ const ApexVsHumanComparison: React.FC<ApexVsHumanComparisonProps> = ({
                   <Box as="tbody">
                     {timeSavings.map((activity, index) => (
                       <TimeSavingsRow key={index} activity={activity} />
-                    ))}}
+                    ))}
                   </Box>
                 </Box>
               </Box>

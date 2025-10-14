@@ -1,12 +1,12 @@
 // Autonomous Sequence Engine V2 for Apex AI Revenue Operator
-import { Lead } from '../types/agent';
+import { Lead } from 'types/agent';
 import { 
   SequenceStep, 
   SequenceState, 
   SequenceStepExecution,
   SequenceExecutionMetrics,
   SequenceDefinition
-} from '../types/sequence';
+} from 'types/sequence';
 import { SequenceStorage } from './sequence-storage';
 import { AgentTools } from './agent-tools';
 import { 

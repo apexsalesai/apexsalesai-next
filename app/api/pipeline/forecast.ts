@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Fetch all active leads for tenant
     const leads = await prisma.lead.findMany({ where: { tenantId } });
     // Compose prompt for pipeline forecasting
-    const prompt = `You are Max, an expert AI revenue operator. Given the following leads, forecast the total expected revenue, predicted close rate, and highlight any pipeline risks.\n\nLeads:\n${leads.map(l => `Name: ${l.name}, Stage: ${l.stage}, Confidence: ${l.confidence_score}, Value: $${l.deal_value || 0}`).join('\n')}\n\nRespond with:\n- Forecasted Revenue: <amount>\n- Predicted Close Rate: <percent>%\n- Pipeline Risks: <short summary>\n- Key Insights: <bulleted list>`;
+    const prompt = `You are Max, an expert AI revenue operator. Given the following leads, forecast the total expected revenue, predicted close rate, and highlight any pipeline risks.\n\nLeads:\n${leads.map(l => `Name: ${l.name}, Stage: ${l.stage}, Confidence: ${l.confidence_score}`).join('\n')}\n\nRespond with:\n- Forecasted Revenue: <amount>\n- Predicted Close Rate: <percent>%\n- Pipeline Risks: <short summary>\n- Key Insights: <bulleted list>`;
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/max-chat/route`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

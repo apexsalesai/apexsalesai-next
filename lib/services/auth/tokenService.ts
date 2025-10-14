@@ -1,8 +1,8 @@
 import { PrismaClient, AuthToken } from '@prisma/client';
 import axios from 'axios';
-import { encrypt, decrypt } from '../crypto/encryption';
+import { encrypt, decrypt } from '@lib/services/crypto/encryption';
 import * as msal from '@azure/msal-node';
-import { AuthTokenWithMetadata, TokenStorageParams, OAuthTokenResponse, DataverseTokenMetadata } from '../../types/auth';
+import { AuthTokenWithMetadata, TokenStorageParams, OAuthTokenResponse, DataverseTokenMetadata } from 'types/auth';
 
 const prisma = new PrismaClient();
 
@@ -234,6 +234,7 @@ export class TokenService {
         expires_in: result.expiresOn ? 
           Math.floor((result.expiresOn.getTime() - new Date().getTime()) / 1000) : 
           3600,
+        token_type: 'Bearer',
       };
     } catch (error) {
       console.error('Dataverse token refresh failed:', error);
@@ -282,7 +283,7 @@ export class TokenService {
       await this.storeToken({
         provider: 'dataverse',
         accessToken: result.accessToken,
-        refreshToken: result.refreshToken || undefined,
+        refreshToken: (result as any).refreshToken || null,
         expiresAt,
         userId,
         tenantId,

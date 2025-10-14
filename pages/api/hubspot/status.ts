@@ -17,9 +17,10 @@ export default async function handler(
     // const session = await getServerSession(req, res, authOptions);
     const mockUser = { tenantId: 1 }; // Demo tenant
     
-    if (!session || !session.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    // TODO: Implement proper session validation with Auth0
+    // if (!session || !session.user) {
+    //   return res.status(401).json({ error: 'Unauthorized' });
+    // }
 
     // For demo purposes, we'll use tenant ID 1 (Apex Enterprises)
     // In a real app, you'd get this from the session or user context

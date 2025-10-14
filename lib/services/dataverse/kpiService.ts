@@ -15,7 +15,7 @@ import {
   KPIData,
   ChartData 
 } from './types';
-import { ErrorLogger } from '../../utils/errorLogger';
+import { ErrorLogger } from '@lib/utils/errorLogger';
 
 export class KpiService {
   private dataverseApi: DataverseApiService;
