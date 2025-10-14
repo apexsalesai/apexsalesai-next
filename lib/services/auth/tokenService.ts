@@ -19,7 +19,17 @@ export class TokenService {
     }
   };
 
-  private static msalClient = new msal.ConfidentialClientApplication(TokenService.msalConfig);
+  private static _msalClient: msal.ConfidentialClientApplication | null = null;
+  
+  /**
+   * Lazy initialize MSAL client to prevent build-time errors
+   */
+  private static get msalClient(): msal.ConfidentialClientApplication {
+    if (!this._msalClient) {
+      this._msalClient = new msal.ConfidentialClientApplication(this.msalConfig);
+    }
+    return this._msalClient;
+  }
 
   /**
    * Store a new OAuth token in the database

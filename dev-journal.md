@@ -180,3 +180,11 @@ RESULT: Build compiles successfully, zero type errors
 - Resolves Prisma Client outdated cache issue on Vercel
 
 This ensures Prisma Client is regenerated after npm install on Vercel
+- ✅ 2025-10-14: fix(auth): prevent Auth0 initialization errors during build
+
+- Wrap handleAuth() in runtime check for environment variables
+- Return 501 error if Auth0 not configured instead of crashing build
+- Prevents 'invalid_client_credential' error during Vercel build
+
+This allows the build to complete even if Auth0 env vars aren't set,
+while still providing clear error messages at runtime.
