@@ -8,10 +8,9 @@ import { KPIData, ChartData } from './types';
 import { ErrorLogger } from '@lib/utils/errorLogger';
 
 export class OpportunityKpiService {
-  private dataverseApi: DataverseApiService;
-
-  constructor(dataverseApi: DataverseApiService) {
-    this.dataverseApi = dataverseApi;
+  // Using static methods from DataverseApiService
+  constructor() {
+    // No instance needed - using static methods
   }
 
   /**
@@ -85,7 +84,7 @@ export class OpportunityKpiService {
 
   private async getTotalOpportunities(vertical: string) {
     try {
-      const current = await this.dataverseApi.query('opportunities', {
+      const current = await DataverseApiService.query('opportunities', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfMonthFilter()}`,
         select: ['opportunityid']
       });
@@ -102,7 +101,7 @@ export class OpportunityKpiService {
 
   private async getWonOpportunities(vertical: string) {
     try {
-      const won = await this.dataverseApi.query('opportunities', {
+      const won = await DataverseApiService.query('opportunities', {
         filter: `_new_vertical eq '${vertical}' and statecode eq 1 and createdon ge ${this.getStartOfMonthFilter()}`,
         select: ['opportunityid']
       });
@@ -119,12 +118,12 @@ export class OpportunityKpiService {
 
   private async getAverageDealSize(vertical: string) {
     try {
-      const deals = await this.dataverseApi.query('opportunities', {
+      const deals = await DataverseApiService.query('opportunities', {
         filter: `_new_vertical eq '${vertical}' and statecode eq 1`,
         select: ['opportunityid', 'estimatedvalue']
       });
 
-      const total = deals.value.reduce((sum, deal) => sum + (deal.estimatedvalue || 0), 0);
+      const total = deals.value.reduce((sum: number, deal: any) => sum + (deal.estimatedvalue || 0), 0);
       const average = deals.value.length > 0 ? total / deals.value.length : 0;
 
       return {

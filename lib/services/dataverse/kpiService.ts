@@ -18,16 +18,15 @@ import {
 import { ErrorLogger } from '@lib/utils/errorLogger';
 
 export class KpiService {
-  private dataverseApi: DataverseApiService;
   private leadKpiService: LeadKpiService;
   private opportunityKpiService: OpportunityKpiService;
   private agentActivityKpiService: AgentActivityKpiService;
 
-  constructor(config: DataverseConfig) {
-    this.dataverseApi = new DataverseApiService(config);
-    this.leadKpiService = new LeadKpiService(this.dataverseApi);
-    this.opportunityKpiService = new OpportunityKpiService(this.dataverseApi);
-    this.agentActivityKpiService = new AgentActivityKpiService(this.dataverseApi);
+  constructor(config?: DataverseConfig) {
+    // KPI services now use static DataverseApiService methods
+    this.leadKpiService = new LeadKpiService();
+    this.opportunityKpiService = new OpportunityKpiService();
+    this.agentActivityKpiService = new AgentActivityKpiService();
   }
 
   /**
@@ -189,7 +188,7 @@ export class KpiService {
   async testConnection(): Promise<boolean> {
     try {
       // Simple test query to verify connection
-      await this.dataverseApi.query('systemusers', {
+      await DataverseApiService.query('systemusers', {
         top: 1,
         select: ['systemuserid']
       });

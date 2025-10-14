@@ -8,10 +8,9 @@ import { KPIData, ChartData } from './types';
 import { ErrorLogger } from '@lib/utils/errorLogger';
 
 export class AgentActivityKpiService {
-  private dataverseApi: DataverseApiService;
-
-  constructor(dataverseApi: DataverseApiService) {
-    this.dataverseApi = dataverseApi;
+  // Using static methods from DataverseApiService
+  constructor() {
+    // No instance needed - using static methods
   }
 
   /**
@@ -116,7 +115,7 @@ export class AgentActivityKpiService {
   }> {
     try {
       // Query agent actions from custom entity or activity records
-      const actions = await this.dataverseApi.query('new_agentactions', {
+      const actions = await DataverseApiService.query('new_agentactions', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfWeekFilter()}`,
         select: ['new_agentactionid', 'createdon', 'new_actiontype']
       });
@@ -161,7 +160,7 @@ export class AgentActivityKpiService {
   }> {
     try {
       // Query leads that should have follow-ups
-      const leadsRequiringFollowUp = await this.dataverseApi.query('leads', {
+      const leadsRequiringFollowUp = await DataverseApiService.query('leads', {
         filter: `_new_vertical eq '${vertical}' and createdon ge ${this.getStartOfMonthFilter()} and statuscode ne 6`,
         select: ['leadid', '_new_lastfollowupdate']
       });
@@ -256,14 +255,13 @@ export class AgentActivityKpiService {
    */
   private async getRecentActivity(vertical: string): Promise<string[]> {
     try {
-      const activities = await this.dataverseApi.query('new_agentactions', {
+      const activities = await DataverseApiService.query('new_agentactions', {
         filter: `_new_vertical eq '${vertical}'`,
-        orderBy: 'createdon desc',
         top: 10,
         select: ['new_actiontype', 'new_description', 'createdon']
       });
 
-      return activities.value.map(activity => {
+      return activities.value.map((activity: any) => {
         const timeAgo = this.formatTimeAgo(new Date(activity.createdon));
         return `${activity.new_description || activity.new_actiontype} - ${timeAgo}`;
       });
