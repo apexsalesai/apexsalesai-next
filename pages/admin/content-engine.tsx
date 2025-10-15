@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/router';
-import { MaxContentAgent } from '../../app/components/MaxContentAgent';
-import { ContentGeneratorPanel } from '../../app/components/ContentGeneratorPanel';
+import dynamic from 'next/dynamic';
+
+// Dynamically import components to avoid SSR issues
+const MaxContentAgent = dynamic(
+  () => import('../../app/components/MaxContentAgent').then(mod => mod.MaxContentAgent),
+  { ssr: false }
+);
+
+const ContentGeneratorPanel = dynamic(
+  () => import('../../app/components/ContentGeneratorPanel').then(mod => mod.ContentGeneratorPanel),
+  { ssr: false }
+);
 
 /**
  * Admin-Only Content Engine Dashboard

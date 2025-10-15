@@ -293,3 +293,6 @@ USAGE:
 API Protection:
 - Add CONTENT_API_KEY to Vercel environment variables
 - All API calls require x-api-key header
+- ✅ 2025-10-15: docs: add comprehensive setup guide for Max Content Engine
+
+Complete step-by-step guide covering security, deployment, and automation
