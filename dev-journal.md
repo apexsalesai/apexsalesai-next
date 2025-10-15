@@ -297,3 +297,4 @@ API Protection:
 
 Complete step-by-step guide covering security, deployment, and automation
 - ✅ 2025-10-15: fix: update component imports to use dynamic loading for SSR compatibility
+- ✅ 2025-10-15: fix: update @auth0/nextjs-auth0 to latest version for build compatibility
