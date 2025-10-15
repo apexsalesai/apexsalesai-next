@@ -17,7 +17,7 @@
   "description": "",
   "dependencies": {
     "@auth/core": "^0.34.2",
-    "@auth0/nextjs-auth0": "^4.10.0",
+    "@auth0/nextjs-auth0": "^2.7.0",
     "@azure/msal-node": "^3.6.1",
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.7.1",
