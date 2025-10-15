@@ -11,7 +11,7 @@
  */
 
 import OpenAI from 'openai';
-import { logger } from '@lib/logger';
+import { logger } from '../../logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',

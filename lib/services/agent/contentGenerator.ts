@@ -4,7 +4,7 @@
  */
 
 import OpenAI from 'openai';
-import { logger } from '@lib/logger';
+import { logger } from '../../logger';
 
 // Robust API key fallback logic
 const openaiKey = 
