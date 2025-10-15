@@ -265,3 +265,4 @@ FEATURES:
 USAGE:
 Visit /dashboard/operator-agent-fixed to see Max in action
 Follow QUICKSTART.md for 5-minute setup
+- ✅ 2025-10-15: fix: resolve logger type errors and make Resend API optional for build success
