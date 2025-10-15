@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { publishMarkdown } from '@lib/services/agent/publishToGithub';
+import { publishMarkdown } from '../../../lib/services/agent/publishToGithub';
 
 export const runtime = 'nodejs';
 

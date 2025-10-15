@@ -291,3 +291,9 @@ All phases 1-4 complete and tested locally.
 - Improve form UX with better labels and hints
 
 This transforms the basic MVP into a premium enterprise agent interface.
+- ✅ 2025-10-15: fix: add robust OpenAI API key fallback logic
+
+- Support OPENAI_API_KEY, AZURE_OPENAI_API_KEY, NEXT_PUBLIC_OPENAI_API_KEY
+- Add validation to throw clear error if no key found
+- Prevents 'Failed to generate content' errors
+- Aligns with Vercel environment variable configuration

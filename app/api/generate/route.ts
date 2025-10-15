@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentGenerator } from '@lib/services/agent/contentGenerator';
+import { ContentGenerator } from '../../../lib/services/agent/contentGenerator';
 
 export const runtime = 'nodejs';
 

@@ -4,7 +4,7 @@
  */
 
 import { ContentGenerator, ContentGenerationRequest } from './contentGenerator';
-import { logger } from '@lib/logger';
+import { logger } from '../../logger';
 
 export interface ScheduleConfig {
   enabled: boolean;
