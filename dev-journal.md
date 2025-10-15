@@ -297,3 +297,11 @@ This transforms the basic MVP into a premium enterprise agent interface.
 - Add validation to throw clear error if no key found
 - Prevents 'Failed to generate content' errors
 - Aligns with Vercel environment variable configuration
+- ✅ 2025-10-15: fix: replace @lib path aliases with relative imports for Vercel build compatibility
+
+- Change @lib/logger to ../../logger in contentGenerator.ts
+- Change @lib/logger to ../../logger in contentScheduler.ts
+- Change @lib/logger to ../../logger in videoGenerator.ts
+- Change @lib/services imports to relative paths in API routes
+- Fixes 'Cannot find module @lib/logger' build error on Vercel
+- Local build now passes successfully
