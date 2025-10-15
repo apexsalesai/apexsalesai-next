@@ -42,7 +42,7 @@ export class ContentGenerator {
    */
   static async generateBlogPost(request: ContentGenerationRequest): Promise<BlogPost> {
     try {
-      logger.info('Generating blog post', { topic: request.topic, vertical: request.vertical });
+      logger.info(`Generating blog post: ${request.topic} (${request.vertical || 'general'})`);
 
       const prompt = this.buildBlogPrompt(request);
       
@@ -102,11 +102,11 @@ Format your response as JSON with these fields:
         }
       };
 
-      logger.info('Blog post generated successfully', { slug, title: blogPost.title });
+      logger.info(`Blog post generated successfully: ${blogPost.title} (${slug})`);
 
       return blogPost;
     } catch (error) {
-      logger.error('Error generating blog post', { error, request });
+      logger.error(`Error generating blog post: ${error}`);
       throw new Error(`Failed to generate blog post: ${error}`);
     }
   }
@@ -151,7 +151,7 @@ Create posts for LinkedIn, Twitter, and Facebook that:
       const response = JSON.parse(completion.choices[0].message.content || '{}');
       return response;
     } catch (error) {
-      logger.error('Error generating social content', { error, request });
+      logger.error(`Error generating social content: ${error}`);
       throw new Error(`Failed to generate social content: ${error}`);
     }
   }
@@ -197,7 +197,7 @@ Include:
       const response = JSON.parse(completion.choices[0].message.content || '{}');
       return response;
     } catch (error) {
-      logger.error('Error generating email content', { error, request });
+      logger.error(`Error generating email content: ${error}`);
       throw new Error(`Failed to generate email content: ${error}`);
     }
   }
@@ -301,9 +301,9 @@ ${blogPost.content}
 `;
 
       await fs.writeFile(filePath, markdown, 'utf-8');
-      logger.info('Blog post saved to file', { filePath, slug: blogPost.slug });
+      logger.info(`Blog post saved to file: ${filePath}`);
     } catch (error) {
-      logger.error('Error saving blog post', { error, slug: blogPost.slug });
+      logger.error(`Error saving blog post: ${error}`);
       throw new Error(`Failed to save blog post: ${error}`);
     }
   }
