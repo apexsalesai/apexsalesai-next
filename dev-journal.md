@@ -296,3 +296,4 @@ API Protection:
 - ✅ 2025-10-15: docs: add comprehensive setup guide for Max Content Engine
 
 Complete step-by-step guide covering security, deployment, and automation
+- ✅ 2025-10-15: fix: update component imports to use dynamic loading for SSR compatibility
