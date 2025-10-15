@@ -300,3 +300,4 @@ Complete step-by-step guide covering security, deployment, and automation
 - ✅ 2025-10-15: fix: update @auth0/nextjs-auth0 to latest version for build compatibility
 - ✅ 2025-10-15: fix: move API routes from app/api to pages/api for Pages Router compatibility
 - ✅ 2025-10-15: fix: use @lib path alias for contentGenerator import
+- ✅ 2025-10-15: fix: simplify API route to remove external dependencies and use inline OpenAI calls
