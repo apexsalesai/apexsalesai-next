@@ -6,8 +6,18 @@
 import OpenAI from 'openai';
 import { logger } from '@lib/logger';
 
+// Robust API key fallback logic
+const openaiKey = 
+  process.env.OPENAI_API_KEY || 
+  process.env.AZURE_OPENAI_API_KEY || 
+  process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+
+if (!openaiKey) {
+  throw new Error('Missing OpenAI API key in environment variables. Please set OPENAI_API_KEY or AZURE_OPENAI_API_KEY.');
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
+  apiKey: openaiKey,
 });
 
 export interface ContentGenerationRequest {
