@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ContentGenerator, ContentGenerationRequest } from '../../../lib/services/agent/contentGenerator';
+import { ContentGenerator, ContentGenerationRequest } from '@lib/services/agent/contentGenerator';
 
 /**
  * API Route: /api/agent/generate-content
