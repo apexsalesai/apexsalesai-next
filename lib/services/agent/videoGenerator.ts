@@ -54,7 +54,7 @@ export class VideoGenerator {
    */
   static async generateVideoScript(request: VideoGenerationRequest): Promise<VideoScript> {
     try {
-      logger.info('Generating video script', { topic: request.topic, platform: request.platform });
+      logger.info(`Generating video script: ${request.topic} for ${request.platform}`);
 
       const durationMap = {
         short: '1-3 minutes (60-180 seconds)',
@@ -120,15 +120,11 @@ Your scripts are optimized for each platform's unique requirements and audience 
       // Calculate total duration
       script.duration = script.scenes.reduce((sum: number, scene: VideoScene) => sum + scene.duration, 0);
 
-      logger.info('Video script generated successfully', { 
-        title: script.title, 
-        sceneCount: script.scenes.length,
-        duration: script.duration
-      });
+      logger.info(`Video script generated: ${script.title} (${script.scenes.length} scenes, ${script.duration}s)`);
 
       return script as VideoScript;
     } catch (error) {
-      logger.error('Error generating video script', { error, request });
+      logger.error(`Error generating video script: ${error}`);
       throw new Error(`Failed to generate video script: ${error}`);
     }
   }
@@ -147,7 +143,7 @@ Your scripts are optimized for each platform's unique requirements and audience 
     status: 'processing' | 'completed' | 'failed';
   }> {
     try {
-      logger.info('Generating video from script', { title: script.title });
+      logger.info(`Generating video from script: ${script.title}`);
 
       // TODO: Integrate with video generation API
       // Example: Synthesia API
@@ -187,7 +183,7 @@ Your scripts are optimized for each platform's unique requirements and audience 
         status: 'processing'
       };
     } catch (error) {
-      logger.error('Error generating video', { error, script });
+      logger.error(`Error generating video: ${error}`);
       throw new Error(`Failed to generate video: ${error}`);
     }
   }
@@ -219,7 +215,7 @@ Your scripts are optimized for each platform's unique requirements and audience 
 
       return 'https://placeholder-voiceover-url.com';
     } catch (error) {
-      logger.error('Error generating voiceover', { error });
+      logger.error(`Error generating voiceover: ${error}`);
       throw new Error(`Failed to generate voiceover: ${error}`);
     }
   }
@@ -270,7 +266,7 @@ Your scripts are optimized for each platform's unique requirements and audience 
 
       return 'https://youtube.com/watch?v=placeholder';
     } catch (error) {
-      logger.error('Error uploading to YouTube', { error });
+      logger.error(`Error uploading to YouTube: ${error}`);
       throw new Error(`Failed to upload to YouTube: ${error}`);
     }
   }
@@ -310,7 +306,7 @@ Return as a JSON array of strings.`;
       const response = JSON.parse(completion.choices[0].message.content || '{"topics":[]}');
       return response.topics || [];
     } catch (error) {
-      logger.error('Error getting recommended topics', { error });
+      logger.error(`Error getting recommended topics: ${error}`);
       return [
         'How AI Agents Are Transforming Sales Teams in 2025',
         'The ROI of Autonomous Sales Execution: Real Numbers',

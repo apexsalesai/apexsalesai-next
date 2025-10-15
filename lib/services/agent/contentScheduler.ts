@@ -105,9 +105,7 @@ export class ContentScheduler {
       this.calculateNextRun(schedule);
     });
     
-    logger.info('Content scheduler initialized', { 
-      scheduleCount: this.schedules.size 
-    });
+    logger.info(`Content scheduler initialized with ${this.schedules.size} schedules`);
   }
 
   /**
@@ -162,7 +160,7 @@ export class ContentScheduler {
     }
 
     try {
-      logger.info('Executing content schedule', { scheduleId, name: schedule.name });
+      logger.info(`Executing content schedule: ${schedule.name} (${scheduleId})`);
 
       // Select a random topic if available
       const topics = schedule.config.topics || [];
@@ -186,17 +184,11 @@ export class ContentScheduler {
         
         if (schedule.config.autoPublish) {
           await ContentGenerator.saveBlogPost(blogPost);
-          logger.info('Blog post generated and published', { 
-            scheduleId, 
-            title: blogPost.title 
-          });
+          logger.info(`Blog post generated and published: ${blogPost.title} (${scheduleId})`);
         }
       } else if (schedule.config.contentType === 'social') {
         const socialContent = await ContentGenerator.generateSocialContent(request);
-        logger.info('Social content generated', { 
-          scheduleId, 
-          platforms: Object.keys(socialContent) 
-        });
+        logger.info(`Social content generated for schedule ${scheduleId}: ${Object.keys(socialContent).join(', ')}`);
         
         // TODO: Post to social media platforms
         // This would integrate with LinkedIn, Twitter, Facebook APIs
@@ -208,10 +200,7 @@ export class ContentScheduler {
       schedule.status = 'active';
 
     } catch (error) {
-      logger.error('Error executing content schedule', { 
-        scheduleId, 
-        error 
-      });
+      logger.error(`Error executing content schedule ${scheduleId}: ${error}`);
       schedule.status = 'error';
       throw error;
     }
@@ -233,7 +222,7 @@ export class ContentScheduler {
         try {
           await this.executeSchedule(id);
         } catch (error) {
-          logger.error('Failed to execute schedule', { id, error });
+          logger.error(`Failed to execute schedule ${id}: ${error}`);
         }
       }
     }
@@ -256,7 +245,7 @@ export class ContentScheduler {
       if (updates.config) {
         this.calculateNextRun(schedule);
       }
-      logger.info('Schedule updated', { id, updates });
+      logger.info(`Schedule updated: ${id}`);
     }
   }
 
@@ -271,7 +260,7 @@ export class ContentScheduler {
       if (enabled) {
         this.calculateNextRun(schedule);
       }
-      logger.info('Schedule toggled', { id, enabled });
+      logger.info(`Schedule ${id} ${enabled ? 'enabled' : 'disabled'}`);
     }
   }
 }
