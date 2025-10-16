@@ -344,3 +344,4 @@ CRITICAL FIX - Root cause of 500 errors:
 
 This resolves the 'Failed to generate content' 500 error by ensuring
 Vercel can correctly resolve module imports without path alias issues.
+- ✅ 2025-10-16: debug: add diagnostic endpoint to identify exact OpenAI API error
