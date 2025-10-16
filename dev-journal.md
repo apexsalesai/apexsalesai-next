@@ -361,3 +361,10 @@ Solution:
 - Fully compatible with Vercel's serverless architecture
 
 This resolves the 25-second timeout and 'Failed to generate content' error.
+- ✅ 2025-10-16: feat: add content preview to generator UI
+
+- Show excerpt and tags in success message
+- Add scrollable content preview (first 500 chars)
+- Add prominent 'View Full Published Post' link
+- Improve UX by showing generated content immediately
+- Better visual feedback after successful generation

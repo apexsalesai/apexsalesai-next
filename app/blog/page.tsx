@@ -1,47 +1,47 @@
 'use client';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-const featuredPost = {
-  title: "The Rise of Autonomous Revenue Teams",
-  date: "April 22, 2025",
-  author: "ApexSalesAI Editorial",
-  image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80", // Teamwork/AI
-  excerpt: "Discover how AI agents are reshaping go-to-market operations, helping teams do more with less — and scale without headcount. This comprehensive analysis explores real-world case studies from Fortune 500 companies deploying AI agents across their revenue org.",
-  tags: ["AI Agents", "Revenue Operations", "Enterprise Strategy"],
-  slug: "ai-revenue-teams"
-};
+interface BlogPost {
+  slug: string;
+  title: string;
+  date: string;
+  author: string;
+  excerpt: string;
+  image: string;
+  tags: string[];
+}
 
-const blogPosts = [
+// Default fallback posts
+const defaultPosts: BlogPost[] = [
   {
-    title: "The Future of Sales: How AI is Reshaping Revenue Operations",
-    date: "May 15, 2025",
-    author: "Dr. Sarah Chen, AI Strategy Director",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80", // Futuristic sales
-    excerpt: "The convergence of AI and sales operations is creating unprecedented opportunities for revenue growth. Learn how predictive analytics and autonomous execution are transforming the sales landscape.",
-    tags: ["AI", "Sales Strategy", "Revenue Operations"],
-    slug: "ai-sales-future"
+    slug: 'ai-revenue-teams',
+    title: 'The Rise of Autonomous Revenue Teams',
+    date: '2025-04-22',
+    author: 'ApexSalesAI Editorial',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'Discover how AI agents are reshaping go-to-market operations, helping teams do more with less — and scale without headcount.',
+    tags: ['AI Agents', 'Revenue Operations', 'Enterprise Strategy'],
   },
   {
-    title: "Maximizing ROI with Predictive Sales Intelligence",
-    date: "May 10, 2025",
-    author: "Michael Thompson, Chief Revenue Officer",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80", // Analytics
-    excerpt: "Discover how leading enterprises are leveraging predictive analytics to identify high-value opportunities and optimize their sales funnels for maximum ROI.",
-    tags: ["Analytics", "ROI", "Sales Optimization"],
-    slug: "predictive-analytics"
+    slug: 'ai-sales-future',
+    title: 'The Future of Sales: How AI is Reshaping Revenue Operations',
+    date: '2025-05-15',
+    author: 'Dr. Sarah Chen, AI Strategy Director',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'The convergence of AI and sales operations is creating unprecedented opportunities for revenue growth.',
+    tags: ['AI', 'Sales Strategy', 'Revenue Operations'],
   },
   {
-    title: "The Rise of Autonomous Sales Execution",
-    date: "May 5, 2025",
-    author: "Lisa Martinez, AI Product Lead",
-    image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80", // Automation/AI
-    excerpt: "Explore the capabilities of our autonomous sales agents and how they're revolutionizing the way businesses engage with their customers at scale.",
-    tags: ["AI Agents", "Sales Automation", "Customer Engagement"],
-    slug: "autonomous-sales"
+    slug: 'predictive-analytics',
+    title: 'Maximizing ROI with Predictive Sales Intelligence',
+    date: '2025-05-10',
+    author: 'Michael Thompson, Chief Revenue Officer',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'Discover how leading enterprises are leveraging predictive analytics to identify high-value opportunities.',
+    tags: ['Analytics', 'ROI', 'Sales Optimization'],
   },
 ];
 
@@ -101,6 +101,29 @@ function NewsletterSubscribeForm() {
 }
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
+  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultPosts[0]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch actual blog posts from API
+    fetch('/api/blog/posts')
+      .then(res => res.json())
+      .then(data => {
+        if (data.posts && data.posts.length > 0) {
+          setPosts(data.posts);
+          setFeaturedPost(data.posts[0]);
+        }
+      })
+      .catch(err => {
+        console.error('Error loading blog posts:', err);
+        // Keep default posts on error
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const otherPosts = posts.slice(1);
+
   return (
     <>
       <Head>
@@ -164,7 +187,7 @@ export default function BlogPage() {
 
         {/* Blog Grid */}
         <section className="grid md:grid-cols-3 gap-8 mb-16">
-          {blogPosts.map((post, index) => (
+          {otherPosts.map((post, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
