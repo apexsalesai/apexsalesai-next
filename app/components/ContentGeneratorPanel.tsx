@@ -329,16 +329,36 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
           {result.contentType === 'blog' && result.data && (
             <div style={{ fontSize: '13px', color: '#2f855a' }}>
               <div><strong>Title:</strong> {result.data.title}</div>
-              <div><strong>Slug:</strong> {result.data.slug}</div>
-              {result.published && (
+              <div><strong>Excerpt:</strong> {result.data.excerpt}</div>
+              <div><strong>Tags:</strong> {result.data.tags?.join(', ')}</div>
+              
+              {/* Content Preview */}
+              <div style={{ 
+                marginTop: '12px', 
+                padding: '12px', 
+                backgroundColor: '#f7fafc', 
+                borderRadius: '6px',
+                maxHeight: '300px',
+                overflowY: 'auto',
+                fontSize: '12px',
+                color: '#2d3748',
+                whiteSpace: 'pre-wrap'
+              }}>
+                <strong>Content Preview:</strong>
                 <div style={{ marginTop: '8px' }}>
+                  {result.data.content?.substring(0, 500)}...
+                </div>
+              </div>
+
+              {result.published && (
+                <div style={{ marginTop: '12px' }}>
                   <a
                     href={`/blog/${result.data.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#2b6cb0', textDecoration: 'underline' }}
+                    style={{ color: '#2b6cb0', textDecoration: 'underline', fontWeight: 600 }}
                   >
-                    View Published Post →
+                    📖 View Full Published Post →
                   </a>
                 </div>
               )}

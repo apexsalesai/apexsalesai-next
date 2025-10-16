@@ -345,3 +345,19 @@ CRITICAL FIX - Root cause of 500 errors:
 This resolves the 'Failed to generate content' 500 error by ensuring
 Vercel can correctly resolve module imports without path alias issues.
 - ✅ 2025-10-16: debug: add diagnostic endpoint to identify exact OpenAI API error
+- ✅ 2025-10-16: fix: replace local filesystem save with GitHub publishing
+
+CRITICAL FIX - Root cause of 500 error identified:
+- Error: ENOENT read-only file system in Vercel serverless
+- Content generation was WORKING (OpenAI API responding)
+- Failure occurred when trying to save to local filesystem
+- Vercel's serverless environment is read-only
+
+Solution:
+- Replaced fs.writeFile() with GitHub API publishing
+- Updated saveBlogPost() to use publishToGithub service
+- Content now publishes directly to GitHub repository
+- Returns commit URL and file path for verification
+- Fully compatible with Vercel's serverless architecture
+
+This resolves the 25-second timeout and 'Failed to generate content' error.
