@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentGenerator, ContentGenerationRequest } from '@lib/services/agent/contentGenerator';
+import { ContentGenerator, ContentGenerationRequest } from '../../../../lib/services/agent/contentGenerator';
 
 /**
  * API Route: /api/agent/generate-content
@@ -97,14 +97,32 @@ export async function POST(request: NextRequest) {
     }
   } catch (error: any) {
     console.error('Error generating content:', error);
-    return NextResponse.json(
-      { 
-        error: 'Failed to generate content',
-        message: error.message,
-        details: error.toString()
-      },
-      { status: 500 }
-    );
+    
+    // Enhanced error response with specific guidance
+    const errorResponse: any = {
+      error: 'Failed to generate content',
+      message: error.message || 'Unknown error',
+      type: error.type || 'unknown'
+    };
+
+    // Add specific guidance for common errors
+    if (error?.status === 401 || error?.message?.includes('API key')) {
+      errorResponse.suggestion = 'Check that OPENAI_API_KEY is correctly set in Vercel environment variables';
+    } else if (error?.status === 429) {
+      errorResponse.suggestion = 'OpenAI API rate limit exceeded. Check your account quota and billing';
+    } else if (error?.status === 404 || error?.message?.includes('model')) {
+      errorResponse.suggestion = 'The gpt-4o model might not be available. Try upgrading your OpenAI account';
+    } else if (error?.message?.includes('Missing OpenAI API key')) {
+      errorResponse.suggestion = 'OPENAI_API_KEY environment variable is not set in Vercel';
+    }
+
+    // Include details in development
+    if (process.env.NODE_ENV === 'development') {
+      errorResponse.details = error.toString();
+      errorResponse.stack = error.stack;
+    }
+
+    return NextResponse.json(errorResponse, { status: error?.status || 500 });
   }
 }
 

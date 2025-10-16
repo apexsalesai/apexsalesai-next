@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentGenerator, BlogPost } from '@lib/services/agent/contentGenerator';
+import { ContentGenerator, BlogPost } from '../../../../lib/services/agent/contentGenerator';
 
 /**
  * API Route: /api/agent/publish-content
