@@ -332,3 +332,15 @@ This transforms the basic MVP into a premium enterprise agent interface.
 - All logger calls use template literals (correct syntax)
 - Force Vercel to rebuild from scratch
 - Clear any cached build artifacts
+- ✅ 2025-10-16: fix: replace @lib path aliases with relative imports in agent API routes
+
+CRITICAL FIX - Root cause of 500 errors:
+- Changed @lib imports to relative paths in all agent API routes
+- Fixed /api/agent/generate-content (main content generation endpoint)
+- Fixed /api/agent/publish-content (blog publishing endpoint)
+- Fixed /api/agent/schedule (scheduling endpoint)
+- Added enhanced error handling with specific guidance
+- Local build passes with zero errors
+
+This resolves the 'Failed to generate content' 500 error by ensuring
+Vercel can correctly resolve module imports without path alias issues.
