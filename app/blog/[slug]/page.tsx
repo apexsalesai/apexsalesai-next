@@ -5,16 +5,37 @@ import { notFound } from 'next/navigation';
 import Head from 'next/head';
 import React from 'react';
 import Markdown from 'react-markdown';
+import Navbar from '../../components/Navbar';
 
 export async function generateStaticParams() {
-  const postsDir = path.join(process.cwd(), 'app', 'blog');
-  const files = fs.readdirSync(postsDir).filter(file => file.endsWith('.md'));
-  return files.map(filename => ({ slug: filename.replace(/\.md$/, '') }));
+  // Check both locations for blog posts
+  const contentDir = path.join(process.cwd(), 'content', 'blog');
+  const appDir = path.join(process.cwd(), 'app', 'blog');
+  
+  let files: string[] = [];
+  
+  if (fs.existsSync(contentDir)) {
+    files = [...files, ...fs.readdirSync(contentDir).filter(file => file.endsWith('.md'))];
+  }
+  
+  if (fs.existsSync(appDir)) {
+    files = [...files, ...fs.readdirSync(appDir).filter(file => file.endsWith('.md'))];
+  }
+  
+  // Remove duplicates and .md extension
+  const uniqueSlugs = [...new Set(files.map(filename => filename.replace(/\.md$/, '')))];
+  return uniqueSlugs.map(slug => ({ slug }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  const filePath = path.join(process.cwd(), 'app', 'blog', `${slug}.md`);
+  
+  // Try content/blog first, then app/blog
+  const contentPath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`);
+  const appPath = path.join(process.cwd(), 'app', 'blog', `${slug}.md`);
+  
+  const filePath = fs.existsSync(contentPath) ? contentPath : appPath;
+  
   if (!fs.existsSync(filePath)) return {};
   const { data } = matter(fs.readFileSync(filePath, 'utf8'));
   return {
@@ -35,12 +56,18 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function BlogPostPage({ params: { slug } }: { params: { slug: string } }) {
-  const filePath = path.join(process.cwd(), 'app', 'blog', `${slug}.md`);
+  // Try content/blog first, then app/blog
+  const contentPath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`);
+  const appPath = path.join(process.cwd(), 'app', 'blog', `${slug}.md`);
+  
+  const filePath = fs.existsSync(contentPath) ? contentPath : appPath;
+  
   if (!fs.existsSync(filePath)) return notFound();
   const { data, content } = matter(fs.readFileSync(filePath, 'utf8'));
 
   return (
     <>
+      <Navbar />
       <Head>
         <title>{data.title} | ApexSalesAI</title>
         <meta name="description" content={data.excerpt} />
@@ -52,7 +79,7 @@ export default async function BlogPostPage({ params: { slug } }: { params: { slu
         <meta name="twitter:description" content={data.excerpt} />
         {data.image && <meta name="twitter:image" content={data.image} />}
       </Head>
-      <main className="max-w-3xl mx-auto px-4 py-12">
+      <main className="max-w-3xl mx-auto px-4 py-12 mt-16">
   <article>
     {data.image && (
       <img
