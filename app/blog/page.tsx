@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Navbar from '../components/Navbar';
 
 interface BlogPost {
   slug: string;
@@ -143,7 +144,11 @@ export default function BlogPage() {
         <link rel="icon" href="/images/favicon.ico" />
         <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
       </Head>
-<main className="container mx-auto px-4 py-20">
+      
+      {/* Navigation Ribbon */}
+      <Navbar />
+      
+      <main className="container mx-auto px-4 py-20 mt-16">
         <header className="relative text-center text-white py-24 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" className="w-full h-full">
