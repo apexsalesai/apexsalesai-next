@@ -284,37 +284,40 @@ Focus on:
   }
 
   /**
-   * Save blog post to file system
+   * Save blog post to GitHub (Vercel-compatible)
    */
-  static async saveBlogPost(blogPost: BlogPost): Promise<void> {
-    const fs = require('fs').promises;
-    const path = require('path');
-
+  static async saveBlogPost(blogPost: BlogPost): Promise<{ commitUrl: string; filePath: string }> {
     try {
-      const blogDir = path.join(process.cwd(), 'app', 'blog');
-      const filePath = path.join(blogDir, `${blogPost.slug}.md`);
+      // Import GitHub publishing service
+      const { publishMarkdown } = await import('./publishToGithub');
 
-      // Create markdown content with frontmatter
-      const markdown = `---
-title: "${blogPost.title}"
-date: "${blogPost.date}"
-author: "${blogPost.author}"
-excerpt: "${blogPost.excerpt}"
-image: "${blogPost.image}"
-tags: [${blogPost.tags.map(t => `"${t}"`).join(', ')}]
-metaTitle: "${blogPost.seoMetadata?.metaTitle}"
-metaDescription: "${blogPost.seoMetadata?.metaDescription}"
-keywords: [${blogPost.seoMetadata?.keywords.map(k => `"${k}"`).join(', ')}]
----
+      // Publish to GitHub
+      const result = await publishMarkdown({
+        title: blogPost.title,
+        slug: blogPost.slug,
+        frontmatter: {
+          title: blogPost.title,
+          date: blogPost.date,
+          author: blogPost.author,
+          excerpt: blogPost.excerpt,
+          image: blogPost.image || '',
+          tags: blogPost.tags,
+          metaTitle: blogPost.seoMetadata?.metaTitle || blogPost.title,
+          metaDescription: blogPost.seoMetadata?.metaDescription || blogPost.excerpt,
+          keywords: blogPost.seoMetadata?.keywords || []
+        },
+        body: blogPost.content
+      });
 
-${blogPost.content}
-`;
-
-      await fs.writeFile(filePath, markdown, 'utf-8');
-      logger.info(`Blog post saved to file: ${filePath}`);
+      logger.info(`Blog post published to GitHub: ${result.path}`);
+      
+      return {
+        commitUrl: result.url || '',
+        filePath: result.path
+      };
     } catch (error) {
-      logger.error(`Error saving blog post: ${error}`);
-      throw new Error(`Failed to save blog post: ${error}`);
+      logger.error(`Error publishing blog post to GitHub: ${error}`);
+      throw new Error(`Failed to publish blog post: ${error}`);
     }
   }
 }
