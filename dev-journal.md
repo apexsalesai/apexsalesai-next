@@ -388,3 +388,4 @@ IMAGE FIXES:
 
 This resolves the 'small icons' issue and makes the blog page
 production-ready with real AI-generated content.
+- ✅ 2025-10-16: feat: add navigation ribbon to blog + premium feature roadmap
