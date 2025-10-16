@@ -319,3 +319,10 @@ This transforms the basic MVP into a premium enterprise agent interface.
 - Include admin dashboard access URL with token
 - Document expected workflow and outputs
 - Ready for end-to-end testing
+- ✅ 2025-10-15: fix: add comprehensive OpenAI API diagnostics and error handling
+
+- Add /api/test-openai endpoint for API key validation
+- Enhanced error messages with specific guidance
+- Better error handling for 401, 429, and 404 responses
+- Mask API keys in diagnostic output for security
+- Help identify quota, auth, and model access issues
