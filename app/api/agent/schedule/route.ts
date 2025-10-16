@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentScheduler } from '@lib/services/agent/contentScheduler';
+import { ContentScheduler } from '../../../../lib/services/agent/contentScheduler';
 
 /**
  * API Route: /api/agent/schedule
