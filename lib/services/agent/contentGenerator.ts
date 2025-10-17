@@ -284,67 +284,119 @@ Focus on:
   }
 
   /**
-   * Save blog post to GitHub (Vercel-compatible)
+   * Save blog post to database (NEW: Database-driven publishing)
    */
-  static async saveBlogPost(blogPost: BlogPost): Promise<{ commitUrl: string; filePath: string }> {
+  static async saveBlogPost(blogPost: BlogPost): Promise<{ postId: string; slug: string; url: string }> {
     try {
-      // Import GitHub publishing service
-      const { publishMarkdown } = await import('./publishToGithub');
-
-      // Publish to GitHub
-      const result = await publishMarkdown({
-        title: blogPost.title,
-        slug: blogPost.slug,
-        frontmatter: {
+      const startTime = Date.now();
+      
+      // Call the database API to create the post
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+      const protocol = baseUrl.startsWith('localhost') ? 'http://' : 'https://';
+      const fullUrl = baseUrl.startsWith('http') ? baseUrl : `${protocol}${baseUrl}`;
+      
+      const response = await fetch(`${fullUrl}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          slug: blogPost.slug,
           title: blogPost.title,
-          date: blogPost.date,
-          author: blogPost.author,
+          content: blogPost.content,
           excerpt: blogPost.excerpt,
-          image: blogPost.image || '',
+          image: blogPost.image,
+          author: blogPost.author,
           tags: blogPost.tags,
+          keywords: blogPost.seoMetadata?.keywords || [],
           metaTitle: blogPost.seoMetadata?.metaTitle || blogPost.title,
           metaDescription: blogPost.seoMetadata?.metaDescription || blogPost.excerpt,
-          keywords: blogPost.seoMetadata?.keywords || []
-        },
-        body: blogPost.content
+          status: 'DRAFT', // Start as draft
+          generatedBy: 'Max Content Agent',
+          generationModel: 'gpt-4o',
+          generationCost: 0, // TODO: Calculate actual cost
+          generationTokens: 0, // TODO: Track actual tokens
+          generationTime: Date.now() - startTime,
+        })
       });
-
-      logger.info(`Blog post published to GitHub: ${result.path}`);
       
-      // Trigger on-demand revalidation (ISR)
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to save post: ${error.message || response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const post = data.post;
+      
+      logger.info(`✅ Blog post saved to database: ${post.slug} (${data.responseTime}ms)`);
+      
+      // Optionally: Export to GitHub as backup
       try {
-        const revalidationSecret = process.env.REVALIDATION_SECRET || 'default-secret-change-me';
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
-        const protocol = baseUrl.startsWith('localhost') ? 'http://' : 'https://';
-        const fullUrl = baseUrl.startsWith('http') ? baseUrl : `${protocol}${baseUrl}`;
-        
-        const revalidateResponse = await fetch(`${fullUrl}/api/revalidate-blog`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const { publishMarkdown } = await import('./publishToGithub');
+        await publishMarkdown({
+          title: blogPost.title,
+          slug: blogPost.slug,
+          frontmatter: {
+            title: blogPost.title,
+            date: blogPost.date,
+            author: blogPost.author,
+            excerpt: blogPost.excerpt,
+            image: blogPost.image || '',
+            tags: blogPost.tags,
+            metaTitle: blogPost.seoMetadata?.metaTitle || blogPost.title,
+            metaDescription: blogPost.seoMetadata?.metaDescription || blogPost.excerpt,
+            keywords: blogPost.seoMetadata?.keywords || []
           },
-          body: JSON.stringify({
-            slug: blogPost.slug,
-            secret: revalidationSecret
-          })
+          body: blogPost.content
         });
-        
-        if (revalidateResponse.ok) {
-          logger.info(`Blog revalidation triggered for slug: ${blogPost.slug}`);
-        } else {
-          logger.warn(`Blog revalidation failed: ${revalidateResponse.statusText}`);
-        }
-      } catch (revalidationError) {
-        // Non-fatal error - log but don't fail the publish
-        logger.warn(`Could not trigger revalidation: ${revalidationError}`);
+        logger.info(`📦 Blog post backed up to GitHub: ${post.slug}`);
+      } catch (backupError) {
+        // Non-fatal - log but don't fail
+        logger.warn(`⚠️  GitHub backup failed (non-fatal): ${backupError}`);
       }
       
       return {
-        commitUrl: result.url || '',
-        filePath: result.path
+        postId: post.id,
+        slug: post.slug,
+        url: `${fullUrl}/blog/${post.slug}`
       };
     } catch (error) {
-      logger.error(`Error publishing blog post to GitHub: ${error}`);
+      logger.error(`❌ Error saving blog post to database: ${error}`);
+      throw new Error(`Failed to save blog post: ${error}`);
+    }
+  }
+  
+  /**
+   * Publish a draft blog post (make it live)
+   */
+  static async publishBlogPost(slug: string): Promise<{ success: boolean; url: string }> {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+      const protocol = baseUrl.startsWith('localhost') ? 'http://' : 'https://';
+      const fullUrl = baseUrl.startsWith('http') ? baseUrl : `${protocol}${baseUrl}`;
+      
+      const response = await fetch(`${fullUrl}/api/posts/${slug}/publish`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to publish post: ${error.message || response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      logger.info(`🚀 Blog post published: ${slug} (${data.responseTime}ms)`);
+      
+      return {
+        success: true,
+        url: `${fullUrl}/blog/${slug}`
+      };
+    } catch (error) {
+      logger.error(`❌ Error publishing blog post: ${error}`);
       throw new Error(`Failed to publish blog post: ${error}`);
     }
   }
