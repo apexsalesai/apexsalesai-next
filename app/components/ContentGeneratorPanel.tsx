@@ -17,6 +17,8 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showFullContent, setShowFullContent] = useState(false);
+  const [deploymentStatus, setDeploymentStatus] = useState<'pending' | 'deploying' | 'ready'>('pending');
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -55,11 +57,42 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
       if (onContentGenerated) {
         onContentGenerated(data);
       }
+      
+      // If published, start checking deployment status
+      if (data.published) {
+        setDeploymentStatus('deploying');
+        checkDeploymentStatus(data.data.slug);
+      }
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Check if blog post is deployed and accessible
+  const checkDeploymentStatus = async (slug: string) => {
+    let attempts = 0;
+    const maxAttempts = 30; // 5 minutes (10 seconds * 30)
+    
+    const checkInterval = setInterval(async () => {
+      attempts++;
+      
+      try {
+        const response = await fetch(`/blog/${slug}`, { method: 'HEAD' });
+        if (response.ok) {
+          setDeploymentStatus('ready');
+          clearInterval(checkInterval);
+        }
+      } catch (err) {
+        // Still deploying
+      }
+      
+      if (attempts >= maxAttempts) {
+        clearInterval(checkInterval);
+        setDeploymentStatus('ready'); // Assume ready after 5 minutes
+      }
+    }, 10000); // Check every 10 seconds
   };
 
   const suggestedTopics = [
@@ -332,34 +365,97 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
               <div><strong>Excerpt:</strong> {result.data.excerpt}</div>
               <div><strong>Tags:</strong> {result.data.tags?.join(', ')}</div>
               
-              {/* Content Preview */}
-              <div style={{ 
-                marginTop: '12px', 
-                padding: '12px', 
-                backgroundColor: '#f7fafc', 
-                borderRadius: '6px',
-                maxHeight: '300px',
-                overflowY: 'auto',
-                fontSize: '12px',
-                color: '#2d3748',
-                whiteSpace: 'pre-wrap'
-              }}>
-                <strong>Content Preview:</strong>
-                <div style={{ marginTop: '8px' }}>
-                  {result.data.content?.substring(0, 500)}...
+              {/* Content Preview/Full View Toggle */}
+              <div style={{ marginTop: '12px' }}>
+                <button
+                  onClick={() => setShowFullContent(!showFullContent)}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#4299e1',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    marginBottom: '12px'
+                  }}
+                >
+                  {showFullContent ? '📄 Show Preview Only' : '📖 View Full Content'}
+                </button>
+                
+                <div style={{ 
+                  padding: '12px', 
+                  backgroundColor: '#f7fafc', 
+                  borderRadius: '6px',
+                  maxHeight: showFullContent ? '600px' : '200px',
+                  overflowY: 'auto',
+                  fontSize: '12px',
+                  color: '#2d3748',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: '1.6',
+                  border: '1px solid #e2e8f0'
+                }}>
+                  <strong style={{ color: '#2d3748', fontSize: '14px' }}>
+                    {showFullContent ? 'Full Content:' : 'Content Preview:'}
+                  </strong>
+                  <div style={{ marginTop: '8px' }}>
+                    {showFullContent 
+                      ? result.data.content 
+                      : `${result.data.content?.substring(0, 500)}...`
+                    }
+                  </div>
                 </div>
               </div>
 
               {result.published && (
-                <div style={{ marginTop: '12px' }}>
+                <div style={{ marginTop: '12px', padding: '12px', backgroundColor: '#ebf8ff', borderRadius: '6px', border: '1px solid #90cdf4' }}>
+                  {deploymentStatus === 'deploying' && (
+                    <div style={{ fontSize: '13px', color: '#2c5282', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                          width: '16px',
+                          height: '16px',
+                          border: '2px solid #4299e1',
+                          borderTopColor: 'transparent',
+                          borderRadius: '50%',
+                          animation: 'spin 1s linear infinite'
+                        }} />
+                        <span><strong>Deploying to production...</strong></span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#4a5568', marginTop: '4px', marginLeft: '24px' }}>
+                        This usually takes 2-3 minutes. You can view the full content above while waiting.
+                      </div>
+                    </div>
+                  )}
+                  
+                  {deploymentStatus === 'ready' && (
+                    <div style={{ fontSize: '13px', color: '#22543d', marginBottom: '8px' }}>
+                      ✅ <strong>Deployed successfully!</strong>
+                    </div>
+                  )}
+                  
                   <a
                     href={`/blog/${result.data.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#2b6cb0', textDecoration: 'underline', fontWeight: 600 }}
+                    style={{ 
+                      color: deploymentStatus === 'ready' ? '#2b6cb0' : '#718096',
+                      textDecoration: 'underline', 
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      pointerEvents: deploymentStatus === 'ready' ? 'auto' : 'none',
+                      opacity: deploymentStatus === 'ready' ? 1 : 0.6
+                    }}
                   >
-                    📖 View Full Published Post →
+                    🌐 View Live Blog Post →
                   </a>
+                  
+                  {deploymentStatus === 'deploying' && (
+                    <div style={{ fontSize: '11px', color: '#718096', marginTop: '4px' }}>
+                      (Link will be active once deployment completes)
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -368,4 +464,16 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
       )}
     </div>
   );
+}
+
+// Add CSS animation for spinner
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
 }

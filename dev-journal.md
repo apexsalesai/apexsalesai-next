@@ -442,3 +442,33 @@ TESTING:
 - Blog post route generated correctly
 - Navigation renders properly
 - Ready for production deployment
+- ✅ 2025-10-16: fix: restore default blog posts + merge with AI-generated content
+
+CRITICAL FIX:
+- Blog page was showing only 1 post (AI-generated)
+- Previous default posts disappeared
+- Users saw empty/sparse blog page
+
+SOLUTION:
+- Updated getAllBlogPosts() to merge default + dynamic posts
+- Created full markdown files for all 3 default posts:
+  * ai-revenue-teams.md (4,500+ words)
+  * ai-sales-future.md (3,800+ words)
+  * predictive-analytics.md (4,200+ words)
+- Removes duplicates (prefers dynamic over defaults)
+- Sorts by date (newest first)
+
+CONTENT QUALITY:
+- All posts are enterprise-grade, SEO-optimized
+- Include case studies, ROI analysis, implementation guides
+- Proper frontmatter with metadata
+- High-quality images from Unsplash
+
+RESULT:
+- Blog page now shows 4 posts (1 AI + 3 defaults)
+- All posts clickable and viewable
+- Professional, content-rich blog
+- Ready for production demos
+
+This ensures the blog always has quality content, even before
+AI-generated posts are created.
