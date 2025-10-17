@@ -19,48 +19,56 @@ export interface BlogPost {
 const contentDirectory = path.join(process.cwd(), 'content', 'blog');
 
 /**
- * Get all blog posts from content/blog directory
+ * Get all blog posts from content/blog directory + default posts
  */
 export function getAllBlogPosts(): BlogPost[] {
   try {
-    // Check if directory exists
-    if (!fs.existsSync(contentDirectory)) {
-      console.warn('Blog content directory does not exist:', contentDirectory);
-      return [];
+    let dynamicPosts: BlogPost[] = [];
+    
+    // Try to read from content directory
+    if (fs.existsSync(contentDirectory)) {
+      const fileNames = fs.readdirSync(contentDirectory);
+      dynamicPosts = fileNames
+        .filter(fileName => fileName.endsWith('.md'))
+        .map(fileName => {
+          const slug = fileName.replace(/\.md$/, '');
+          const fullPath = path.join(contentDirectory, fileName);
+          const fileContents = fs.readFileSync(fullPath, 'utf8');
+          const { data, content } = matter(fileContents);
+
+          return {
+            slug,
+            title: data.title || 'Untitled',
+            date: data.date || new Date().toISOString().split('T')[0],
+            author: data.author || 'ApexSalesAI Editorial Team',
+            excerpt: data.excerpt || content.substring(0, 200) + '...',
+            image: data.image || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80',
+            tags: data.tags || [],
+            content,
+            metaTitle: data.metaTitle,
+            metaDescription: data.metaDescription,
+            keywords: data.keywords,
+          } as BlogPost;
+        });
     }
 
-    const fileNames = fs.readdirSync(contentDirectory);
-    const posts = fileNames
-      .filter(fileName => fileName.endsWith('.md'))
-      .map(fileName => {
-        const slug = fileName.replace(/\.md$/, '');
-        const fullPath = path.join(contentDirectory, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf8');
-        const { data, content } = matter(fileContents);
+    // Merge with default posts (default posts act as fallback/starter content)
+    const defaultPosts = getDefaultBlogPosts();
+    
+    // Combine and remove duplicates (prefer dynamic posts over defaults)
+    const allPosts = [...dynamicPosts, ...defaultPosts];
+    const uniquePosts = allPosts.filter((post, index, self) => 
+      index === self.findIndex(p => p.slug === post.slug)
+    );
 
-        return {
-          slug,
-          title: data.title || 'Untitled',
-          date: data.date || new Date().toISOString().split('T')[0],
-          author: data.author || 'ApexSalesAI Editorial Team',
-          excerpt: data.excerpt || content.substring(0, 200) + '...',
-          image: data.image || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80',
-          tags: data.tags || [],
-          content,
-          metaTitle: data.metaTitle,
-          metaDescription: data.metaDescription,
-          keywords: data.keywords,
-        } as BlogPost;
-      })
-      .sort((a, b) => {
-        // Sort by date, newest first
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      });
-
-    return posts;
+    // Sort by date, newest first
+    return uniquePosts.sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
   } catch (error) {
     console.error('Error reading blog posts:', error);
-    return [];
+    // Return default posts on error
+    return getDefaultBlogPosts();
   }
 }
 
