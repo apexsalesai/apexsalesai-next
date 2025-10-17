@@ -208,3 +208,164 @@ model SequenceMetrics {
   confidenceScore    Float?
   createdAt          DateTime          @default(now())
 }
+
+// ============================================================================
+// BLOG & CONTENT ENGINE MODELS
+// ============================================================================
+
+enum BlogPostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogPost {
+  id              String         @id @default(cuid())
+  slug            String         @unique
+  
+  // Content
+  title           String
+  content         String         @db.Text
+  excerpt         String         @db.Text
+  image           String?
+  
+  // Governance & Compliance
+  generatedBy     String?        // "Max Content Agent", "Human", "Claude-3"
+  generatedByUserId String?      // User ID who triggered generation
+  approvedBy      String?        // User ID who approved for publishing
+  approvedAt      DateTime?
+  
+  // Audit Trail
+  createdBy       String         // User ID who created
+  createdByEmail  String?
+  lastModifiedBy  String?        // User ID of last editor
+  lastModifiedAt  DateTime?
+  
+  // AI Generation Metadata
+  generationModel String?        // "gpt-4o", "claude-3-opus", etc.
+  generationCost  Decimal?       @db.Decimal(8, 4)
+  generationTokens Int?
+  generationTime  Int?           // milliseconds
+  
+  // Compliance
+  complianceChecked Boolean      @default(false)
+  complianceStatus  String?      // "approved", "flagged", "rejected"
+  complianceNotes   String?      @db.Text
+  
+  // Publishing
+  author          String         @default("ApexSalesAI Editorial Team")
+  authorEmail     String?
+  publishedAt     DateTime?
+  publishedBy     String?        // User ID who published
+  
+  // Status & Workflow
+  status          BlogPostStatus @default(DRAFT)
+  scheduledFor    DateTime?      // For scheduled publishing
+  
+  // SEO Metadata
+  metaTitle       String?
+  metaDescription String?        @db.Text
+  keywords        String[]       @default([])
+  canonicalUrl    String?
+  
+  // Categorization
+  tags            String[]       @default([])
+  category        String?
+  
+  // Syndication
+  syndicatedTo    String[]       @default([]) // ["LinkedIn", "Medium"]
+  syndicationUrls Json?          // { "LinkedIn": "url", "Medium": "url" }
+  
+  // Version Control
+  version         Int            @default(1)
+  previousVersionId String?
+  previousVersion BlogPost?      @relation("BlogPostVersions", fields: [previousVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nextVersions    BlogPost[]     @relation("BlogPostVersions")
+  
+  // Timestamps
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  // Relations
+  engagement      PostEngagement[]
+  events          BlogAnalyticsEvent[]
+  
+  @@index([status, publishedAt])
+  @@index([slug])
+  @@index([generatedBy])
+  @@index([approvedBy])
+  @@index([createdBy])
+  @@index([complianceStatus])
+  @@map("blog_posts")
+}
+
+// Separate engagement table for scalable analytics (time-series data)
+model PostEngagement {
+  id              String   @id @default(cuid())
+  postId          String
+  post            BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // Time-series metrics (daily aggregates)
+  date            DateTime @db.Date
+  
+  // Engagement Metrics
+  views           Int      @default(0)
+  uniqueViews     Int      @default(0)
+  avgTimeOnPage   Int      @default(0) // seconds
+  bounceRate      Decimal  @default(0) @db.Decimal(5, 4)
+  
+  // Social Metrics
+  shares          Int      @default(0)
+  likes           Int      @default(0)
+  comments        Int      @default(0)
+  
+  // Conversion Metrics
+  leadConversions Int      @default(0)
+  demoRequests    Int      @default(0)
+  revenueInfluence Decimal @default(0) @db.Decimal(12, 2)
+  
+  // Traffic Sources
+  organicTraffic  Int      @default(0)
+  socialTraffic   Int      @default(0)
+  directTraffic   Int      @default(0)
+  referralTraffic Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([postId, date])
+  @@index([date])
+  @@map("post_engagement")
+}
+
+// Analytics Event Logging (writes to Application Insights + Dataverse)
+model BlogAnalyticsEvent {
+  id          String   @id @default(cuid())
+  postId      String
+  post        BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // Event Details
+  eventType   String   // "view", "share", "like", "conversion", "demo_request"
+  userId      String?
+  sessionId   String?
+  
+  // Metadata
+  metadata    Json?    // Additional event data
+  
+  // Application Insights Integration
+  appInsightsEventId String? // Reference to App Insights event
+  appInsightsSent    Boolean @default(false)
+  
+  // Dataverse Integration (for agent performance tracking)
+  dataverseRecordId  String?
+  dataverseSynced    Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([postId, eventType])
+  @@index([createdAt])
+  @@index([appInsightsSent])
+  @@index([dataverseSynced])
+  @@map("blog_analytics_events")
+}
