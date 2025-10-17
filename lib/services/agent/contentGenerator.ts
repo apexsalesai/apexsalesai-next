@@ -311,6 +311,34 @@ Focus on:
 
       logger.info(`Blog post published to GitHub: ${result.path}`);
       
+      // Trigger on-demand revalidation (ISR)
+      try {
+        const revalidationSecret = process.env.REVALIDATION_SECRET || 'default-secret-change-me';
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+        const protocol = baseUrl.startsWith('localhost') ? 'http://' : 'https://';
+        const fullUrl = baseUrl.startsWith('http') ? baseUrl : `${protocol}${baseUrl}`;
+        
+        const revalidateResponse = await fetch(`${fullUrl}/api/revalidate-blog`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            slug: blogPost.slug,
+            secret: revalidationSecret
+          })
+        });
+        
+        if (revalidateResponse.ok) {
+          logger.info(`Blog revalidation triggered for slug: ${blogPost.slug}`);
+        } else {
+          logger.warn(`Blog revalidation failed: ${revalidateResponse.statusText}`);
+        }
+      } catch (revalidationError) {
+        // Non-fatal error - log but don't fail the publish
+        logger.warn(`Could not trigger revalidation: ${revalidationError}`);
+      }
+      
       return {
         commitUrl: result.url || '',
         filePath: result.path
