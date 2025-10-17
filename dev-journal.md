@@ -472,3 +472,41 @@ RESULT:
 
 This ensures the blog always has quality content, even before
 AI-generated posts are created.
+- ✅ 2025-10-16: feat: fix 404 errors + add in-dashboard content viewer
+
+CRITICAL UX IMPROVEMENTS:
+1. In-Dashboard Content Viewer
+   - Added 'View Full Content' button
+   - Scrollable preview (600px max height)
+   - Toggle between preview and full content
+   - No need to leave dashboard!
+
+2. Deployment Status Indicator
+   - Shows 'Deploying to production...' with spinner
+   - Checks deployment status every 10 seconds
+   - Shows checkmark when ready
+   - Link disabled until deployment completes
+
+3. Better User Guidance
+   - Clear message about 2-3 minute wait
+   - Suggests viewing content while waiting
+   - Link grayed out until ready
+   - Helpful tooltips
+
+ROOT CAUSE:
+- Content published to GitHub triggers Vercel deployment
+- Deployment takes 2-3 minutes
+- Users clicked link immediately  404 error
+- No feedback about deployment status
+
+SOLUTION:
+- Users can now view full content in dashboard
+- Link only activates when deployment is ready
+- Clear status indicators throughout process
+- Much better UX!
+
+LONG-TERM RECOMMENDATION:
+- See BLOG_PUBLISHING_STRATEGY.md for database-driven approach
+- Would enable instant publishing, editing, analytics
+- Comprehensive comparison of options
+- Implementation roadmap included

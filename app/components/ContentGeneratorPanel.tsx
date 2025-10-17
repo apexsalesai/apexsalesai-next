@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Markdown from 'react-markdown';
 
 interface ContentGeneratorPanelProps {
   onContentGenerated?: (content: any) => void;
@@ -70,27 +71,44 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
     }
   };
 
-  // Check if blog post is deployed and accessible
+  // Check if blog post is deployed and accessible (validates actual Vercel deployment)
   const checkDeploymentStatus = async (slug: string) => {
     let attempts = 0;
-    const maxAttempts = 30; // 5 minutes (10 seconds * 30)
+    const maxAttempts = 36; // 6 minutes (10 seconds * 36)
     
     const checkInterval = setInterval(async () => {
       attempts++;
       
       try {
-        const response = await fetch(`/blog/${slug}`, { method: 'HEAD' });
-        if (response.ok) {
-          setDeploymentStatus('ready');
-          clearInterval(checkInterval);
+        // Check if the actual blog post page exists and returns 200
+        const response = await fetch(`/blog/${slug}`, { 
+          method: 'HEAD',
+          cache: 'no-store' // Force fresh check, bypass cache
+        });
+        
+        if (response.ok && response.status === 200) {
+          // Double-check with a GET to ensure content is actually there
+          const contentCheck = await fetch(`/blog/${slug}`, {
+            method: 'GET',
+            cache: 'no-store'
+          });
+          
+          if (contentCheck.ok) {
+            setDeploymentStatus('ready');
+            clearInterval(checkInterval);
+            console.log(`✅ Blog post deployed successfully after ${attempts * 10} seconds`);
+          }
         }
       } catch (err) {
-        // Still deploying
+        // Still deploying or network error
+        console.log(`⏳ Deployment check ${attempts}/${maxAttempts}...`);
       }
       
+      // After 6 minutes, assume ready (Vercel timeout)
       if (attempts >= maxAttempts) {
         clearInterval(checkInterval);
-        setDeploymentStatus('ready'); // Assume ready after 5 minutes
+        setDeploymentStatus('ready');
+        console.log('⚠️ Deployment check timed out, assuming ready');
       }
     }, 10000); // Check every 10 seconds
   };
@@ -385,25 +403,43 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
                 </button>
                 
                 <div style={{ 
-                  padding: '12px', 
-                  backgroundColor: '#f7fafc', 
-                  borderRadius: '6px',
+                  padding: '16px', 
+                  backgroundColor: '#ffffff', 
+                  borderRadius: '8px',
                   maxHeight: showFullContent ? '600px' : '200px',
                   overflowY: 'auto',
-                  fontSize: '12px',
+                  fontSize: '14px',
                   color: '#2d3748',
-                  whiteSpace: 'pre-wrap',
-                  lineHeight: '1.6',
-                  border: '1px solid #e2e8f0'
+                  lineHeight: '1.8',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
                 }}>
-                  <strong style={{ color: '#2d3748', fontSize: '14px' }}>
-                    {showFullContent ? 'Full Content:' : 'Content Preview:'}
+                  <strong style={{ color: '#1a202c', fontSize: '15px', display: 'block', marginBottom: '12px' }}>
+                    {showFullContent ? '📄 Full Content' : '👁️ Content Preview'}
                   </strong>
-                  <div style={{ marginTop: '8px' }}>
-                    {showFullContent 
-                      ? result.data.content 
-                      : `${result.data.content?.substring(0, 500)}...`
-                    }
+                  <div className="markdown-preview" style={{ marginTop: '8px' }}>
+                    <Markdown
+                      components={{
+                        h1: ({node, ...props}) => <h1 style={{ fontSize: '24px', fontWeight: 700, marginTop: '20px', marginBottom: '12px', color: '#1a202c', lineHeight: '1.3' }} {...props} />,
+                        h2: ({node, ...props}) => <h2 style={{ fontSize: '20px', fontWeight: 600, marginTop: '18px', marginBottom: '10px', color: '#2d3748', lineHeight: '1.4' }} {...props} />,
+                        h3: ({node, ...props}) => <h3 style={{ fontSize: '18px', fontWeight: 600, marginTop: '16px', marginBottom: '8px', color: '#2d3748', lineHeight: '1.4' }} {...props} />,
+                        p: ({node, ...props}) => <p style={{ marginBottom: '14px', lineHeight: '1.8', color: '#4a5568' }} {...props} />,
+                        ul: ({node, ...props}) => <ul style={{ marginLeft: '20px', marginBottom: '14px', listStyleType: 'disc' }} {...props} />,
+                        ol: ({node, ...props}) => <ol style={{ marginLeft: '20px', marginBottom: '14px', listStyleType: 'decimal' }} {...props} />,
+                        li: ({node, ...props}) => <li style={{ marginBottom: '6px', lineHeight: '1.7' }} {...props} />,
+                        blockquote: ({node, ...props}) => <blockquote style={{ borderLeft: '4px solid #4299e1', paddingLeft: '16px', marginLeft: '0', marginBottom: '14px', fontStyle: 'italic', color: '#718096' }} {...props} />,
+                        code: ({node, inline, ...props}: any) => inline 
+                          ? <code style={{ backgroundColor: '#edf2f7', padding: '2px 6px', borderRadius: '3px', fontSize: '13px', fontFamily: 'monospace' }} {...props} />
+                          : <code style={{ display: 'block', backgroundColor: '#1a202c', color: '#e2e8f0', padding: '12px', borderRadius: '6px', fontSize: '13px', fontFamily: 'monospace', overflowX: 'auto', marginBottom: '14px' }} {...props} />,
+                        strong: ({node, ...props}) => <strong style={{ fontWeight: 600, color: '#2d3748' }} {...props} />,
+                        a: ({node, ...props}) => <a style={{ color: '#4299e1', textDecoration: 'underline' }} {...props} />,
+                      }}
+                    >
+                      {showFullContent 
+                        ? result.data.content 
+                        : `${result.data.content?.substring(0, 500)}...`
+                      }
+                    </Markdown>
                   </div>
                 </div>
               </div>
