@@ -22,21 +22,43 @@ export async function generateStaticParams() {
     files = [...files, ...fs.readdirSync(appDir).filter(file => file.endsWith('.md'))];
   }
   
-  // Remove duplicates and .md extension
-  const uniqueSlugs = [...new Set(files.map(filename => filename.replace(/\.md$/, '')))];
+  // Remove duplicates, .md extension, AND date prefix (YYYY-MM-DD-)
+  const uniqueSlugs = [...new Set(files.map(filename => {
+    // Remove .md extension
+    let slug = filename.replace(/\.md$/, '');
+    
+    // Remove date prefix if present (YYYY-MM-DD-)
+    slug = slug.replace(/^\d{4}-\d{2}-\d{2}-/, '');
+    
+    return slug;
+  }))];
+  
   return uniqueSlugs.map(slug => ({ slug }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const { slug } = params;
   
+  // Helper to find file with or without date prefix
+  const findFile = (dir: string): string | null => {
+    if (!fs.existsSync(dir)) return null;
+    
+    const files = fs.readdirSync(dir);
+    const matchingFile = files.find(file => 
+      file.endsWith('.md') && 
+      (file === `${slug}.md` || file.match(new RegExp(`\\d{4}-\\d{2}-\\d{2}-${slug}\\.md`)))
+    );
+    
+    return matchingFile ? path.join(dir, matchingFile) : null;
+  };
+  
   // Try content/blog first, then app/blog
-  const contentPath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`);
-  const appPath = path.join(process.cwd(), 'app', 'blog', `${slug}.md`);
+  const contentDir = path.join(process.cwd(), 'content', 'blog');
+  const appDir = path.join(process.cwd(), 'app', 'blog');
   
-  const filePath = fs.existsSync(contentPath) ? contentPath : appPath;
+  const filePath = findFile(contentDir) || findFile(appDir);
   
-  if (!fs.existsSync(filePath)) return {};
+  if (!filePath || !fs.existsSync(filePath)) return {};
   const { data } = matter(fs.readFileSync(filePath, 'utf8'));
   return {
     title: data.title || 'Blog Article | ApexSalesAI',
@@ -56,13 +78,26 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function BlogPostPage({ params: { slug } }: { params: { slug: string } }) {
+  // Helper to find file with or without date prefix
+  const findFile = (dir: string): string | null => {
+    if (!fs.existsSync(dir)) return null;
+    
+    const files = fs.readdirSync(dir);
+    const matchingFile = files.find(file => 
+      file.endsWith('.md') && 
+      (file === `${slug}.md` || file.match(new RegExp(`\\d{4}-\\d{2}-\\d{2}-${slug}\\.md`)))
+    );
+    
+    return matchingFile ? path.join(dir, matchingFile) : null;
+  };
+  
   // Try content/blog first, then app/blog
-  const contentPath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`);
-  const appPath = path.join(process.cwd(), 'app', 'blog', `${slug}.md`);
+  const contentDir = path.join(process.cwd(), 'content', 'blog');
+  const appDir = path.join(process.cwd(), 'app', 'blog');
   
-  const filePath = fs.existsSync(contentPath) ? contentPath : appPath;
+  const filePath = findFile(contentDir) || findFile(appDir);
   
-  if (!fs.existsSync(filePath)) return notFound();
+  if (!filePath || !fs.existsSync(filePath)) return notFound();
   const { data, content } = matter(fs.readFileSync(filePath, 'utf8'));
 
   return (
