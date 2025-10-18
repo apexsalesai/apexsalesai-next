@@ -4,9 +4,9 @@ import { getSession } from '@auth0/nextjs-auth0';
 
 const prisma = new PrismaClient();
 
-export const runtime = 'edge';
+// Force Node.js runtime (required for Auth0 and Prisma)
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
 /**
  * Helper: Require authentication
  */
