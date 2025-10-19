@@ -873,3 +873,31 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Blog page now fetches from working API endpoint
 - Fixes 404 errors preventing posts from displaying
 - Auto-published posts will now appear on blog page
+- ✅ 2025-10-19: fix: blog detail page now reads from database + default images
+
+CRITICAL FIXES:
+- Blog detail page now checks database first for AI-generated posts
+- Falls back to markdown files for legacy posts
+- Fixes 404 errors when clicking on AI-generated blog posts
+- Added default placeholder image for AI posts
+- Both database and markdown posts now work
+
+WHAT THIS FIXES:
+-  Clicking on AI-generated posts no longer returns 404
+-  Database posts display correctly with full content
+-  Markdown posts still work (backward compatible)
+-  Default image prevents broken image placeholders
+- ✅ 2025-10-19: fix: blog detail page now reads from database + default images
+
+CRITICAL FIXES:
+- Blog detail page now checks database first for AI-generated posts
+- Falls back to markdown files for legacy posts
+- Fixes 404 errors when clicking on AI-generated blog posts
+- Added default placeholder image for AI posts
+- Both database and markdown posts now work
+
+WHAT THIS FIXES:
+-  Clicking on AI-generated posts no longer returns 404
+-  Database posts display correctly with full content
+-  Markdown posts still work (backward compatible)
+-  Default image prevents broken image placeholders
