@@ -781,3 +781,10 @@ Complete overview of Week 1 foundation work including:
 - Deployment checklist
 - Success criteria and business impact
 - Next steps for Week 2-3
+- ✅ 2025-10-18: fix: force Node.js runtime for all API routes to support Auth0 and Prisma
+
+- Explicitly set runtime='nodejs' for all /api/posts routes
+- Fixes Edge runtime compatibility issues with Auth0 nextjs-auth0 library
+- Auth0 requires Node.js http module which is not available in Edge runtime
+- Resolves build error: Module not found: Can't resolve 'http'
+- All API routes now use Node.js runtime for Auth0 and Prisma compatibility
