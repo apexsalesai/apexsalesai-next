@@ -901,3 +901,5 @@ WHAT THIS FIXES:
 -  Database posts display correctly with full content
 -  Markdown posts still work (backward compatible)
 -  Default image prevents broken image placeholders
+- ✅ 2025-10-19: fix: blog detail page reads from database + default images
+- ✅ 2025-10-19: fix: blog detail page reads from database + default images
