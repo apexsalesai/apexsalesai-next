@@ -111,26 +111,31 @@ Please provide a well-structured, engaging piece with:
     let savedPost = null;
     if (autoPublish && contentType === 'blog') {
       try {
-        savedPost = await prisma.blogPost.create({
-          data: {
-            title: topic,
-            content: content,
-            excerpt: content.substring(0, 200) + '...',
-            slug: slug,
-            status: 'PUBLISHED', // Auto-publish means status = PUBLISHED
-            tags: tags,
-            createdBy: 'system-user', // TODO: Replace with actual user ID when Auth0 is re-enabled
-            generatedBy: 'Max Content Agent',
-            generationModel: 'gpt-4o-mini',
-            generationTokens: completion.usage?.total_tokens || 0,
-            generationCost: (completion.usage?.total_tokens || 0) * 0.00001, // Rough estimate
-            publishedAt: new Date(),
-            publishedBy: 'system-user',
-          }
-        });
-        console.log(`✅ Blog post published: ${savedPost.slug}`);
+        // Check if database is available
+        if (!process.env.DATABASE_URL) {
+          console.warn('⚠️ DATABASE_URL not configured, skipping auto-publish to database');
+        } else {
+          savedPost = await prisma.blogPost.create({
+            data: {
+              title: topic,
+              content: content,
+              excerpt: content.substring(0, 200) + '...',
+              slug: slug,
+              status: 'PUBLISHED', // Auto-publish means status = PUBLISHED
+              tags: tags,
+              createdBy: 'system-user', // TODO: Replace with actual user ID when Auth0 is re-enabled
+              generatedBy: 'Max Content Agent',
+              generationModel: 'gpt-4o-mini',
+              generationTokens: completion.usage?.total_tokens || 0,
+              publishedAt: new Date(),
+              publishedBy: 'system-user',
+            }
+          });
+          console.log(`✅ Blog post published to database: ${savedPost.slug}`);
+        }
       } catch (dbError: any) {
-        console.error('Database save error:', dbError);
+        console.error('❌ Database save error:', dbError.message);
+        console.error('Full error:', dbError);
         // Don't fail the whole request if DB save fails
       }
     }

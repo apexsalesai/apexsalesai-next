@@ -837,3 +837,11 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Added type checking to handle both formats
 - Fixes 's.split is not a function' error
 - Tags now properly extracted from array or string
+- ✅ 2025-10-19: feat: implement auto-publish with draft flag (Phase 1)
+
+- Add autoPublish parameter handling
+- Save to BlogPost table with status PUBLISHED/DRAFT
+- Track generation metadata (model, tokens, cost)
+- Return published status in response
+- Supports future editor dashboard (Phase 2)
+- Follows COO's hybrid approach recommendation
