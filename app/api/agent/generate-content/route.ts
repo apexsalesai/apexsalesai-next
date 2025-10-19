@@ -101,6 +101,27 @@ Please provide a well-structured, engaging piece with:
 
     console.log('OpenAI API call successful');
 
+    // Generate a relevant blog image using DALL-E
+    let imageUrl = null;
+    try {
+      console.log('🎨 Generating blog image with DALL-E...');
+      const imagePrompt = `A professional, modern blog header image for an article about ${topic}. Clean, corporate style with technology and AI themes. High quality, 16:9 aspect ratio.`;
+      
+      const imageResponse = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: imagePrompt,
+        n: 1,
+        size: "1792x1024",
+        quality: "standard",
+      });
+
+      imageUrl = imageResponse.data[0]?.url;
+      console.log('✅ Blog image generated successfully');
+    } catch (imageError: any) {
+      console.error('⚠️ Image generation failed:', imageError.message);
+      // Continue without image - will use null
+    }
+
     // Generate slug and tags
     const baseSlug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
@@ -130,7 +151,7 @@ Please provide a well-structured, engaging piece with:
               slug: slug,
               status: 'PUBLISHED', // Auto-publish means status = PUBLISHED
               tags: tags,
-              image: '/images/blog-default.jpg', // Default placeholder image
+              image: imageUrl, // AI-generated image from DALL-E
               createdBy: 'system-user', // TODO: Replace with actual user ID when Auth0 is re-enabled
               generatedBy: 'Max Content Agent',
               generationModel: 'gpt-4o-mini',

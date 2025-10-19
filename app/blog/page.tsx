@@ -166,10 +166,17 @@ export default function BlogPage() {
         <section className="mb-16">
           <div className="bg-[#1a202c] rounded-2xl overflow-hidden shadow-lg relative flex flex-col md:flex-row">
             <span className="absolute top-4 right-4 bg-[#00c2cb] text-[#0d1321] px-4 py-1 rounded-full font-semibold text-xs">Featured</span>
-            <div className="md:w-1/2 w-full h-72 md:h-auto relative">
-              <Image src={featuredPost.image} alt={featuredPost.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" className="object-cover" />
-            </div>
-            <div className="md:w-1/2 w-full p-8 flex flex-col justify-center">
+            {featuredPost.image && (
+              <div className="md:w-1/2 w-full h-72 md:h-auto relative">
+                <Image 
+                  src={featuredPost.image} 
+                  alt={featuredPost.title} 
+                  fill 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" 
+                  className="object-cover" 
+                />
+              </div>
+            )}            <div className="md:w-1/2 w-full p-8 flex flex-col justify-center">
               <span className="text-[#00c2cb] text-sm mb-2">{featuredPost.date}</span>
               <div className="flex flex-wrap gap-2 mb-4">
                 {featuredPost.tags.map((tag, i) => (
@@ -201,16 +208,18 @@ export default function BlogPage() {
               className="bg-[#1a1e29] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col"
             >
               <article>
-                <div className="relative h-48">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                </div>
+                {post.image && (
+                  <div className="relative h-48">
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                      className="object-cover"
+                      priority={index === 0}
+                    />
+                  </div>
+                )}
                 <div className="p-6 flex flex-col flex-1">
                   <span className="text-[#00c2cb] text-xs mb-2">{post.date}</span>
                   <div className="flex flex-wrap gap-2 mb-4">

@@ -19,6 +19,16 @@ const nextConfig = {
         hostname: '**.unsplash.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.openai.com',
+        pathname: '/**',
+      },
     ],
   },
   webpack: (config, { isServer }) => {

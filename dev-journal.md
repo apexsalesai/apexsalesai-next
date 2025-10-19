@@ -903,3 +903,4 @@ WHAT THIS FIXES:
 -  Default image prevents broken image placeholders
 - ✅ 2025-10-19: fix: blog detail page reads from database + default images
 - ✅ 2025-10-19: fix: blog detail page reads from database + default images
+- ✅ 2025-10-19: chore: update dev journal
