@@ -38,9 +38,14 @@ export async function POST(request: NextRequest) {
       topic,
       contentType = 'blog',
       tone = 'professional',
-      keywords = '',
+      keywords: rawKeywords = '',
       length = 'medium'
     } = body;
+
+    // Handle keywords as either string or array
+    const keywords = Array.isArray(rawKeywords) 
+      ? rawKeywords.join(', ') 
+      : rawKeywords;
 
     // Validate required fields
     if (!topic) {
@@ -100,7 +105,9 @@ Please provide a well-structured, engaging piece with:
         title: topic, // Use topic as title for now
         content: content,
         excerpt: content.substring(0, 200) + '...',
-        tags: keywords.split(',').map((k: string) => k.trim()).filter(Boolean),
+        tags: Array.isArray(rawKeywords) 
+          ? rawKeywords 
+          : keywords.split(',').map((k: string) => k.trim()).filter(Boolean),
         slug: topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
       },
       model: 'gpt-4o-mini',

@@ -825,3 +825,9 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Better error handling and logging
 - Explicit API key validation
 - Fixes 500 error by avoiding module-level initialization issues
+- ✅ 2025-10-19: fix: format API response to match frontend expectations
+
+- Add data object with title, content, excerpt, tags, slug
+- Frontend expects result.data.content not result.content
+- Fixes content display issue in UI
+- Content now shows in preview/full view toggle
