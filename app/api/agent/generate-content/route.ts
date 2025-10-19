@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentGenerator, ContentGenerationRequest } from '../../../../lib/services/agent/contentGenerator';
+import OpenAI from 'openai';
 
 // Force Node.js runtime (required for OpenAI SDK)
 export const runtime = 'nodejs';
@@ -14,119 +14,101 @@ export const dynamic = 'force-dynamic';
  *   "topic": "How AI Agents Transform Revenue Operations",
  *   "contentType": "blog",
  *   "tone": "professional",
- *   "targetAudience": "C-level executives",
- *   "keywords": ["AI", "revenue operations", "automation"],
- *   "length": "medium",
- *   "vertical": "SaaS",
- *   "autoPublish": true
+ *   "keywords": "AI, revenue operations, automation",
+ *   "length": "medium"
  * }
  */
 export async function POST(request: NextRequest) {
   try {
+    // Check for API key first
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'OpenAI API key is not configured',
+          suggestion: 'Please set OPENAI_API_KEY in Vercel environment variables'
+        },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     
     const {
       topic,
       contentType = 'blog',
       tone = 'professional',
-      targetAudience,
-      keywords,
-      length = 'medium',
-      vertical,
-      autoPublish = false
+      keywords = '',
+      length = 'medium'
     } = body;
 
     // Validate required fields
     if (!topic) {
       return NextResponse.json(
-        { error: 'Topic is required' },
+        { success: false, error: 'Topic is required' },
         { status: 400 }
       );
     }
 
-    const contentRequest: ContentGenerationRequest = {
-      topic,
-      contentType,
-      tone,
-      targetAudience,
-      keywords,
-      length,
-      vertical
-    };
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
-    let result;
+    // Build prompt
+    const prompt = `Write a ${tone} ${contentType} about "${topic}". 
+    
+Keywords to include: ${keywords || 'AI, sales, automation'}
+Target length: ${length} (${length === 'short' ? '500-800' : length === 'medium' ? '1000-1500' : '2000-3000'} words)
 
-    switch (contentType) {
-      case 'blog':
-        result = await ContentGenerator.generateBlogPost(contentRequest);
-        
-        // Auto-publish if requested
-        if (autoPublish) {
-          await ContentGenerator.saveBlogPost(result);
+Please provide a well-structured, engaging piece with:
+- A compelling title
+- Clear introduction
+- Well-organized body sections
+- Strong conclusion
+- SEO-friendly content`;
+
+    console.log('Calling OpenAI API with model: gpt-4o-mini');
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert content writer for ApexSalesAI, a premium enterprise AI sales platform. Create professional, engaging, and SEO-optimized content.'
+        },
+        {
+          role: 'user',
+          content: prompt
         }
-        
-        return NextResponse.json({
-          success: true,
-          contentType: 'blog',
-          data: result,
-          published: autoPublish,
-          message: autoPublish 
-            ? `Blog post "${result.title}" generated and published successfully!`
-            : `Blog post "${result.title}" generated. Use /api/agent/publish-content to publish.`
-        });
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
+    });
 
-      case 'social':
-        result = await ContentGenerator.generateSocialContent(contentRequest);
-        return NextResponse.json({
-          success: true,
-          contentType: 'social',
-          data: result,
-          message: 'Social media content generated successfully!'
-        });
+    const content = completion.choices[0]?.message?.content || '';
 
-      case 'email':
-        result = await ContentGenerator.generateEmailContent(contentRequest);
-        return NextResponse.json({
-          success: true,
-          contentType: 'email',
-          data: result,
-          message: 'Email content generated successfully!'
-        });
+    console.log('OpenAI API call successful');
 
-      default:
-        return NextResponse.json(
-          { error: `Unsupported content type: ${contentType}` },
-          { status: 400 }
-        );
-    }
+    return NextResponse.json({
+      success: true,
+      content,
+      model: 'gpt-4o-mini',
+      usage: completion.usage
+    });
+
   } catch (error: any) {
     console.error('Error generating content:', error);
     
-    // Enhanced error response with specific guidance
-    const errorResponse: any = {
-      error: 'Failed to generate content',
-      message: error.message || 'Unknown error',
-      type: error.type || 'unknown'
-    };
-
-    // Add specific guidance for common errors
-    if (error?.status === 401 || error?.message?.includes('API key')) {
-      errorResponse.suggestion = 'Check that OPENAI_API_KEY is correctly set in Vercel environment variables';
-    } else if (error?.status === 429) {
-      errorResponse.suggestion = 'OpenAI API rate limit exceeded. Check your account quota and billing';
-    } else if (error?.status === 404 || error?.message?.includes('model')) {
-      errorResponse.suggestion = 'The gpt-4o model might not be available. Try upgrading your OpenAI account';
-    } else if (error?.message?.includes('Missing OpenAI API key')) {
-      errorResponse.suggestion = 'OPENAI_API_KEY environment variable is not set in Vercel';
-    }
-
-    // Include details in development
-    if (process.env.NODE_ENV === 'development') {
-      errorResponse.details = error.toString();
-      errorResponse.stack = error.stack;
-    }
-
-    return NextResponse.json(errorResponse, { status: error?.status || 500 });
+    return NextResponse.json(
+      { 
+        success: false,
+        error: error.message || 'Failed to generate content',
+        details: error.toString()
+      },
+      { status: 500 }
+    );
   }
 }
 
