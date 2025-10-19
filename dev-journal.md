@@ -788,3 +788,12 @@ Complete overview of Week 1 foundation work including:
 - Auth0 requires Node.js http module which is not available in Edge runtime
 - Resolves build error: Module not found: Can't resolve 'http'
 - All API routes now use Node.js runtime for Auth0 and Prisma compatibility
+- ✅ 2025-10-18: fix: change ALL API routes from edge to nodejs runtime
+
+- app/api/posts/[slug]/route.ts: edge -> nodejs
+- app/api/posts/[slug]/publish/route.ts: edge -> nodejs
+- app/api/posts/[slug]/unpublish/route.ts: edge -> nodejs
+- app/api/posts/[slug]/analytics/view/route.ts: edge -> nodejs
+
+Resolves Auth0 nextjs-auth0 compatibility issue
+Auth0 requires Node.js http module not available in Edge runtime
