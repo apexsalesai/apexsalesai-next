@@ -845,3 +845,10 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Return published status in response
 - Supports future editor dashboard (Phase 2)
 - Follows COO's hybrid approach recommendation
+- ✅ 2025-10-19: fix: improve database error handling and logging
+
+- Add DATABASE_URL check before attempting save
+- Better error logging with full error details
+- Remove generationCost field (causing Decimal type issues)
+- Don't fail request if database save fails
+- Graceful degradation for demo purposes

@@ -102,7 +102,9 @@ Please provide a well-structured, engaging piece with:
     console.log('OpenAI API call successful');
 
     // Generate slug and tags
-    const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const baseSlug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+    const slug = `${baseSlug}-${timestamp}`; // Ensure uniqueness
     const tags = Array.isArray(rawKeywords) 
       ? rawKeywords 
       : keywords.split(',').map((k: string) => k.trim()).filter(Boolean);
@@ -110,11 +112,16 @@ Please provide a well-structured, engaging piece with:
     // Save to database if autoPublish is enabled
     let savedPost = null;
     if (autoPublish && contentType === 'blog') {
+      console.log('🔄 Attempting to save to database...');
+      console.log('Database URL configured:', !!process.env.DATABASE_URL);
+      
       try {
         // Check if database is available
         if (!process.env.DATABASE_URL) {
           console.warn('⚠️ DATABASE_URL not configured, skipping auto-publish to database');
         } else {
+          console.log('📝 Creating blog post with slug:', slug);
+          
           savedPost = await prisma.blogPost.create({
             data: {
               title: topic,
@@ -131,13 +138,20 @@ Please provide a well-structured, engaging piece with:
               publishedBy: 'system-user',
             }
           });
-          console.log(`✅ Blog post published to database: ${savedPost.slug}`);
+          console.log(`✅ Blog post published to database successfully!`);
+          console.log(`   - ID: ${savedPost.id}`);
+          console.log(`   - Slug: ${savedPost.slug}`);
+          console.log(`   - Status: ${savedPost.status}`);
         }
       } catch (dbError: any) {
         console.error('❌ Database save error:', dbError.message);
-        console.error('Full error:', dbError);
+        console.error('Error code:', dbError.code);
+        console.error('Error meta:', dbError.meta);
+        console.error('Full error:', JSON.stringify(dbError, null, 2));
         // Don't fail the whole request if DB save fails
       }
+    } else {
+      console.log('ℹ️ Auto-publish disabled or not a blog post, skipping database save');
     }
 
     // Format response to match frontend expectations
