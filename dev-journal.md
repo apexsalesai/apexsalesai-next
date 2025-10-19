@@ -818,3 +818,10 @@ Auth0 requires Node.js http module not available in Edge runtime
 - gpt-4o-mini is available on all tiers and more cost-effective
 - Fixes 500 error in /api/agent/generate-content
 - Applied to all three content generation methods (blog, social, email)
+- ✅ 2025-10-19: fix: simplify content generation API to bypass service layer
+
+- Remove dependency on ContentGenerator service
+- Direct OpenAI API call with gpt-4o-mini model
+- Better error handling and logging
+- Explicit API key validation
+- Fixes 500 error by avoiding module-level initialization issues

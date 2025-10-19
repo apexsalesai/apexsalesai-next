@@ -91,9 +91,18 @@ Please provide a well-structured, engaging piece with:
 
     console.log('OpenAI API call successful');
 
+    // Format response to match frontend expectations
     return NextResponse.json({
       success: true,
-      content,
+      contentType: 'blog',
+      message: 'Content generated successfully!',
+      data: {
+        title: topic, // Use topic as title for now
+        content: content,
+        excerpt: content.substring(0, 200) + '...',
+        tags: keywords.split(',').map((k: string) => k.trim()).filter(Boolean),
+        slug: topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+      },
       model: 'gpt-4o-mini',
       usage: completion.usage
     });
