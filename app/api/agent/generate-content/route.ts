@@ -115,7 +115,7 @@ Please provide a well-structured, engaging piece with:
         quality: "standard",
       });
 
-      imageUrl = imageResponse.data[0]?.url;
+      imageUrl = imageResponse.data?.[0]?.url || null;
       console.log('✅ Blog image generated successfully');
     } catch (imageError: any) {
       console.error('⚠️ Image generation failed:', imageError.message);
