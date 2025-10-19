@@ -852,3 +852,10 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Remove generationCost field (causing Decimal type issues)
 - Don't fail request if database save fails
 - Graceful degradation for demo purposes
+- ✅ 2025-10-19: fix: add timestamp to slug for uniqueness + detailed logging
+
+- Add timestamp suffix to slug to prevent collisions
+- Extensive console logging for debugging database saves
+- Log DATABASE_URL configuration status
+- Log full error details including code and meta
+- Will help diagnose why posts aren't appearing on blog page

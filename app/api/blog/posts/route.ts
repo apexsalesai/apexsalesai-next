@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// Initialize Prisma client
+let prisma: PrismaClient;
+
+try {
+  prisma = new PrismaClient();
+} catch (error) {
+  console.error('Failed to initialize Prisma client:', error);
+  prisma = new PrismaClient(); // Retry
+}
 
 // Force Node.js runtime (required for Prisma)
 export const runtime = 'nodejs';
@@ -12,7 +20,11 @@ export const dynamic = 'force-dynamic';
  * Returns all published blog posts from database
  */
 export async function GET() {
+  console.log('📡 GET /api/blog/posts called');
+  
   try {
+    console.log('🔍 Fetching published blog posts from database...');
+    
     const posts = await prisma.blogPost.findMany({
       where: {
         status: 'PUBLISHED',
@@ -31,17 +43,21 @@ export async function GET() {
       },
     });
 
+    console.log(`✅ Found ${posts.length} published posts`);
+    
+    const formattedPosts = posts.map((post: any) => ({
+      slug: post.slug,
+      title: post.title,
+      date: post.publishedAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+      author: post.author,
+      excerpt: post.excerpt,
+      image: post.image,
+      tags: post.tags,
+    }));
+    
     return NextResponse.json({
       success: true,
-      posts: posts.map(post => ({
-        slug: post.slug,
-        title: post.title,
-        date: post.publishedAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
-        author: post.author,
-        excerpt: post.excerpt,
-        image: post.image,
-        tags: post.tags,
-      })),
+      posts: formattedPosts,
       count: posts.length,
     });
   } catch (error: any) {
