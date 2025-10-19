@@ -129,12 +129,12 @@ export default async function BlogPostPage({ params: { slug } }: { params: { slu
               <div className="text-base text-gray-400 mb-8 font-medium">
                 {data.author} <span className="mx-2">|</span> {data.date}
               </div>
-              <div className="prose prose-invert prose-lg max-w-none mb-4">
+              <div className="prose prose-invert prose-base max-w-none mb-4">
                 <Markdown
                   components={{
                     h2: ({node, ...props}) => <h2 className="mt-10 mb-4 text-2xl font-bold text-[#00c2cb]" {...props} />,
                     h3: ({node, ...props}) => <h3 className="mt-8 mb-3 text-xl font-semibold text-[#00c2cb]" {...props} />,
-                    p: ({node, ...props}) => <p className="mb-5 leading-relaxed text-gray-200" {...props} />,
+                    p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-gray-200 text-base" {...props} />,
                     ul: ({node, ...props}) => <ul className="list-disc ml-6 mb-5" {...props} />,
                     ol: ({node, ...props}) => <ol className="list-decimal ml-6 mb-5" {...props} />,
                     li: ({node, ...props}) => <li className="mb-2" {...props} />,

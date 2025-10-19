@@ -165,9 +165,9 @@ export default function BlogPage() {
         {/* Featured Post */}
         <section className="mb-16">
           <div className="bg-[#1a202c] rounded-2xl overflow-hidden shadow-lg relative flex flex-col md:flex-row">
-            <span className="absolute top-4 right-4 bg-[#00c2cb] text-[#0d1321] px-4 py-1 rounded-full font-semibold text-xs">Featured</span>
+            <span className="absolute top-4 right-4 bg-[#00c2cb] text-[#0d1321] px-4 py-1 rounded-full font-semibold text-xs z-10">Featured</span>
             {featuredPost.image && (
-              <div className="md:w-1/2 w-full h-72 md:h-auto relative">
+              <div className="md:w-1/2 w-full h-72 md:h-auto relative flex-shrink-0">
                 <Image 
                   src={featuredPost.image} 
                   alt={featuredPost.title} 
@@ -176,7 +176,8 @@ export default function BlogPage() {
                   className="object-cover" 
                 />
               </div>
-            )}            <div className="md:w-1/2 w-full p-8 flex flex-col justify-center">
+            )}
+            <div className={`${featuredPost.image ? 'md:w-1/2' : 'w-full'} p-8 flex flex-col justify-center`}>
               <span className="text-[#00c2cb] text-sm mb-2">{featuredPost.date}</span>
               <div className="flex flex-wrap gap-2 mb-4">
                 {featuredPost.tags.map((tag, i) => (
