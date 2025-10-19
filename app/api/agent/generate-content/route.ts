@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ContentGenerator, ContentGenerationRequest } from '../../../../lib/services/agent/contentGenerator';
 
+// Force Node.js runtime (required for OpenAI SDK)
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /**
  * API Route: /api/agent/generate-content
  * Purpose: Generate marketing content using AI agent

@@ -12,13 +12,10 @@ const openaiKey =
   process.env.AZURE_OPENAI_API_KEY || 
   process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
-if (!openaiKey) {
-  throw new Error('Missing OpenAI API key in environment variables. Please set OPENAI_API_KEY or AZURE_OPENAI_API_KEY.');
-}
-
-const openai = new OpenAI({
+// Initialize OpenAI client (will be checked at runtime)
+const openai = openaiKey ? new OpenAI({
   apiKey: openaiKey,
-});
+}) : null;
 
 export interface ContentGenerationRequest {
   topic: string;
@@ -52,6 +49,11 @@ export class ContentGenerator {
    */
   static async generateBlogPost(request: ContentGenerationRequest): Promise<BlogPost> {
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
       logger.info(`Generating blog post: ${request.topic} (${request.vertical || 'general'})`);
 
       const prompt = this.buildBlogPrompt(request);
@@ -130,6 +132,11 @@ Format your response as JSON with these fields:
     facebook: string;
   }> {
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
       const prompt = `Create engaging social media posts about: ${request.topic}
       
 Target audience: ${request.targetAudience || 'Revenue leaders and sales professionals'}
@@ -176,6 +183,11 @@ Create posts for LinkedIn, Twitter, and Facebook that:
     cta: string;
   }> {
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
       const prompt = `Create a compelling marketing email about: ${request.topic}
       
 Target audience: ${request.targetAudience || 'Revenue leaders'}
