@@ -804,3 +804,11 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Auth0 integration will be properly implemented after initial deployment
 - All API routes now use placeholder authentication
 - Allows build to complete successfully
+- ✅ 2025-10-19: fix: add runtime checks and force nodejs runtime for AI content generation
+
+- Add runtime='nodejs' to /api/agent/generate-content route
+- Add runtime checks for OpenAI client initialization
+- Prevent module-level errors when API key is missing
+- Update /api/blog/posts to use database instead of filesystem
+- Graceful error handling with helpful messages
+- Fixes 500 error on content generation endpoint

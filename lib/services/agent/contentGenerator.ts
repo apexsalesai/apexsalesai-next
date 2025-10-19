@@ -59,7 +59,7 @@ export class ContentGenerator {
       const prompt = this.buildBlogPrompt(request);
       
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -150,7 +150,7 @@ Create posts for LinkedIn, Twitter, and Facebook that:
 - Are optimized for each platform's best practices`;
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -201,7 +201,7 @@ Include:
 - Clear call-to-action`;
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
