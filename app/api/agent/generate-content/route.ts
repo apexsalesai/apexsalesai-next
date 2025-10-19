@@ -130,6 +130,7 @@ Please provide a well-structured, engaging piece with:
               slug: slug,
               status: 'PUBLISHED', // Auto-publish means status = PUBLISHED
               tags: tags,
+              image: '/images/blog-default.jpg', // Default placeholder image
               createdBy: 'system-user', // TODO: Replace with actual user ID when Auth0 is re-enabled
               generatedBy: 'Max Content Agent',
               generationModel: 'gpt-4o-mini',

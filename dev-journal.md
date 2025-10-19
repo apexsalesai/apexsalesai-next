@@ -866,3 +866,10 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Log number of posts found
 - Fix TypeScript any type issues
 - Should help diagnose why route returns 404 in production
+- ✅ 2025-10-19: fix: use correct API endpoint for blog posts
+
+- Changed /api/blog/posts to /api/posts?status=PUBLISHED
+- Removed duplicate non-building route /api/blog/posts
+- Blog page now fetches from working API endpoint
+- Fixes 404 errors preventing posts from displaying
+- Auto-published posts will now appear on blog page
