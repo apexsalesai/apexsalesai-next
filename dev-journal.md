@@ -859,3 +859,10 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Log DATABASE_URL configuration status
 - Log full error details including code and meta
 - Will help diagnose why posts aren't appearing on blog page
+- ✅ 2025-10-19: fix: add logging and error handling to blog posts API
+
+- Add console logging for debugging 404 errors
+- Better Prisma client initialization with error handling
+- Log number of posts found
+- Fix TypeScript any type issues
+- Should help diagnose why route returns 404 in production

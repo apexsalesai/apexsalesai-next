@@ -108,7 +108,7 @@ export default function BlogPage() {
 
   useEffect(() => {
     // Fetch actual blog posts from API
-    fetch('/api/blog/posts')
+    fetch('/api/posts?status=PUBLISHED')
       .then(res => res.json())
       .then(data => {
         if (data.posts && data.posts.length > 0) {
