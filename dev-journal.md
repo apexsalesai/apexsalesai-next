@@ -831,3 +831,9 @@ Auth0 requires Node.js http module not available in Edge runtime
 - Frontend expects result.data.content not result.content
 - Fixes content display issue in UI
 - Content now shows in preview/full view toggle
+- ✅ 2025-10-19: fix: handle keywords as array from frontend
+
+- Frontend sends keywords as array, not string
+- Added type checking to handle both formats
+- Fixes 's.split is not a function' error
+- Tags now properly extracted from array or string

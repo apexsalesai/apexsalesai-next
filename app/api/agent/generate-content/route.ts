@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // Force Node.js runtime (required for OpenAI SDK)
 export const runtime = 'nodejs';
@@ -39,7 +42,9 @@ export async function POST(request: NextRequest) {
       contentType = 'blog',
       tone = 'professional',
       keywords: rawKeywords = '',
-      length = 'medium'
+      length = 'medium',
+      autoPublish = false,
+      vertical = ''
     } = body;
 
     // Handle keywords as either string or array
@@ -96,19 +101,55 @@ Please provide a well-structured, engaging piece with:
 
     console.log('OpenAI API call successful');
 
+    // Generate slug and tags
+    const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const tags = Array.isArray(rawKeywords) 
+      ? rawKeywords 
+      : keywords.split(',').map((k: string) => k.trim()).filter(Boolean);
+
+    // Save to database if autoPublish is enabled
+    let savedPost = null;
+    if (autoPublish && contentType === 'blog') {
+      try {
+        savedPost = await prisma.blogPost.create({
+          data: {
+            title: topic,
+            content: content,
+            excerpt: content.substring(0, 200) + '...',
+            slug: slug,
+            status: 'PUBLISHED', // Auto-publish means status = PUBLISHED
+            tags: tags,
+            createdBy: 'system-user', // TODO: Replace with actual user ID when Auth0 is re-enabled
+            generatedBy: 'Max Content Agent',
+            generationModel: 'gpt-4o-mini',
+            generationTokens: completion.usage?.total_tokens || 0,
+            generationCost: (completion.usage?.total_tokens || 0) * 0.00001, // Rough estimate
+            publishedAt: new Date(),
+            publishedBy: 'system-user',
+          }
+        });
+        console.log(`✅ Blog post published: ${savedPost.slug}`);
+      } catch (dbError: any) {
+        console.error('Database save error:', dbError);
+        // Don't fail the whole request if DB save fails
+      }
+    }
+
     // Format response to match frontend expectations
     return NextResponse.json({
       success: true,
       contentType: 'blog',
-      message: 'Content generated successfully!',
+      message: autoPublish 
+        ? `Blog post "${topic}" generated and published successfully!`
+        : `Blog post "${topic}" generated successfully!`,
+      published: autoPublish && savedPost !== null,
       data: {
-        title: topic, // Use topic as title for now
+        title: topic,
         content: content,
         excerpt: content.substring(0, 200) + '...',
-        tags: Array.isArray(rawKeywords) 
-          ? rawKeywords 
-          : keywords.split(',').map((k: string) => k.trim()).filter(Boolean),
-        slug: topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        tags: tags,
+        slug: slug,
+        id: savedPost?.id,
       },
       model: 'gpt-4o-mini',
       usage: completion.usage
