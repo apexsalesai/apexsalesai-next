@@ -32,15 +32,15 @@ export async function POST(request: NextRequest) {
         messages: [
           {
             role: 'system',
-            content: 'You are Max, ApexSalesAI\'s expert content creator. Create engaging, professional social media content optimized for each platform.'
+            content: 'You are Max, ApexSalesAI\'s expert social media content creator. You create SHORT social media posts, NOT blog articles. Always respect character limits: Twitter 280 chars per tweet, LinkedIn 1200-1500 chars, Facebook 400-600 chars, Instagram 150-300 chars + hashtags. Never write full articles or blog posts.'
           },
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.8,
-        max_tokens: 500,
+        temperature: 0.7,
+        max_tokens: 600,
       });
 
       socialPosts[platform] = {
@@ -73,50 +73,54 @@ function getPlatformPrompt(platform: string, topic: string, tone?: string): stri
   const toneGuide = tone || 'professional yet approachable';
   
   const prompts: Record<string, string> = {
-    LinkedIn: `Create a LinkedIn post about "${topic}". 
-    
-Requirements:
+    LinkedIn: `Write ONLY a LinkedIn post (NOT a blog article) about "${topic}". 
+
+CRITICAL REQUIREMENTS:
+- This must be a SHORT social media post, NOT a blog article
+- Maximum 1200-1500 characters total
 - Professional ${toneGuide} tone
-- 1200-1500 characters (optimal LinkedIn length)
-- Start with a hook that grabs attention
-- Include 2-3 key insights or statistics
-- End with a thought-provoking question or CTA
-- Add 3-5 relevant hashtags
-- Format with line breaks for readability
-- Focus on business value and ROI`,
+- Start with a hook (1-2 sentences)
+- Include 2-3 key insights
+- End with a question or CTA
+- Add 3-5 hashtags at the end
+- Use line breaks for readability
+- NO title, NO article format, ONLY the post content`,
 
-    Twitter: `Create a Twitter/X thread about "${topic}".
+    Twitter: `Write ONLY a Twitter/X thread (NOT a blog article) about "${topic}".
 
-Requirements:
+CRITICAL REQUIREMENTS:
+- This must be SHORT tweets, NOT a blog article
+- Create exactly 3-5 tweets
+- Each tweet MUST be under 280 characters
+- Number each tweet (1/, 2/, 3/, etc.)
 - ${toneGuide} tone
-- 3-5 tweets in a thread
-- Each tweet under 280 characters
-- Start with an attention-grabbing first tweet
-- Include actionable insights
-- Use emojis strategically (1-2 per tweet)
-- Add 2-3 relevant hashtags in the last tweet
-- Make it shareable and engaging`,
+- Use emojis (1-2 per tweet)
+- Add hashtags only in the last tweet
+- Make it punchy and shareable
+- NO article content, ONLY tweets`,
 
-    Facebook: `Create a Facebook post about "${topic}".
+    Facebook: `Write ONLY a Facebook post (NOT a blog article) about "${topic}".
 
-Requirements:
+CRITICAL REQUIREMENTS:
+- This must be a SHORT social post, NOT a blog article
+- Maximum 400-600 characters total
 - Conversational ${toneGuide} tone
-- 400-600 characters
-- Start with an engaging question or statement
-- Include a clear value proposition
-- Add a call-to-action
-- Use 2-3 relevant hashtags
-- Make it relatable and shareable`,
+- Start with an engaging question
+- Include clear value
+- Add a CTA
+- Use 2-3 hashtags
+- NO article format, ONLY the post`,
 
-    Instagram: `Create an Instagram caption about "${topic}".
+    Instagram: `Write ONLY an Instagram caption (NOT a blog article) about "${topic}".
 
-Requirements:
+CRITICAL REQUIREMENTS:
+- This must be a SHORT caption, NOT a blog article
+- Maximum 150-300 characters for main text
 - ${toneGuide} yet visual tone
-- 150-300 characters for the main caption
-- Include a compelling hook in the first line
-- Add relevant emojis
-- Include 10-15 strategic hashtags at the end
-- Encourage engagement with a question or CTA`
+- Include emojis (3-5)
+- Add 10-15 hashtags at the end
+- End with engagement question
+- NO article format, ONLY the caption`
   };
 
   return prompts[platform] || prompts.LinkedIn;

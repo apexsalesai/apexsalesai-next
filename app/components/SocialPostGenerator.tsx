@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Loader2, Copy, Check } from 'lucide-react';
+import { X, Loader2, Copy, Check, Linkedin } from 'lucide-react';
 
 interface SocialPostGeneratorProps {
   isOpen: boolean;
@@ -52,6 +52,14 @@ export function SocialPostGenerator({ isOpen, onClose }: SocialPostGeneratorProp
     navigator.clipboard.writeText(content);
     setCopiedPlatform(platform);
     setTimeout(() => setCopiedPlatform(null), 2000);
+  };
+
+  const shareToLinkedIn = (content: string) => {
+    // Copy to clipboard first
+    navigator.clipboard.writeText(content);
+    // Open LinkedIn share page
+    window.open('https://www.linkedin.com/feed/', '_blank');
+    alert('Content copied! Paste it into your LinkedIn post.');
   };
 
   const togglePlatform = (platform: string) => {
@@ -155,22 +163,33 @@ export function SocialPostGenerator({ isOpen, onClose }: SocialPostGeneratorProp
                         {data.characterCount} characters
                       </span>
                     </div>
-                    <button
-                      onClick={() => copyToClipboard(platform, data.content)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm text-gray-300"
-                    >
-                      {copiedPlatform === platform ? (
-                        <>
-                          <Check className="w-4 h-4 text-green-400" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copy
-                        </>
+                    <div className="flex gap-2">
+                      {platform === 'LinkedIn' && (
+                        <button
+                          onClick={() => shareToLinkedIn(data.content)}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-[#0077b5] hover:bg-[#006399] rounded-lg transition-colors text-sm text-white"
+                        >
+                          <Linkedin className="w-4 h-4" />
+                          Share
+                        </button>
                       )}
-                    </button>
+                      <button
+                        onClick={() => copyToClipboard(platform, data.content)}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm text-gray-300"
+                      >
+                        {copiedPlatform === platform ? (
+                          <>
+                            <Check className="w-4 h-4 text-green-400" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            Copy
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <div className="bg-[#1a202c] rounded-lg p-4 text-gray-300 whitespace-pre-wrap text-sm leading-relaxed">
                     {data.content}
