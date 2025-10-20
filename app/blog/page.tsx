@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { NewsletterSubscribe } from '../components/NewsletterSubscribe';
 import Navbar from '../components/Navbar';
 
 interface BlogPost {
@@ -103,8 +104,14 @@ function NewsletterSubscribeForm() {
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
-  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultPosts[0]);
+  const [selectedTag, setSelectedTag] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultPosts[0]);
+  
+  // Filter posts based on selected tag
+  const filteredPosts = selectedTag === 'All' 
+    ? posts.slice(1) 
+    : posts.slice(1).filter(post => post.tags.some(tag => tag.toLowerCase().includes(selectedTag.toLowerCase())));
 
   useEffect(() => {
     // Fetch actual blog posts from API
@@ -197,15 +204,40 @@ export default function BlogPage() {
         </section>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-12 p-4 bg-[#1a202c]/70 rounded-lg justify-center">
-          {['All', 'AI & Automation', 'Sales Strategy', 'Customer Support', 'Industry Insights', 'Case Studies'].map((filter, i) => (
-            <button key={i} className={`border border-[#00c2cb] px-4 py-2 rounded-full font-medium text-sm transition ${i===0 ? 'bg-[#00c2cb] text-[#0d1321]' : 'bg-transparent text-[#00c2cb] hover:bg-[#00c2cb] hover:text-[#0d1321]'}`}>{filter}</button>
+        <div className="flex flex-wrap gap-2 mb-8 p-4 bg-[#1a202c]/70 rounded-lg justify-center">
+          {['All', 'AI & Automation', 'Sales Strategy', 'Customer Support', 'Industry Insights', 'Case Studies'].map((filter) => (
+            <button 
+              key={filter}
+              onClick={() => setSelectedTag(filter)}
+              className={`border border-[#00c2cb] px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 ${
+                selectedTag === filter 
+                  ? 'bg-[#00c2cb] text-[#0d1321] shadow-lg scale-105' 
+                  : 'bg-transparent text-[#00c2cb] hover:bg-[#00c2cb] hover:text-[#0d1321]'
+              }`}
+            >
+              {filter}
+            </button>
           ))}
+        </div>
+        
+        {/* Results Counter */}
+        <div className="text-center mb-8">
+          <p className="text-gray-400 text-sm">
+            {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'} found
+            {selectedTag !== 'All' && (
+              <button 
+                onClick={() => setSelectedTag('All')}
+                className="ml-2 text-[#00c2cb] hover:underline"
+              >
+                Clear filter
+              </button>
+            )}
+          </p>
         </div>
 
         {/* Blog Grid */}
         <section className="grid md:grid-cols-3 gap-8 mb-16">
-          {otherPosts.map((post, index) => (
+          {filteredPosts.map((post, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -258,11 +290,7 @@ export default function BlogPage() {
         </section>
 
         {/* Newsletter Section */}
-        <section className="bg-[#1a202c] rounded-2xl p-10 text-center max-w-2xl mx-auto">
-          <h3 className="text-2xl font-bold text-white mb-2">Stay Updated on AI Sales & Support Trends</h3>
-          <p className="text-gray-300 mb-6">Join 15,000+ revenue leaders receiving our bi-weekly insights on AI-powered GTM execution.</p>
-          <NewsletterSubscribeForm />
-        </section>
+        <NewsletterSubscribe />
       </main>
     </>
   );
