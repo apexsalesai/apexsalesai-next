@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Markdown from 'react-markdown';
+import { SocialPostGenerator } from './SocialPostGenerator';
 
 interface ContentGeneratorPanelProps {
   onContentGenerated?: (content: any) => void;
@@ -20,6 +21,7 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
   const [error, setError] = useState<string | null>(null);
   const [showFullContent, setShowFullContent] = useState(false);
   const [deploymentStatus, setDeploymentStatus] = useState<'pending' | 'deploying' | 'ready'>('pending');
+  const [showSocialGenerator, setShowSocialGenerator] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -193,7 +195,13 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
           {(['blog', 'social', 'email'] as const).map((type) => (
             <button
               key={type}
-              onClick={() => setContentType(type)}
+              onClick={() => {
+                if (type === 'social') {
+                  setShowSocialGenerator(true);
+                } else {
+                  setContentType(type);
+                }
+              }}
               style={{
                 flex: 1,
                 padding: '8px 16px',
@@ -211,6 +219,12 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
           ))}
         </div>
       </div>
+      
+      {/* Social Post Generator Modal */}
+      <SocialPostGenerator 
+        isOpen={showSocialGenerator}
+        onClose={() => setShowSocialGenerator(false)}
+      />
 
       {/* Tone & Length (for blog posts) */}
       {contentType === 'blog' && (
