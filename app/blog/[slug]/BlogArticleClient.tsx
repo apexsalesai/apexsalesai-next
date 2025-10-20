@@ -129,13 +129,13 @@ export default function BlogArticleClient({ title, content, slug, nextPost, prev
             {prevPost && (
               <a
                 href={`/blog/${prevPost.slug}`}
-                className="group p-6 bg-[#1a202c] rounded-lg border border-gray-800 hover:border-[#00c2cb] transition-all"
+                className="group p-5 bg-[#1a202c] rounded-lg border border-gray-800 hover:border-[#00c2cb] transition-all"
               >
-                <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                  <ChevronLeft className="w-4 h-4" />
+                <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
+                  <ChevronLeft className="w-3 h-3" />
                   <span>Previous Article</span>
                 </div>
-                <h3 className="text-white font-semibold group-hover:text-[#00c2cb] transition-colors line-clamp-2">
+                <h3 className="text-sm font-semibold text-white group-hover:text-[#00c2cb] transition-colors line-clamp-2">
                   {prevPost.title}
                 </h3>
               </a>
@@ -144,13 +144,13 @@ export default function BlogArticleClient({ title, content, slug, nextPost, prev
             {nextPost && (
               <a
                 href={`/blog/${nextPost.slug}`}
-                className="group p-6 bg-[#1a202c] rounded-lg border border-gray-800 hover:border-[#00c2cb] transition-all md:text-right"
+                className="group p-5 bg-[#1a202c] rounded-lg border border-gray-800 hover:border-[#00c2cb] transition-all md:text-right"
               >
-                <div className="flex items-center justify-end gap-2 text-sm text-gray-400 mb-2">
+                <div className="flex items-center justify-end gap-2 text-xs text-gray-400 mb-2">
                   <span>Next Article</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3 h-3" />
                 </div>
-                <h3 className="text-white font-semibold group-hover:text-[#00c2cb] transition-colors line-clamp-2">
+                <h3 className="text-sm font-semibold text-white group-hover:text-[#00c2cb] transition-colors line-clamp-2">
                   {nextPost.title}
                 </h3>
               </a>
