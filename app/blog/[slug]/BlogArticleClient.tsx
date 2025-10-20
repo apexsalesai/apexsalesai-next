@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Share2, Linkedin, Twitter, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArticleEnhancements } from '../../components/ArticleEnhancements';
 
 interface BlogArticleClientProps {
   title: string;
@@ -121,6 +122,9 @@ export default function BlogArticleClient({ title, content, slug, nextPost, prev
           </div>
         )}
       </div>
+
+      {/* Article Enhancements - Table of Contents & Related Articles */}
+      <ArticleEnhancements content={content} title={title} />
 
       {/* Next/Previous Navigation */}
       {(prevPost || nextPost) && (
