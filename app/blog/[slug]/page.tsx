@@ -7,6 +7,7 @@ import React from 'react';
 import Markdown from 'react-markdown';
 import Navbar from '../../components/Navbar';
 import { PrismaClient } from '@prisma/client';
+import BlogArticleClient from './BlogArticleClient';
 
 const prisma = new PrismaClient();
 
@@ -108,9 +109,27 @@ export default async function BlogPostPage({ params: { slug } }: { params: { slu
       };
       const content = dbPost.content;
 
+      // Fetch next and previous posts
+      const allPosts = await prisma.blogPost.findMany({
+        where: { status: 'PUBLISHED' },
+        orderBy: { publishedAt: 'desc' },
+        select: { slug: true, title: true, publishedAt: true }
+      });
+
+      const currentIndex = allPosts.findIndex(p => p.slug === slug);
+      const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+      const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+
       return (
         <>
           <Navbar />
+          <BlogArticleClient 
+            title={data.title}
+            content={content}
+            slug={slug}
+            nextPost={nextPost}
+            prevPost={prevPost}
+          />
           <Head>
             <title>{data.title} | ApexSalesAI</title>
             <meta name="description" content={data.excerpt} />
