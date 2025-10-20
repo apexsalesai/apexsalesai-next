@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { SocialPostGenerator } from './SocialPostGenerator';
 
 /**
  * Max Content Agent - OpenAI ChatKit Integration
@@ -20,6 +21,7 @@ export function MaxContentAgent({
 }: MaxContentAgentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'schedule' | 'history'>('chat');
+  const [showSocialGenerator, setShowSocialGenerator] = useState(false);
 
   return (
     <div style={{
@@ -145,31 +147,43 @@ export function MaxContentAgent({
 
           {/* Quick Actions */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <button style={{
-              padding: '12px',
-              backgroundColor: '#4299e1',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}>
+            <button 
+              onClick={() => window.location.href = '/dashboard/operator-agent-fixed'}
+              style={{
+                padding: '12px',
+                backgroundColor: '#4299e1',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
               📝 Generate Blog Post
             </button>
-            <button style={{
-              padding: '12px',
-              backgroundColor: '#48bb78',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}>
+            <button 
+              onClick={() => setShowSocialGenerator(true)}
+              style={{
+                padding: '12px',
+                backgroundColor: '#48bb78',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
               📱 Create Social Posts
             </button>
           </div>
+          
+          {/* Social Post Generator Modal */}
+          <SocialPostGenerator 
+            isOpen={showSocialGenerator}
+            onClose={() => setShowSocialGenerator(false)}
+          />
         </div>
       )}
 

@@ -996,3 +996,4 @@ MATCHES:
 - Harvard Business Review navigation
 - TechCrunch article features
 - Fortune 100 publication standards
+- ✅ 2025-10-19: fix: reduce navigation card font sizes for better hierarchy
