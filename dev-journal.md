@@ -930,3 +930,18 @@ COST NOTE:
 - Fixed 'possibly undefined' error on imageResponse.data
 - Added optional chaining and null fallback
 - Build should now succeed
+- ✅ 2025-10-19: fix: cosmetic improvements to blog layout
+
+VISUAL FIXES:
+- Reduced font size on blog detail page (prose-lg  prose-base)
+- Smaller paragraph text for better readability
+- Fixed broken layout when featured post has no image
+- Added flex-shrink-0 to prevent image squishing
+- Dynamic width for content area based on image presence
+- Featured badge now has z-index to stay on top
+
+WHAT THIS FIXES:
+-  More readable paragraph text (not too large)
+-  Better layout on blog listing page
+-  Proper spacing and proportions
+-  Works with or without images

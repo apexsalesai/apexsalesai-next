@@ -184,8 +184,8 @@ export default function BlogPage() {
                   <span key={i} className="bg-[#00c2cb]/10 text-[#00c2cb] px-3 py-1 rounded-full text-xs font-medium">{tag}</span>
                 ))}
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">{featuredPost.title}</h2>
-              <p className="text-gray-300 mb-4">{featuredPost.excerpt}</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2 leading-tight">{featuredPost.title}</h2>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed">{featuredPost.excerpt}</p>
               <a href={`/blog/${featuredPost.slug}`} className="inline-block bg-[#00c2cb] text-[#0d1321] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#00a8b3] transition">Read Article</a>
             </div>
           </div>
@@ -233,10 +233,10 @@ export default function BlogPage() {
                       </span>
                     ))}
                   </div>
-                  <h2 className="text-xl font-bold text-white mb-2">
+                  <h2 className="text-lg font-bold text-white mb-2 leading-tight line-clamp-2">
                     {post.title}
                   </h2>
-                  <p className="text-gray-300 mb-4 flex-1">
+                  <p className="text-sm text-gray-300 mb-4 flex-1 leading-relaxed line-clamp-3">
                     {post.excerpt}
                   </p>
                   <a
