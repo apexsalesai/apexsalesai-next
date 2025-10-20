@@ -1113,3 +1113,16 @@ WHAT THIS DELIVERS:
 - Professional brand presence
 - Investor-demo ready
 - Enterprise-grade polish
+- ✅ 2025-10-20: fix: Social tab now opens dedicated social media generator modal
+
+CRITICAL FIX:
+- Social tab was generating full blog posts instead of social content
+- Now clicking 'Social' opens the SocialPostGenerator modal
+- Clean separation between blog and social content generation
+
+WHAT THIS FIXES:
+-  Before: Social tab generated blog articles
+-  After: Social tab opens proper social media generator
+-  Platform selection now visible
+-  Character limits enforced
+-  Clean, dedicated UI for social posts
