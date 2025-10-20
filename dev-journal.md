@@ -1036,3 +1036,36 @@ WHAT THIS DELIVERS:
 - Professional copywriting at scale
 - Time savings: 30+ min per post set
 - Consistent brand voice across platforms
+- ✅ 2025-10-19: fix: social media generator creating proper short posts, not blog articles
+
+CRITICAL FIXES:
+ Fixed AI generating full blog articles instead of social posts
+ Added explicit character limit enforcement
+ Enhanced system prompts to prevent article generation
+ Added LinkedIn direct share button
+ Improved platform-specific formatting
+
+TECHNICAL CHANGES:
+- Updated system message with strict character limits
+- Added 'CRITICAL REQUIREMENTS' to all prompts
+- Emphasized 'NOT a blog article' in every prompt
+- Twitter: Enforced 280 chars per tweet with numbering
+- LinkedIn: 1200-1500 chars max
+- Facebook: 400-600 chars max
+- Instagram: 150-300 chars + hashtags
+- Reduced temperature to 0.7 for better control
+- Added LinkedIn share button with auto-copy
+
+WHAT THIS FIXES:
+-  Before: Generated 2000+ char blog articles
+-  After: Generates proper social posts within limits
+-  Before: LinkedIn button didn't work
+-  After: Opens LinkedIn + copies content automatically
+-  Before: Twitter posts were too long
+-  After: Each tweet under 280 characters
+
+USER EXPERIENCE:
+- Click LinkedIn Share  Content copied + LinkedIn opens
+- Character counts displayed accurately
+- Platform-optimized content
+- Ready to paste and publish

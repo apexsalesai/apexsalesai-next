@@ -150,6 +150,8 @@ export default function BlogPage() {
       
       <main className="container mx-auto px-4 py-20 mt-16">
         <header className="relative text-center text-white py-24 overflow-hidden">
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00c2cb]/10 via-transparent to-[#005f6b]/10 animate-gradient"></div>
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" className="w-full h-full">
               <circle cx="200" cy="200" r="150" fill="#00c2cb" className="opacity-15 animate-float" />
@@ -157,14 +159,17 @@ export default function BlogPage() {
             </svg>
           </div>
           <div className="container mx-auto px-4 relative z-10">
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Insights That Drive Execution</h1>
-            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">Explore practical AI use cases, GTM strategies, and automation frameworks designed to accelerate revenue outcomes.</p>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Insights That Drive Execution</h1>
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8">Explore practical AI use cases, GTM strategies, and automation frameworks designed to accelerate revenue outcomes.</p>
+            <a href="#subscribe" className="inline-block bg-gradient-to-r from-[#00c2cb] to-[#00a8b3] text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+              Subscribe for AI Sales Insights
+            </a>
           </div>
         </header>
 
         {/* Featured Post */}
         <section className="mb-16">
-          <div className="bg-[#1a202c] rounded-2xl overflow-hidden shadow-lg relative flex flex-col md:flex-row">
+          <div className="bg-[#1a202c] rounded-2xl overflow-hidden shadow-lg relative flex flex-col md:flex-row hover:shadow-2xl hover:scale-[1.02] transition-all duration-300">
             <span className="absolute top-4 right-4 bg-[#00c2cb] text-[#0d1321] px-4 py-1 rounded-full font-semibold text-xs z-10">Featured</span>
             {featuredPost.image && (
               <div className="md:w-1/2 w-full h-72 md:h-auto relative flex-shrink-0">
@@ -206,7 +211,7 @@ export default function BlogPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-[#1a1e29] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col"
+              className="bg-[#1a1e29] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group"
             >
               <article>
                 {post.image && (
@@ -241,10 +246,10 @@ export default function BlogPage() {
                   </p>
                   <a
                     href={`/blog/${post.slug}`}
-                    className="inline-block mt-4 text-blue-600 hover:underline font-semibold"
+                    className="inline-block mt-4 text-[#00c2cb] hover:text-[#00a8b3] font-semibold transition-colors group-hover:translate-x-1 transform duration-200"
                     aria-label={`Read full article: ${post.title}`}
                   >
-                    Read Article
+                    Read Article →
                   </a>
                 </div>
               </article>
