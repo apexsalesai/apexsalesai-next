@@ -1163,3 +1163,47 @@ Added detailed progress document tracking:
 
 Current Status: 60% complete on Option D
 Remaining: Tag filtering, article enhancements, SEO, search
+- ✅ 2025-10-20: feat: interactive tag filtering + newsletter integration complete
+
+MAJOR FEATURES ADDED:
+
+1. NEWSLETTER INTEGRATION
+- Replaced static section with NewsletterSubscribe component
+- Full email validation and submission
+- Loading states and success/error handling
+- Social proof messaging
+- Premium gradient design
+
+2. INTERACTIVE TAG FILTERING
+- Click any tag to filter articles
+- Smooth animations (scale + shadow on active)
+- Results counter shows filtered count
+- 'Clear filter' button when filtered
+- Maintains featured post visibility
+- Real-time filtering with smooth transitions
+
+3. HERO CTA WIRED
+- Subscribe button scrolls to #subscribe section
+- Smooth scroll behavior
+- Clean user flow
+
+TECHNICAL IMPLEMENTATION:
+- State management for selectedTag
+- Filter logic with case-insensitive matching
+- Dynamic filtered posts array
+- Animated button states (scale-105 on active)
+- Results counter with conditional rendering
+- Clear filter functionality
+
+UX ENHANCEMENTS:
+- Instant feedback on filter selection
+- Visual indication of active filter
+- Article count updates in real-time
+- Easy way to clear filters
+- Smooth transitions (200ms)
+
+WHAT THIS DELIVERS:
+- Content discovery made easy
+- Professional filtering UX
+- Functional newsletter capture
+- Investor-demo quality interactions
