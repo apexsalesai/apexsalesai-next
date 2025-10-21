@@ -105,25 +105,82 @@ export function SocialPostGenerator({ isOpen, onClose }: SocialPostGeneratorProp
                 />
               </div>
 
-              {/* Platform Selection */}
+              {/* Platform Selection - Premium UI */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-3">
-                  Select Platforms
+                <label className="block text-base font-semibold text-white mb-2">
+                  Select Target Platforms
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {['LinkedIn', 'Twitter', 'Facebook', 'Instagram'].map((platform) => (
+                <p className="text-xs text-gray-400 mb-4">
+                  Choose which social media platforms you want to create posts for
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { name: 'LinkedIn', icon: '💼', color: '#0077b5', desc: 'Professional network' },
+                    { name: 'Twitter', icon: '🐦', color: '#1DA1F2', desc: 'Short-form updates' },
+                    { name: 'Facebook', icon: '👥', color: '#1877F2', desc: 'Social engagement' },
+                    { name: 'Instagram', icon: '📸', color: '#E4405F', desc: 'Visual storytelling' }
+                  ].map((platform) => (
                     <button
-                      key={platform}
-                      onClick={() => togglePlatform(platform)}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        platforms.includes(platform)
-                          ? 'border-[#00c2cb] bg-[#00c2cb]/10 text-[#00c2cb]'
-                          : 'border-gray-700 bg-[#0d1321] text-gray-400 hover:border-gray-600'
+                      key={platform.name}
+                      onClick={() => togglePlatform(platform.name)}
+                      className={`relative p-5 rounded-xl border-2 transition-all duration-200 text-left group ${
+                        platforms.includes(platform.name)
+                          ? 'border-[#00c2cb] bg-gradient-to-br from-[#00c2cb]/20 to-[#00c2cb]/5 shadow-lg shadow-[#00c2cb]/20'
+                          : 'border-gray-700 bg-[#0d1321] hover:border-gray-600 hover:bg-[#1a202c]'
                       }`}
                     >
-                      <div className="font-semibold">{platform}</div>
+                      {/* Checkmark indicator */}
+                      {platforms.includes(platform.name) && (
+                        <div className="absolute top-3 right-3 w-6 h-6 bg-[#00c2cb] rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">{platform.icon}</div>
+                        <div className="flex-1">
+                          <div className={`font-bold text-base mb-1 ${
+                            platforms.includes(platform.name) ? 'text-[#00c2cb]' : 'text-white'
+                          }`}>
+                            {platform.name}
+                          </div>
+                          <div className="text-xs text-gray-400">{platform.desc}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Hover effect */}
+                      <div className={`absolute inset-0 rounded-xl transition-opacity ${
+                        platforms.includes(platform.name) 
+                          ? 'opacity-0' 
+                          : 'opacity-0 group-hover:opacity-100 bg-gradient-to-br from-[#00c2cb]/5 to-transparent'
+                      }`} />
                     </button>
                   ))}
+                </div>
+                
+                {/* Selection summary */}
+                <div className="mt-4 p-3 bg-[#0d1321] rounded-lg border border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">
+                      {platforms.length === 0 ? (
+                        'No platforms selected'
+                      ) : (
+                        <>
+                          <span className="text-[#00c2cb] font-semibold">{platforms.length}</span> platform{platforms.length !== 1 ? 's' : ''} selected
+                        </>
+                      )}
+                    </span>
+                    {platforms.length > 0 && (
+                      <button
+                        onClick={() => setPlatforms([])}
+                        className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+                      >
+                        Clear all
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 

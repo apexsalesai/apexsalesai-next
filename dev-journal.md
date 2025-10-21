@@ -1449,3 +1449,55 @@ READY: Production deployment
 
 All options (1-5) successfully implemented!
 - ✅ 2025-10-21: chore: trigger redeploy after Vercel transient error
+- ✅ 2025-10-21: feat: user feedback fixes - TOC improvements + video generation
+
+FIXES BASED ON USER FEEDBACK:
+
+1. TABLE OF CONTENTS IMPROVEMENTS
+   - Reduced size: w-64  w-56
+   - Smaller text: text-sm  text-xs
+   - Compact padding: p-5  p-4
+   - Max 8 items shown (prevents overflow)
+   - Truncate long titles (40 chars max)
+   - Hidden on mobile/tablet (xl:block instead of lg:block)
+   - Added scroll-mt-24 for proper scroll positioning
+   - Max height with overflow-y-auto
+   - Fixed links: Added IDs to H2/H3 headings
+   - Smooth scroll behavior
+
+2. HEADING ID GENERATION
+   - H2 and H3 now get auto-generated IDs
+   - IDs match TOC link format
+   - scroll-mt-24 for proper offset
+   - Links now work perfectly
+
+3. VIDEO GENERATION ADDED
+   - New VideoGenerator component
+   - Sora-powered video creation
+   - 3 formats: YouTube Shorts, TikTok, Instagram Reels
+   - Platform-specific durations
+   - Professional UI with video preview
+   - Download and upload options
+   - Beta notice (coming soon)
+
+4. CONTENT GENERATOR UPDATES
+   - Added  Video tab
+   - 4 content types: Blog, Social, Video, Email
+   - Video opens dedicated modal
+   - Clean tab interface
+
+TECHNICAL DETAILS:
+- TOC now responsive (hidden < 1280px)
+- Heading IDs use same algorithm as TOC
+- Video component ready for Sora API integration
+- All modals use consistent design system
+
+USER REQUESTS ADDRESSED:
+ TOC too large  Made compact
+ TOC takes full page  Limited to 8 items + scroll
+ TOC worse on mobile  Hidden on mobile
+ TOC links don't work  Fixed with heading IDs
+ Add video generation  Sora component created
+ Platform selection  Already exists in social generator
+
+READY FOR TESTING!
