@@ -43,7 +43,7 @@ interface ContentState {
   setCharLimit: (limit: number) => void;
   togglePlatform: (platform: Platform) => void;
   setIsGenerating: (isGenerating: boolean) => void;
-  setGenerationProgress: (progress: number) => void;
+  setGenerationProgress: (progress: number | ((prev: number) => number)) => void;
   setGeneratedContent: (content: GeneratedContent | null) => void;
   setError: (error: string | null) => void;
   setShowSuccess: (show: boolean) => void;
@@ -89,7 +89,10 @@ export const useContentStore = create<ContentState>()(
       
       setIsGenerating: (isGenerating) => set({ isGenerating }),
       
-      setGenerationProgress: (progress) => set({ generationProgress: progress }),
+      setGenerationProgress: (progress) => 
+        set((state) => ({ 
+          generationProgress: typeof progress === 'function' ? progress(state.generationProgress) : progress 
+        })),
       
       setGeneratedContent: (content) => set({ generatedContent: content }),
       

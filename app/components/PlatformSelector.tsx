@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { useContentStore, Platform } from '@/lib/store/contentStore';
+import { useContentStore, Platform } from '@lib/store/contentStore';
 
 const platforms = [
   { id: 'linkedin' as Platform, name: 'LinkedIn', icon: '💼', charLimit: 3000, color: '#0077b5' },

@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Users, Video, Mail, TrendingUp, Check, Target } from 'lucide-react';
-import { useContentStore, ContentMode } from '@/lib/store/contentStore';
+import { useContentStore, ContentMode } from '@lib/store/contentStore';
 
 const modes = [
   {

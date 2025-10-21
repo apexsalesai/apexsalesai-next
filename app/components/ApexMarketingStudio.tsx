@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Wand2 } from 'lucide-react';
-import { useContentStore } from '@/lib/store/contentStore';
+import { useContentStore } from '@lib/store/contentStore';
 import { ModeSelector } from './ModeSelector';
 import { PlatformSelector } from './PlatformSelector';
 import { CharacterLimitControl } from './CharacterLimitControl';

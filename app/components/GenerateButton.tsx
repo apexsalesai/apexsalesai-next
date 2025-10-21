@@ -3,8 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Zap, Loader2, ChevronRight } from 'lucide-react';
-import { useContentStore } from '@/lib/store/contentStore';
-import { logContentMetrics, logAudit } from '@/lib/telemetry';
+import { useContentStore } from '@lib/store/contentStore';
+import { logContentMetrics, logAudit } from '@lib/telemetry';
 import confetti from 'canvas-confetti';
 
 export function GenerateButton() {
@@ -52,7 +52,7 @@ export function GenerateButton() {
 
     // Simulate progress
     const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => Math.min(prev + 10, 90));
+      setGenerationProgress((prev: number) => Math.min(prev + 10, 90));
     }, 200);
 
     try {

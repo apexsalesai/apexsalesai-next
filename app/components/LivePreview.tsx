@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, Copy, Download, RefreshCw, Sparkles } from 'lucide-react';
-import { useContentStore } from '@/lib/store/contentStore';
+import { useContentStore } from '@lib/store/contentStore';
 
 export function LivePreview() {
   const { isGenerating, generationProgress, generatedContent, setGeneratedContent } = useContentStore();
