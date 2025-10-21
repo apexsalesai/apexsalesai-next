@@ -227,8 +227,16 @@ export default async function BlogPostPage({ params: { slug } }: { params: { slu
     <div className="prose prose-invert prose-lg max-w-none mb-4">
       <Markdown
         components={{
-          h2: ({node, ...props}) => <h2 className="mt-10 mb-4 text-2xl font-bold text-[#00c2cb]" {...props} />,
-          h3: ({node, ...props}) => <h3 className="mt-8 mb-3 text-xl font-semibold text-[#00c2cb]" {...props} />,
+          h2: ({node, children, ...props}) => {
+            const text = String(children);
+            const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            return <h2 id={id} className="mt-10 mb-4 text-2xl font-bold text-[#00c2cb] scroll-mt-24" {...props}>{children}</h2>;
+          },
+          h3: ({node, children, ...props}) => {
+            const text = String(children);
+            const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            return <h3 id={id} className="mt-8 mb-3 text-xl font-semibold text-[#00c2cb] scroll-mt-24" {...props}>{children}</h3>;
+          },
           p: ({node, ...props}) => <p className="mb-5 leading-relaxed text-gray-200" {...props} />,
           ul: ({node, ...props}) => <ul className="list-disc ml-6 mb-5" {...props} />,
           ol: ({node, ...props}) => <ol className="list-decimal ml-6 mb-5" {...props} />,

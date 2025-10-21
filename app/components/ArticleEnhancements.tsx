@@ -54,27 +54,27 @@ export function ArticleEnhancements({ content, title }: ArticleEnhancementsProps
   if (tableOfContents.length === 0) return null;
 
   return (
-    <aside className="hidden lg:block sticky top-24 w-64 ml-8">
-      <div className="bg-[#1a202c] rounded-lg p-5 border border-gray-800">
-        <div className="flex items-center gap-2 mb-4">
-          <BookOpen className="w-5 h-5 text-[#00c2cb]" />
-          <h3 className="font-semibold text-white">Table of Contents</h3>
+    <aside className="hidden xl:block sticky top-24 w-56 ml-6 max-h-[calc(100vh-8rem)] overflow-y-auto">
+      <div className="bg-[#1a202c] rounded-lg p-4 border border-gray-800">
+        <div className="flex items-center gap-2 mb-3">
+          <BookOpen className="w-4 h-4 text-[#00c2cb]" />
+          <h3 className="font-semibold text-white text-sm">Contents</h3>
         </div>
         <nav>
-          <ul className="space-y-2">
-            {tableOfContents.map((heading) => (
+          <ul className="space-y-1.5">
+            {tableOfContents.slice(0, 8).map((heading) => (
               <li key={heading.id}>
                 <button
                   onClick={() => scrollToSection(heading.id)}
-                  className={`text-left w-full text-sm transition-colors ${
-                    heading.level === 3 ? 'pl-4' : ''
+                  className={`text-left w-full text-xs transition-colors leading-snug ${
+                    heading.level === 3 ? 'pl-3' : ''
                   } ${
                     activeSection === heading.id
                       ? 'text-[#00c2cb] font-semibold'
                       : 'text-gray-400 hover:text-gray-300'
                   }`}
                 >
-                  {heading.text}
+                  {heading.text.length > 40 ? heading.text.substring(0, 40) + '...' : heading.text}
                 </button>
               </li>
             ))}
@@ -82,18 +82,12 @@ export function ArticleEnhancements({ content, title }: ArticleEnhancementsProps
         </nav>
       </div>
 
-      {/* Related Articles */}
-      <div className="bg-[#1a202c] rounded-lg p-5 border border-gray-800 mt-6">
-        <h3 className="font-semibold text-white mb-4">Related Articles</h3>
-        <div className="space-y-3">
-          <a href="#" className="block text-sm text-gray-400 hover:text-[#00c2cb] transition-colors">
-            → How AI Agents Transform Sales
-          </a>
-          <a href="#" className="block text-sm text-gray-400 hover:text-[#00c2cb] transition-colors">
-            → Predictive Analytics Guide
-          </a>
-          <a href="#" className="block text-sm text-gray-400 hover:text-[#00c2cb] transition-colors">
-            → Automation Best Practices
+      {/* Related Articles - Compact */}
+      <div className="bg-[#1a202c] rounded-lg p-4 border border-gray-800 mt-4">
+        <h3 className="font-semibold text-white mb-3 text-sm">Related</h3>
+        <div className="space-y-2">
+          <a href="/blog" className="block text-xs text-gray-400 hover:text-[#00c2cb] transition-colors">
+            → More Articles
           </a>
         </div>
       </div>

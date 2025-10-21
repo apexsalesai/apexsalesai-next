@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Markdown from 'react-markdown';
 import { SocialPostGenerator } from './SocialPostGenerator';
+import { VideoGenerator } from './VideoGenerator';
 
 interface ContentGeneratorPanelProps {
   onContentGenerated?: (content: any) => void;
@@ -10,7 +11,7 @@ interface ContentGeneratorPanelProps {
 
 export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPanelProps) {
   const [topic, setTopic] = useState('');
-  const [contentType, setContentType] = useState<'blog' | 'social' | 'email'>('blog');
+  const [contentType, setContentType] = useState<'blog' | 'social' | 'email' | 'video'>('blog');
   const [tone, setTone] = useState<'professional' | 'casual' | 'technical' | 'executive'>('professional');
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [keywords, setKeywords] = useState('');
@@ -22,6 +23,7 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
   const [showFullContent, setShowFullContent] = useState(false);
   const [deploymentStatus, setDeploymentStatus] = useState<'pending' | 'deploying' | 'ready'>('pending');
   const [showSocialGenerator, setShowSocialGenerator] = useState(false);
+  const [showVideoGenerator, setShowVideoGenerator] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -192,12 +194,14 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
           Content Type
         </label>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {(['blog', 'social', 'email'] as const).map((type) => (
+          {(['blog', 'social', 'video', 'email'] as const).map((type) => (
             <button
               key={type}
               onClick={() => {
                 if (type === 'social') {
                   setShowSocialGenerator(true);
+                } else if (type === 'video') {
+                  setShowVideoGenerator(true);
                 } else {
                   setContentType(type);
                 }
@@ -214,7 +218,7 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
                 fontWeight: contentType === type ? 600 : 400
               }}
             >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+              {type === 'video' ? '🎥 Video' : type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
         </div>
@@ -224,6 +228,12 @@ export function ContentGeneratorPanel({ onContentGenerated }: ContentGeneratorPa
       <SocialPostGenerator 
         isOpen={showSocialGenerator}
         onClose={() => setShowSocialGenerator(false)}
+      />
+      
+      {/* Video Generator Modal */}
+      <VideoGenerator 
+        isOpen={showVideoGenerator}
+        onClose={() => setShowVideoGenerator(false)}
       />
 
       {/* Tone & Length (for blog posts) */}
