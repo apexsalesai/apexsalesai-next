@@ -39,7 +39,7 @@ test.env
 .vscode/
 *.swp
 *.swo
-# Environment files
+# Environment files & secrets
 .env
 .env.local
 .env.*
@@ -48,3 +48,11 @@ test.env
 .env.production
 .env.development
 *.env
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Validation reports (may contain sensitive data)
+reports/
+*.log

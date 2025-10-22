@@ -260,21 +260,21 @@ Body: { "action": "check" }
 
 ```env
 # OpenAI
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=your_openai_key_here
 
 # Video Generation (Optional)
-SYNTHESIA_API_KEY=...
-ELEVENLABS_API_KEY=...
+SYNTHESIA_API_KEY=your_synthesia_key_here
+ELEVENLABS_API_KEY=your_elevenlabs_key_here
 
 # YouTube Upload (Optional)
-YOUTUBE_CLIENT_ID=...
-YOUTUBE_CLIENT_SECRET=...
-YOUTUBE_REDIRECT_URI=...
+YOUTUBE_CLIENT_ID=your_youtube_client_id
+YOUTUBE_CLIENT_SECRET=your_youtube_client_secret
+YOUTUBE_REDIRECT_URI=your_redirect_uri
 
 # Social Media APIs (Optional)
-LINKEDIN_ACCESS_TOKEN=...
-TWITTER_API_KEY=...
-FACEBOOK_PAGE_TOKEN=...
+LINKEDIN_ACCESS_TOKEN=your_linkedin_token
+TWITTER_API_KEY=your_twitter_key
+FACEBOOK_PAGE_TOKEN=your_facebook_token
 ```
 
 ## Usage Examples
