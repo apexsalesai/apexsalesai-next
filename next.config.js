@@ -4,8 +4,7 @@ const path = require('path');
 const nextConfig = {
   // Disable Vercel toolbar for production
   devIndicators: {
-    buildActivity: false,
-    buildActivityPosition: 'bottom-right',
+    position: 'bottom-right',
   },
   images: {
     remotePatterns: [
