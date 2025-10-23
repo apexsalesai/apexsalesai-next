@@ -369,3 +369,122 @@ model BlogAnalyticsEvent {
   @@index([dataverseSynced])
   @@map("blog_analytics_events")
 }
+
+// ============================================================================
+// PHASE 2: MULTI-AGENT ORCHESTRATION & CAMPAIGN STUDIO
+// ============================================================================
+
+model Campaign {
+  id             String        @id @default(cuid())
+  title          String
+  objective      String        @db.Text
+  audience       String        @db.Text
+  brandVoice     String        @db.Text
+  channels       String[]      // ["blog","social","email","video","chat","faq","press","ad","community"]
+  status         String        @default("draft") // draft|running|completed|error
+  
+  // Content length control
+  targetLength   String        @default("medium") // short|medium|long|extended
+  
+  // User tracking
+  createdById    String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  // Relations
+  tasks          AgentTask[]
+  assets         ContentAsset[]
+  
+  @@index([status, createdAt])
+  @@index([createdById])
+  @@map("campaigns")
+}
+
+model AgentTask {
+  id            String   @id @default(cuid())
+  campaignId    String
+  agentType     String   // strategy|copy|visual|video|personalize
+  status        String   @default("queued") // queued|running|done|error
+  
+  // Input/Output
+  input         Json
+  output        Json?
+  
+  // Telemetry
+  costTokensIn  Int      @default(0)
+  costTokensOut Int      @default(0)
+  latencyMs     Int      @default(0)
+  error         String?  @db.Text
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  startedAt     DateTime?
+  completedAt   DateTime?
+  
+  // Relations
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  @@index([campaignId, agentType])
+  @@index([status])
+  @@map("agent_tasks")
+}
+
+model ContentAsset {
+  id          String   @id @default(cuid())
+  campaignId  String
+  type        String   // blog|email|social|videoScript|imagePrompt|chat|faq|press|ad|community
+  title       String
+  body        String   @db.Text
+  
+  // Metadata
+  metadata    Json     // platform, wordCount, charCount, readingTime, etc.
+  
+  // Version control
+  version     Int      @default(1)
+  parentId    String?  // For revision history
+  
+  // Publishing
+  status      String   @default("draft") // draft|published|archived
+  publishedAt DateTime?
+  publishedTo String[] @default([]) // ["linkedin","twitter","blog"]
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  @@index([campaignId, type])
+  @@index([status])
+  @@map("content_assets")
+}
+
+model MetricEvent {
+  id         String   @id @default(cuid())
+  name       String   // "agent.cost" | "agent.latency" | "ui.error"
+  value      Float
+  unit       String?  // "tokens" | "ms"
+  dims       Json     // dimensions: { agent: "copy", campaign: "xyz" }
+  createdAt  DateTime @default(now())
+  
+  @@index([name, createdAt])
+  @@map("metric_events")
+}
+
+model Integration {
+  id           String   @id @default(cuid())
+  userId       String
+  provider     String   // "salesforce" | "linkedin" | "twitter"
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  instanceUrl  String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@unique([userId, provider])
+  @@index([userId])
+  @@map("integrations")
+}

@@ -1720,3 +1720,5 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2025-10-21: fix: add telemetry stub to resolve build error
 - ✅ 2025-10-21: feat: Premium Marketing Studio - fix routing conflicts
 - ✅ 2025-10-22: fix: TypeScript error in Framer Motion transitions
+- ✅ 2025-10-22: Security: Remove exposed OpenAI key from documentation and enhance .gitignore
+- ✅ 2025-10-23: Security: Remove exposed OpenAI key from documentation and enhance .gitignore
