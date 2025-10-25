@@ -122,14 +122,26 @@ model FeatureFlag {
 }
 
 model AuditLog {
-  id        Int      @id @default(autoincrement())
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  tenantId  Int
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-  action    String
-  details   String?
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId   Int
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
+  
+  // Phase 2-3 required fields
+  actorId    String?  // Actor performing action (can be system/user/agent)
+  orgId      String?  // Organization ID
+  action     String   // publish_blog|send_email|post_social|retry|error|agent.run|asset.create
+  targetType String?  // campaign|asset|email|post|agentTask
+  targetId   String?  // ID of target entity
+  before     Json?    // State before action
+  after      Json?    // State after action
+  externalId String?  // External system ID (messageId, postId, etc.)
+  status     String   @default("success") // success|error|pending
+  
+  // Legacy fields
+  details    String?  // Legacy details field
+  createdAt  DateTime @default(now())
 }
 
 model AuthToken {
@@ -469,7 +481,7 @@ model AgentTask {
   tokensOut     Int      @default(0)
   latencyMs     Int      @default(0)
   model         String   @default("gpt-4o-mini")
-  costUsd       Float    @default(0)
+  costUsd       Decimal  @db.Decimal(10,6) @default(0)
   error         String?  @db.Text
   
   // Legacy fields (kept for compatibility)
@@ -519,6 +531,19 @@ model ContentAsset {
   @@index([campaignId, type])
   @@index([status])
   @@map("content_assets")
+}
+
+model ManualTask {
+  id        String   @id @default(cuid())
+  type      String   // email_retry|linkedin_post_retry|x_post_retry|agent_retry
+  payload   Json     // Task-specific data
+  priority  Int      @default(5) // 1-10, higher = more urgent
+  status    String   @default("open") // open|in_progress|completed|failed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([status, priority])
+  @@map("manual_tasks")
 }
 
 model MetricEvent {
