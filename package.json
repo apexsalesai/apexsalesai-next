@@ -40,6 +40,7 @@
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.5.0",
     "date-fns": "^4.1.0",
+    "diff": "^8.0.2",
     "dompurify": "^3.3.0",
     "dotenv": "^16.5.0",
     "framer-motion": "^12.18.1",
@@ -47,6 +48,7 @@
     "html2pdf.js": "^0.10.3",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^3.0.3",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.511.0",
     "marked": "^15.0.12",
     "next": "^15.3.2",
@@ -67,6 +69,7 @@
     "react-markdown": "^10.1.0",
     "recharts": "^2.15.3",
     "resend": "^4.5.1",
+    "swr": "^2.3.6",
     "ts-node": "^10.9.2",
     "zustand": "^5.0.8"
   },
@@ -75,7 +78,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
+    "@types/diff": "^7.0.2",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^24.0.3",
     "@types/nodemailer": "^6.4.17",
     "@types/uuid": "^10.0.0",
