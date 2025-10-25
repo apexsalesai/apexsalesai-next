@@ -63,7 +63,7 @@ async function main() {
   
   const totalTokensIn = tasks.reduce((sum, t) => sum + t.tokensIn, 0);
   const totalTokensOut = tasks.reduce((sum, t) => sum + t.tokensOut, 0);
-  const totalCost = tasks.reduce((sum, t) => sum + t.costUsd, 0);
+  const totalCost = tasks.reduce((sum, t) => sum + Number(t.costUsd), 0);
 
   // Generate validation report
   const report = {
