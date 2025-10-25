@@ -3,7 +3,7 @@
  */
 
 import useSWR from 'swr';
-import { getJSON } from '@/lib/http';
+import { getJSON } from '@lib/http';
 
 interface AgentTask {
   id: string;

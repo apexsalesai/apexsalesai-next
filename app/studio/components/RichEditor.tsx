@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import debounce from 'lodash.debounce';
-import { count, LIMITS, enforceLimit } from '@/lib/socialLimits';
+import { count, LIMITS, enforceLimit } from '@lib/socialLimits';
 import { saveAsset } from '../hooks/useAssetSave';
 import { Save, FileText } from 'lucide-react';
 

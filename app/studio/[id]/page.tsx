@@ -8,7 +8,7 @@ import { AgentTimeline } from '../components/AgentTimeline';
 import { AssetTabs } from '../components/AssetTabs';
 import { RichEditor } from '../components/RichEditor';
 import { VersionHistory } from '../components/VersionHistory';
-import { postJSON, getJSON } from '@/lib/http';
+import { postJSON, getJSON } from '@lib/http';
 
 interface ContentAsset {
   id: string;

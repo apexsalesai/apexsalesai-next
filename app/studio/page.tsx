@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Loader2 } from 'lucide-react';
 import { CampaignList } from './components/CampaignList';
-import { getJSON, postJSON } from '@/lib/http';
+import { getJSON, postJSON } from '@lib/http';
 
 interface Campaign {
   id: string;

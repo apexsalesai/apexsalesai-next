@@ -2,7 +2,7 @@
  * Asset save utilities with versioning support
  */
 
-import { patchJSON } from '@/lib/http';
+import { patchJSON } from '@lib/http';
 
 interface SaveAssetResponse {
   data: {
