@@ -28,8 +28,9 @@ export async function POST(req: NextRequest) {
       enhancedTopic = `${topic.trim()}\n\nAdditional Context: ${prompt.trim()}`;
     }
 
-    // Generate content with all parameters
-    const blogPost = await ContentGenerator.generateBlogPost({
+    // Generate content based on type
+    let result;
+    const request = {
       topic: enhancedTopic,
       contentType,
       tone,
@@ -37,11 +38,32 @@ export async function POST(req: NextRequest) {
       keywords: keywords.length > 0 ? keywords : undefined,
       targetAudience,
       vertical,
-    });
+    };
+
+    switch (contentType) {
+      case 'blog':
+        result = await ContentGenerator.generateBlogPost(request);
+        break;
+      case 'social':
+        result = await ContentGenerator.generateSocialContent(request);
+        break;
+      case 'email':
+        result = await ContentGenerator.generateEmailContent(request);
+        break;
+      case 'video':
+        result = await ContentGenerator.generateVideoScript(request);
+        break;
+      case 'jobboard':
+        result = await ContentGenerator.generateJobPosting(request);
+        break;
+      default:
+        result = await ContentGenerator.generateBlogPost(request);
+    }
 
     return NextResponse.json({ 
       success: true, 
-      data: blogPost,
+      data: result,
+      contentType,
       metadata: {
         generatedAt: new Date().toISOString(),
         parameters: { tone, length, targetAudience, vertical, keywordCount: keywords.length },

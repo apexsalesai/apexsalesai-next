@@ -1,0 +1,9 @@
+Copy these THREE lines EXACTLY into your .env file (replace the current DATABASE_URL, DIRECT_URL, USE_DB lines).
+Each line must be on ONE SINGLE LINE with NO line breaks!
+
+DATABASE_URL="postgresql://neondb_owner:ApexMax42XyZ@ep-misty-surf-adv6olws-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&pgbouncer=true&connect_timeout=15"
+DIRECT_URL="postgresql://neondb_owner:ApexMax42XyZ@ep-misty-surf-adv6olws.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+USE_DB=true
+
+CRITICAL: When you paste these into .env, make sure your text editor does NOT wrap the lines!
+In VS Code: View → Word Wrap should be OFF

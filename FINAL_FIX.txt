@@ -1,0 +1,15 @@
+FINAL DATABASE CONNECTION FIX
+================================
+
+Replace lines 4-5 in your .env file with these EXACT lines (NEW password: npg_6Dwv1hS0YKkq):
+
+DATABASE_URL="postgresql://neondb_owner:npg_6Dwv1hS0YKkq@ep-misty-surf-adv6olws-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&pgbouncer=true&connect_timeout=15"
+DIRECT_URL="postgresql://neondb_owner:npg_6Dwv1hS0YKkq@ep-misty-surf-adv6olws.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+USE_DB=true
+
+CRITICAL:
+- Each URL must be on ONE SINGLE LINE (no line breaks!)
+- Password is: npg_6Dwv1hS0YKkq (lowercase L, not number 1)
+- No channel_binding=require
+- DATABASE_URL uses -pooler endpoint
+- DIRECT_URL uses direct endpoint (no -pooler)

@@ -1,10 +1,58 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+/**
+ * Utilities for robust seeding
+ */
+const rand = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+const choice = <T>(arr: T[]) => arr[rand(0, arr.length - 1)];
+
+type AnyModel = keyof PrismaClient;
+
+async function createSafe(model: AnyModel, data: any, note?: string) {
+  // @ts-ignore
+  const client = prisma[model];
+  if (!client?.create) {
+    console.log(`⚠️  Skipped ${note ?? model} (model not found)`);
+    return null;
+  }
+  try {
+    // @ts-ignore
+    return await client.create({ data });
+  } catch (e: any) {
+    console.log(`⚠️  Skipped ${note ?? model}: ${e?.message || e}`);
+    return null;
+  }
+}
+
+async function createManySafe(model: AnyModel, data: any[], note?: string) {
+  // @ts-ignore
+  const client = prisma[model];
+  if (!client?.createMany) {
+    const results = [];
+    for (const d of data) results.push(await createSafe(model, d, note));
+    return results;
+  }
+  try {
+    // @ts-ignore
+    return await client.createMany({ data, skipDuplicates: true });
+  } catch (e: any) {
+    console.log(`⚠️  Skipped bulk for ${note ?? model}: ${e?.message || e}`);
+    const results = [];
+    for (const d of data) results.push(await createSafe(model, d, note));
+    return results;
+  }
+}
+
 async function main() {
-  console.log('Starting seed script...');
-  // Create demo tenants for different verticals
-  console.log('Creating tenants...');
+  console.log('🌱 Seeding ApexSalesAI Premium Platform…\n');
+
+  /**
+   * PHASE 0: Tenants (preserve existing tenant logic)
+   */
+  console.log('🏢 PHASE 0: Tenants');
   const apexEnterprise = await prisma.tenant.upsert({
     where: { orgId: 'apex-enterprises' },
     update: {},
@@ -34,6 +82,7 @@ async function main() {
       domain: 'premiermortgage.com',
     },
   });
+  console.log('  ✅ Tenants (3)');
 
   // Create demo users
   console.log('Creating users...');

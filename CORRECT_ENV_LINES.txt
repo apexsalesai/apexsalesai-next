@@ -1,0 +1,5 @@
+Replace lines 4-5 in your .env file with these EXACT lines (using the NEW password from Neon):
+
+DATABASE_URL="postgresql://neondb_owner:npg_6Dwv1h58YKkq@ep-misty-surf-adv6olws-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+DIRECT_URL="postgresql://neondb_owner:npg_6Dwv1h58YKkq@ep-misty-surf-adv6olws.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+USE_DB=true

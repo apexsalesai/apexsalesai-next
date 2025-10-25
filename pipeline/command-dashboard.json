@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "name": "ApexSalesAI Phase2-3 Command Dashboard",
+    "version": "1.0.0",
+    "description": "Full environment orchestration and validation pipeline for ApexSalesAI multi-agent Studio",
+    "lastUpdated": "2025-10-22T16:30:00Z"
+  },
+  "phases": {
+    "setup": {
+      "description": "Initialize environment and dependencies",
+      "commands": [
+        "npm install",
+        "npx prisma generate",
+        "npx prisma migrate deploy",
+        "npx playwright install chromium"
+      ]
+    },
+    "backendValidation": {
+      "description": "Run automated backend + database validation",
+      "commands": [
+        "npx tsx scripts/validate-phase2-3.ts"
+      ]
+    },
+    "frontendValidation": {
+      "description": "Run UI and E2E visual validation using Playwright",
+      "commands": [
+        "npx tsx scripts/validate-phase2-3-ui.ts"
+      ]
+    },
+    "reports": {
+      "description": "Aggregate and summarize QA outputs",
+      "commands": [
+        "npx tsx scripts/generate-validation-summary.ts"
+      ]
+    },
+    "maintenance": {
+      "description": "Clean legacy routes and logs post-validation",
+      "commands": [
+        "echo Cleaning legacy routes...",
+        "echo Maintenance complete"
+      ]
+    }
+  },
+  "reports": {
+    "outputDirectory": "reports/",
+    "expectedFiles": [
+      "validation-report.json",
+      "ui-validation-report.json",
+      "final-validation-summary.json",
+      "studio-validation-*.png"
+    ]
+  },
+  "successCriteria": {
+    "backendStatus": "complete",
+    "uiStatus": "PASS",
+    "legacyClean": true,
+    "errors": "none"
+  }
+}

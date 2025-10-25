@@ -19,12 +19,13 @@ const openai = openaiKey ? new OpenAI({
 
 export interface ContentGenerationRequest {
   topic: string;
-  contentType: 'blog' | 'social' | 'email' | 'case-study';
+  contentType: 'blog' | 'social' | 'email' | 'case-study' | 'video' | 'jobboard';
   tone?: 'professional' | 'casual' | 'technical' | 'executive';
   targetAudience?: string;
   keywords?: string[];
   length?: 'short' | 'medium' | 'long';
   vertical?: string;
+  platform?: 'LinkedIn' | 'Twitter' | 'Facebook' | 'Instagram';
 }
 
 export interface BlogPost {
@@ -221,6 +222,135 @@ Include:
     } catch (error) {
       logger.error(`Error generating email content: ${error}`);
       throw new Error(`Failed to generate email content: ${error}`);
+    }
+  }
+
+  /**
+   * Generate video script content
+   */
+  static async generateVideoScript(request: ContentGenerationRequest): Promise<{
+    title: string;
+    duration: string;
+    script: string;
+    scenes: Array<{ timestamp: string; description: string; visuals: string; audio: string }>;
+    cta: string;
+  }> {
+    try {
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
+      const lengthMap = {
+        short: '30-60 seconds',
+        medium: '2-3 minutes',
+        long: '5-7 minutes'
+      };
+
+      const prompt = `Create a professional video script about: ${request.topic}
+      
+Target audience: ${request.targetAudience || 'Business professionals'}
+Tone: ${request.tone || 'professional'}
+Duration: ${lengthMap[request.length || 'medium']}
+
+Include:
+- Compelling hook (first 5 seconds)
+- Clear problem statement
+- Solution presentation
+- Benefits and outcomes
+- Social proof or statistics
+- Strong call-to-action
+- Scene-by-scene breakdown with timestamps
+- Visual and audio cues for production`;
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a video production expert specializing in B2B marketing videos. Create engaging scripts that convert viewers into customers.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      });
+
+      const response = JSON.parse(completion.choices[0].message.content || '{}');
+      return response;
+    } catch (error) {
+      logger.error(`Error generating video script: ${error}`);
+      throw new Error(`Failed to generate video script: ${error}`);
+    }
+  }
+
+  /**
+   * Generate job board posting
+   */
+  static async generateJobPosting(request: ContentGenerationRequest): Promise<{
+    title: string;
+    company: string;
+    location: string;
+    type: string;
+    description: string;
+    responsibilities: string[];
+    qualifications: string[];
+    benefits: string[];
+    salary: string;
+    applicationInstructions: string;
+  }> {
+    try {
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
+      const prompt = `Create a compelling job posting for: ${request.topic}
+      
+Company: ApexSalesAI
+Industry: AI-powered sales automation
+Tone: ${request.tone || 'professional'}
+Target candidates: ${request.targetAudience || 'Experienced professionals'}
+
+Include:
+- Engaging job title
+- Compelling company overview
+- Detailed role description
+- 5-7 key responsibilities
+- Required qualifications
+- Preferred qualifications
+- Benefits and perks
+- Salary range (competitive)
+- Application instructions
+- Company culture highlights`;
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a talent acquisition expert specializing in tech recruiting. Create job postings that attract top talent while accurately representing the role and company culture.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      });
+
+      const response = JSON.parse(completion.choices[0].message.content || '{}');
+      return {
+        company: 'ApexSalesAI',
+        location: 'Remote (US)',
+        type: 'Full-time',
+        ...response
+      };
+    } catch (error) {
+      logger.error(`Error generating job posting: ${error}`);
+      throw new Error(`Failed to generate job posting: ${error}`);
     }
   }
 

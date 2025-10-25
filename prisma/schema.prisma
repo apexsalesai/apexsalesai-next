@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Tenant {
@@ -38,13 +39,20 @@ model User {
 
 model Lead {
   id               Int           @id @default(autoincrement())
-  tenant           Tenant        @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  tenantId         Int
+  tenant           Tenant?       @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId         Int?
+  
+  // Support both formats
   name             String
+  firstName        String?       // For seed compatibility
+  lastName         String?       // For seed compatibility
+  company          String?       // For seed compatibility
+  
   email            String
-  industry         String
-  stage            String
-  confidence_score Float
+  industry         String?
+  stage            String?
+  status           String?       // For sequence status
+  confidence_score Float?
   source           String?
   assignedTo       User?         @relation("AssignedToUser", fields: [assignedToId], references: [id])
   assignedToId     Int?
@@ -53,17 +61,33 @@ model Lead {
   agentActions     AgentAction[]
   gdprRequests     GDPRRequest[]
   sequenceStates   SequenceState[]
+  sequenceExecutions SequenceExecution[]
 }
 
 model Agent {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique
-  model     String   // e.g. 'gpt-4o', 'custom'
-  status    String   // e.g. 'active', 'inactive'
+  name      String   // Agent name (Max, Mia, DemoBot)
+  role      String   // Agent role description
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?     @unique
+  model     String   @default("gpt-4o-mini") // e.g. 'gpt-4o', 'custom'
+  status    String   @default("active") // e.g. 'active', 'inactive'
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   actions   AgentAction[]
+}
+
+// Standalone agents for seed compatibility
+model AgentProfile {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  actions   AgentActionLog[]
+  
+  @@map("agent_profiles")
 }
 
 model AgentAction {
@@ -123,11 +147,19 @@ model AuthToken {
 
 model ObservabilityEvent {
   id        Int      @id @default(autoincrement())
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  tenantId  Int
-  type      String   // e.g. 'API_CALL', 'ERROR', 'METRIC', 'ALERT'
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId  Int?
+  
+  // Support both formats
+  type      String?  // e.g. 'API_CALL', 'ERROR', 'METRIC', 'ALERT'
+  source    String?  // For seed (agent, system, etc.)
+  level     String?  // For seed (info, warning, error)
+  
   message   String
   meta      String?
+  data      Json?    // For seed structured data
+  
+  occurredAt DateTime? // For seed
   createdAt DateTime @default(now())
 }
 
@@ -146,24 +178,31 @@ model SequenceDefinition {
   id          Int             @id @default(autoincrement())
   name        String
   description String?
-  type        String          // e.g., 'real_estate_lead_qualification', 'mortgage_doc_chase'
-  tenant      Tenant          @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  tenantId    Int
+  type        String?         // e.g., 'real_estate_lead_qualification', 'mortgage_doc_chase'
+  tenant      Tenant?         @relation(fields: [tenantId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  tenantId    Int?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   isActive    Boolean         @default(true)
   steps       SequenceStep[]
   states      SequenceState[]
+  executions  SequenceExecution[]
 }
 
 model SequenceStep {
   id                 Int               @id @default(autoincrement())
   sequence           SequenceDefinition @relation(fields: [sequenceDefinitionId], references: [id])
   sequenceDefinitionId Int
-  stepId             String            // e.g., 'intake', 'qualification'
+  
+  // Support both formats
+  stepId             String?           // e.g., 'intake', 'qualification'
+  order              Int?              // For seed (1, 2, 3...)
+  type               String?           // For seed (email, call, social)
+  delayHours         Int?              // For seed
+  
   name               String
   description        String?
-  action             String            // Action to execute
+  action             String?           // Action to execute
   conditions         Json?             // JSON conditions for branching logic
   nextSteps          Json?             // JSON array of possible next steps
   createdAt          DateTime          @default(now())
@@ -187,14 +226,29 @@ model SequenceState {
 
 model SequenceExecution {
   id                 Int               @id @default(autoincrement())
-  state              SequenceState     @relation(fields: [sequenceStateId], references: [id])
-  sequenceStateId    Int
-  step               SequenceStep      @relation(fields: [sequenceStepId], references: [id])
-  sequenceStepId     Int
+  
+  // Support both patterns
+  state              SequenceState?    @relation(fields: [sequenceStateId], references: [id])
+  sequenceStateId    Int?
+  step               SequenceStep?     @relation(fields: [sequenceStepId], references: [id])
+  sequenceStepId     Int?
+  
+  // Direct sequence + lead support (for seed)
+  sequence           SequenceDefinition? @relation(fields: [sequenceDefinitionId], references: [id])
+  sequenceDefinitionId Int?
+  lead               Lead?             @relation(fields: [leadId], references: [id])
+  leadId             Int?
+  
+  status             String?           // queued, in_progress, completed, failed
+  startedAt          DateTime?         
+  completedAt        DateTime?         
+  metadata           Json?             
+  
   executionTime      DateTime          @default(now())
   result             Json?             // JSON result of execution
   nextStepId         String?
   agentActions       AgentAction[]
+  agentActionLogs    AgentActionLog[]
   metrics            SequenceMetrics?
 }
 
@@ -463,14 +517,39 @@ model ContentAsset {
 
 model MetricEvent {
   id         String   @id @default(cuid())
-  name       String   // "agent.cost" | "agent.latency" | "ui.error"
+  
+  // Support both formats
+  name       String?  // "agent.cost" | "agent.latency" | "ui.error"
+  metric     String?  // For seed format
+  
   value      Float
   unit       String?  // "tokens" | "ms"
-  dims       Json     // dimensions: { agent: "copy", campaign: "xyz" }
+  dims       Json?    // dimensions: { agent: "copy", campaign: "xyz" }
+  dimensions Json?    // For seed format
+  
+  occurredAt DateTime? // For seed
   createdAt  DateTime @default(now())
   
   @@index([name, createdAt])
+  @@index([metric, createdAt])
   @@map("metric_events")
+}
+
+// Agent action logs for standalone agents
+model AgentActionLog {
+  id                String             @id @default(cuid())
+  agent             AgentProfile?      @relation(fields: [agentId], references: [id])
+  agentId           String?
+  sequenceExecution SequenceExecution? @relation(fields: [sequenceExecutionId], references: [id])
+  sequenceExecutionId Int?
+  
+  type              String
+  status            String
+  input             Json
+  output            Json?
+  createdAt         DateTime           @default(now())
+  
+  @@map("agent_action_logs")
 }
 
 model Integration {
@@ -487,4 +566,131 @@ model Integration {
   @@unique([userId, provider])
   @@index([userId])
   @@map("integrations")
+}
+
+// ============================================
+// PHASE 7: PUBLISHING & CAREER COMPANION
+// ============================================
+
+model PublishJob {
+  id           String    @id @default(cuid())
+  orgId        String?
+  userId       String
+  assetId      String
+  platform     String    // linkedin|x|youtube|instagram|tiktok|wordpress|reddit|pinterest|facebook
+  status       String    @default("queued") // queued|posting|success|failed|cancelled
+  scheduledAt  DateTime?
+  postedAt     DateTime?
+  postUrl      String?
+  errorMessage String?   @db.Text
+  impressions  Int       @default(0)
+  clicks       Int       @default(0)
+  engagement   Float     @default(0)
+  metadata     Json?     // platform-specific data
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([assetId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("publish_jobs")
+}
+
+model OAuthToken {
+  id         String    @id @default(cuid())
+  userId     String
+  platform   String    // linkedin|x|instagram|tiktok|youtube|wordpress|facebook|pinterest|reddit
+  accessToken  String  @db.Text // encrypted
+  refreshToken String? @db.Text // encrypted
+  expiresAt  DateTime?
+  scope      String?
+  metadata   Json?     // platform-specific data
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([userId, platform])
+  @@index([userId])
+  @@map("oauth_tokens")
+}
+
+model CareerProfile {
+  id            String   @id @default(cuid())
+  userId        String
+  label         String   // "PM - AI", "Tech Lead", etc.
+  headline      String?
+  summary       String?  @db.Text
+  skills        String[] // Array of skills
+  portfolioUrls String[] // Array of portfolio URLs
+  socialLinks   Json?    // { linkedin: "", github: "", twitter: "" }
+  resumeUrl     String?
+  visibility    String   @default("private") // private|org|public
+  metadata      Json?    // additional career data
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  resumes       Resume[]
+  jobAnalyses   JobAnalysis[]
+
+  @@unique([userId, label])
+  @@index([userId])
+  @@index([visibility])
+  @@map("career_profiles")
+}
+
+model Resume {
+  id               String   @id @default(cuid())
+  profileId        String
+  storagePath      String   // /uploads/resumes/filename.pdf
+  parsedJson       Json     // Structured resume data
+  originalFilename String
+  mimetype         String
+  bytes            Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("resumes")
+}
+
+model JobAnalysis {
+  id           String   @id @default(cuid())
+  profileId    String
+  jobSource    String   // "upload" | "paste" | "url"
+  rawText      String   @db.Text
+  parsedJson   Json     // Extracted job requirements
+  fitScore     Int?     // 0-100
+  matchSummary Json?    // { matchingSkills, missingSkills, rationale }
+  generated    Json?    // { resume, coverLetter, linkedinAbout }
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([createdAt])
+  @@map("job_analyses")
+}
+
+model ContentPerformance {
+  id           String   @id @default(cuid())
+  assetId      String
+  platform     String   // linkedin|x|youtube|instagram|tiktok|wordpress|reddit|pinterest|facebook
+  impressions  Int      @default(0)
+  clicks       Int      @default(0)
+  engagement   Float    @default(0)
+  conversions  Int      @default(0)
+  spendUsd     Float    @default(0)
+  periodStart  DateTime
+  periodEnd    DateTime
+  insights     Json?    // AI-generated insights
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([assetId])
+  @@index([platform])
+  @@index([periodStart])
+  @@map("content_performance")
 }
