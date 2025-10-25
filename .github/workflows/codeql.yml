@@ -32,27 +32,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Recommended for Next.js so CodeQL sees the built graph
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build --if-present
-        continue-on-error: true  # Don't fail if build has issues
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+          # Disable autobuild for JavaScript/TypeScript (not needed)
+          queries: security-and-quality
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
