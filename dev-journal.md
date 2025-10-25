@@ -1726,3 +1726,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2025-10-24: ApexSalesAI current build
 - ✅ 2025-10-24: Cleaned .env and ensured secrets are ignored
 - ✅ 2025-10-24: Add safe env example
+- ✅ 2025-10-25: Add CodeQL security scanning workflow
