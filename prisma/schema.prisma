@@ -465,10 +465,16 @@ model AgentTask {
   output        Json?
   
   // Telemetry
+  tokensIn      Int      @default(0)
+  tokensOut     Int      @default(0)
+  latencyMs     Int      @default(0)
+  model         String   @default("gpt-4o-mini")
+  costUsd       Float    @default(0)
+  error         String?  @db.Text
+  
+  // Legacy fields (kept for compatibility)
   costTokensIn  Int      @default(0)
   costTokensOut Int      @default(0)
-  latencyMs     Int      @default(0)
-  error         String?  @db.Text
   
   // Timestamps
   createdAt     DateTime @default(now())

@@ -132,15 +132,22 @@ export async function runAgents(
         }
       }
 
+      // Calculate cost (GPT-4o-mini pricing: $0.150/1M input, $0.600/1M output)
+      const costUsd = (result.tokensIn * 0.150 / 1_000_000) + (result.tokensOut * 0.600 / 1_000_000);
+      
       // Update task as completed
       await prisma.agentTask.update({
         where: { id: task.id },
         data: {
           status: 'done',
           output: result as any,
-          costTokensIn: result.tokensIn,
-          costTokensOut: result.tokensOut,
+          tokensIn: result.tokensIn,
+          tokensOut: result.tokensOut,
+          costTokensIn: result.tokensIn, // Legacy field
+          costTokensOut: result.tokensOut, // Legacy field
           latencyMs: result.ms,
+          model: 'gpt-4o-mini',
+          costUsd,
           completedAt: new Date(),
         },
       });
