@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 import { count, LIMITS, enforceLimit } from '@lib/socialLimits';
 import { saveAsset } from '../hooks/useAssetSave';
-import { Save, FileText } from 'lucide-react';
+import { usePublish } from '../hooks/usePublish';
+import { Save, FileText, Send, Mail, Linkedin, Twitter } from 'lucide-react';
 
 interface RichEditorProps {
   assetId: string;
@@ -27,6 +28,7 @@ export function RichEditor({ assetId, initialTitle, initialBody, assetType, onSa
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [targetWords, setTargetWords] = useState<number | null>(null);
+  const { publish, publishing, error: publishError, success: publishSuccess } = usePublish();
 
   const stats = count(body);
   const isSocial = assetType === 'social';
@@ -93,6 +95,26 @@ export function RichEditor({ assetId, initialTitle, initialBody, assetType, onSa
     if (charLimit) {
       setBody(enforceLimit(body, charLimit));
     }
+  };
+
+  const handlePublish = async (channel: 'blog' | 'email' | 'linkedin' | 'x') => {
+    // Save first
+    await handleSave();
+    
+    // Then publish
+    const options: any = { assetId, channel };
+    
+    if (channel === 'blog') {
+      options.title = title;
+    } else if (channel === 'email') {
+      // TODO: Get recipient from user input
+      options.to = 'test@example.com';
+      options.subject = title;
+    } else if (channel === 'linkedin' || channel === 'x') {
+      options.text = body;
+    }
+    
+    await publish(options);
   };
 
   return (
@@ -213,6 +235,70 @@ export function RichEditor({ assetId, initialTitle, initialBody, assetType, onSa
           <Save className="w-4 h-4" />
           Save as New Version
         </button>
+      </div>
+
+      {/* Publish Buttons */}
+      <div className="border-t border-slate-700 pt-4">
+        <h3 className="text-sm font-medium text-slate-300 mb-3">Publish to Channels</h3>
+        <div className="flex items-center gap-3 flex-wrap">
+          {assetType === 'blog' && (
+            <button
+              onClick={() => handlePublish('blog')}
+              disabled={publishing || saving || exceeded}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              Publish Blog
+            </button>
+          )}
+          
+          {assetType === 'email' && (
+            <button
+              onClick={() => handlePublish('email')}
+              disabled={publishing || saving || exceeded}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              <Mail className="w-4 h-4" />
+              Send Email
+            </button>
+          )}
+          
+          {assetType === 'social' && (
+            <>
+              <button
+                onClick={() => handlePublish('linkedin')}
+                disabled={publishing || saving || exceeded}
+                className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              >
+                <Linkedin className="w-4 h-4" />
+                Post to LinkedIn
+              </button>
+              <button
+                onClick={() => handlePublish('x')}
+                disabled={publishing || saving || exceeded}
+                className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              >
+                <Twitter className="w-4 h-4" />
+                Post to X
+              </button>
+            </>
+          )}
+        </div>
+        
+        {/* Publish Status Messages */}
+        {publishing && (
+          <div className="mt-3 text-sm text-cyan-400">Publishing...</div>
+        )}
+        {publishSuccess && (
+          <div className="mt-3 text-sm text-green-400" data-testid="publish-success">
+            ✓ {publishSuccess}
+          </div>
+        )}
+        {publishError && (
+          <div className="mt-3 text-sm text-red-400" data-testid="publish-error">
+            ✗ {publishError}
+          </div>
+        )}
       </div>
     </div>
   );
