@@ -12,20 +12,24 @@ export async function POST(request: NextRequest) {
   try {
     const body = await requireJson<{
       campaignId: string;
-      agents: AgentName[];
+      agents?: AgentName[];
     }>(request);
 
     // Validate
-    if (!body.campaignId || !Array.isArray(body.agents) || body.agents.length === 0) {
+    if (!body.campaignId) {
       return NextResponse.json(
-        { error: 'campaignId and agents[] are required' },
+        { error: 'campaignId is required' },
         { status: 422 }
       );
     }
 
+    // Use default agent chain if not specified
+    const defaultAgents: AgentName[] = ['strategy', 'copy', 'visual', 'video', 'personalize'];
+    const agentsToRun = body.agents && body.agents.length > 0 ? body.agents : defaultAgents;
+
     // Validate agent names
     const validAgents: AgentName[] = ['strategy', 'copy', 'visual', 'video', 'personalize'];
-    const invalidAgents = body.agents.filter(a => !validAgents.includes(a));
+    const invalidAgents = agentsToRun.filter(a => !validAgents.includes(a));
     
     if (invalidAgents.length > 0) {
       return NextResponse.json(
@@ -34,10 +38,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[API] Running agents for campaign ${body.campaignId}:`, body.agents);
+    console.log(`[API] Running agents for campaign ${body.campaignId}:`, agentsToRun);
 
     // Execute agent chain
-    const result = await runAgents(body.campaignId, body.agents);
+    const result = await runAgents(body.campaignId, agentsToRun);
 
     // Log execution
     await audit('system-user', 'agents.run', { type: 'campaign', id: body.campaignId }, {

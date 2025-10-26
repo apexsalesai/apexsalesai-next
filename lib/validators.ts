@@ -95,6 +95,38 @@ export const ContentGenerationSchema = z.object({
 
 export type ContentGeneration = z.infer<typeof ContentGenerationSchema>;
 
+// Channel publishing schemas
+export const publishBase = z.object({
+  assetId: z.string().min(1),
+  title: z.string().optional(),
+  body: z.string().optional(),
+  scheduledAt: z.string().datetime().optional(),
+});
+
+export const publishEmail = publishBase.extend({
+  provider: z.enum(['resend', 'sendgrid']).default('resend'),
+  to: z.array(z.string().email()).min(1),
+  subject: z.string().min(1),
+});
+
+export const publishBlog = publishBase.extend({
+  slug: z.string().min(2),
+});
+
+export const publishLinkedIn = publishBase.extend({
+  visibility: z.enum(['PUBLIC', 'CONNECTIONS']).default('PUBLIC'),
+});
+
+export const publishX = publishBase;
+
+export const publishSocial = z.object({
+  assetId: z.string().min(1),
+  title: z.string().optional(),
+  body: z.string().optional(),
+  scheduledAt: z.string().datetime().optional(),
+  channels: z.array(z.enum(['blog', 'email', 'linkedin', 'x'])).min(1),
+});
+
 // Helper function to validate and parse
 export function validateRequest<T>(
   schema: z.ZodSchema<T>,

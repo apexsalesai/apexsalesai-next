@@ -546,6 +546,23 @@ model ManualTask {
   @@map("manual_tasks")
 }
 
+model ScheduledPublish {
+  id          String   @id @default(cuid())
+  assetId     String
+  channel     String   // blog|email|linkedin|x
+  scheduledAt DateTime
+  payload     Json     // Channel-specific data (to, subject, slug, etc.)
+  status      String   @default("pending") // pending|processing|completed|failed
+  processedAt DateTime?
+  error       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([scheduledAt, status])
+  @@index([assetId])
+  @@map("scheduled_publishes")
+}
+
 model MetricEvent {
   id         String   @id @default(cuid())
   
