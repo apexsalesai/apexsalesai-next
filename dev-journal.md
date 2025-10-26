@@ -1756,3 +1756,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2025-10-26: Organize documentation for AI assistant access
 - ✅ 2025-10-26: Add Claude access summary document
 - ✅ 2025-10-26: Update Claude access doc with GitHub token and API URLs
+- ✅ 2025-10-26: Item C Phase 2.5: Add Blog adapter + scaffold Email/LinkedIn/X adapters (501 placeholders)

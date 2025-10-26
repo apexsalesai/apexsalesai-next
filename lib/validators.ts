@@ -103,10 +103,11 @@ export const publishBase = z.object({
   scheduledAt: z.string().datetime().optional(),
 });
 
-export const publishEmail = publishBase.extend({
-  provider: z.enum(['resend', 'sendgrid']).default('resend'),
-  to: z.array(z.string().email()).min(1),
-  subject: z.string().min(1),
+export const publishEmail = z.object({
+  assetId: z.string().min(1),
+  to: z.union([z.string().email(), z.array(z.string().email())]),
+  subject: z.string().optional(),
+  scheduledAt: z.string().datetime().optional(),
 });
 
 export const publishBlog = publishBase.extend({
@@ -121,10 +122,8 @@ export const publishX = publishBase;
 
 export const publishSocial = z.object({
   assetId: z.string().min(1),
-  title: z.string().optional(),
-  body: z.string().optional(),
+  text: z.string().optional(),
   scheduledAt: z.string().datetime().optional(),
-  channels: z.array(z.enum(['blog', 'email', 'linkedin', 'x'])).min(1),
 });
 
 // Helper function to validate and parse
