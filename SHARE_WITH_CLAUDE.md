@@ -6,22 +6,30 @@ Hi Claude! I've set up our project documentation so you can fetch it directly fr
 
 ## 📍 Quick Access URLs
 
+**GitHub Token:** `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`
+
 ### Core Status (Read These First)
 ```
-https://raw.githubusercontent.com/apexsalesai/apexsalesai-next/main/docs/PROJECT_STATUS.md
-https://raw.githubusercontent.com/apexsalesai/apexsalesai-next/main/docs/DAILY_STANDUP.md
-https://raw.githubusercontent.com/apexsalesai/apexsalesai-next/main/docs/BLOCKERS.md
+https://api.github.com/repos/apexsalesai/apexsalesai-next/contents/docs/PROJECT_STATUS.md
+https://api.github.com/repos/apexsalesai/apexsalesai-next/contents/docs/DAILY_STANDUP.md
+https://api.github.com/repos/apexsalesai/apexsalesai-next/contents/docs/BLOCKERS.md
+```
+
+**Note:** Repository is private. Use the GitHub token above with these headers:
+```
+Authorization: token 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
+Accept: application/vnd.github.v3.raw
 ```
 
 ### Implementation Details
 ```
-https://raw.githubusercontent.com/apexsalesai/apexsalesai-next/main/docs/ITEM_B_STUDIO_UI.md
-https://raw.githubusercontent.com/apexsalesai/apexsalesai-next/main/docs/ITEM_C_CHANNEL_ADAPTERS.md
+https://api.github.com/repos/apexsalesai/apexsalesai-next/contents/docs/ITEM_B_STUDIO_UI.md
+https://api.github.com/repos/apexsalesai/apexsalesai-next/contents/docs/ITEM_C_CHANNEL_ADAPTERS.md
 ```
 
 ### Performance Data
 ```
-https://raw.githubusercontent.com/apexsalesai/apexsalesai-next/main/reports/validation-report.json
+https://api.github.com/repos/apexsalesai/apexsalesai-next/contents/reports/validation-report.json
 ```
 
 ---
