@@ -1,0 +1,47 @@
+version: 2
+updates:
+  # 1️⃣ NPM Packages (Frontend + Backend)
+  - package-ecosystem: "npm"
+    directory: "/" # Root directory for package.json
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "04:00"
+      timezone: "America/New_York"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+
+  # 2️⃣ GitHub Actions (CI/CD Workflows)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "04:30"
+      timezone: "America/New_York"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "ci"
+      - "automation"
+
+  # 3️⃣ Docker (Optional — If using container builds)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "docker"
+    labels:
+      - "infrastructure"
