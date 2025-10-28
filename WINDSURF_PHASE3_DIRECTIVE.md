@@ -23,11 +23,12 @@ This task converts our telemetry pipeline into **live, investor-grade observabil
 |------|--------|---------|
 | **T + 0 min** | `pwsh ./scripts/phase3_execute.ps1` | Repo validation + migration + env vars populated |
 | **T + 15 min** | Create Azure AD Service Principal (`apex-dataverse-sp`) | Client ID/Secret generated, permissions granted |
-| **T + 60 min** | Create Dataverse table → Apex Campaign Metrics | 13 columns per setup guide + API access verified |
-| **T + 90 min** | Import Power Automate Flow (JSON template) | Neon → Dataverse sync active (every 5 min) |
-| **T + 120 min** | Run validation suite (`npm run build/lint/test`) | 0 errors → ✅ All checks pass |
-| **T + 150 min** | Record screenshots + fill `PHASE_3_COMPLETE.md` | Evidence + KPI metrics attached |
-| **T + 165 min** | `git commit -m "Phase 3 Complete: Dataverse telemetry live"` | Pushed → `v3.0-complete` tag created |
+| **T + 20 min** | Test OAuth2 token (`pwsh ./scripts/test-dataverse-token.ps1`) | ✅ Bearer token acquired, Dataverse API validated |
+| **T + 65 min** | Create Dataverse table → Apex Campaign Metrics | 13 columns per setup guide + API access verified |
+| **T + 95 min** | Import Power Automate Flow (JSON template) | Neon → Dataverse sync active (every 5 min) |
+| **T + 125 min** | Run validation suite (`npm run build/lint/test`) | 0 errors → ✅ All checks pass |
+| **T + 155 min** | Record screenshots + fill `PHASE_3_COMPLETE.md` | Evidence + KPI metrics attached |
+| **T + 170 min** | `git commit -m "Phase 3 Complete: Dataverse telemetry live"` | Pushed → `v3.0-complete` tag created |
 
 ---
 
@@ -162,6 +163,59 @@ DATAVERSE_RESOURCE=https://apexsalesai.crm.dynamics.com
 ```
 
 **Add to `.env.local` and Vercel Environment Variables**
+
+---
+
+### **Step 2.5: Test OAuth2 Token (5 minutes)**
+
+**⚠️ CRITICAL: Use PowerShell, NOT ReqBin**
+
+ReqBin silently mis-encodes form data (adds line breaks, uses multipart encoding). Azure rejects these requests. Use PowerShell for guaranteed success.
+
+**Run the automated test script:**
+```powershell
+pwsh ./scripts/test-dataverse-token.ps1
+```
+
+**Or test manually:**
+```powershell
+$tenantId = "YOUR_TENANT_ID"
+$clientId = "YOUR_CLIENT_ID"
+$clientSecret = "YOUR_CLIENT_SECRET"
+$scope = "https://YOUR_INSTANCE.crm.dynamics.com/.default"
+
+$body = @{
+    client_id     = $clientId
+    client_secret = $clientSecret
+    grant_type    = "client_credentials"
+    scope         = $scope
+}
+
+Invoke-RestMethod -Method Post `
+  -Uri "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token" `
+  -ContentType "application/x-www-form-urlencoded" `
+  -Body $body
+```
+
+**Expected Response:**
+```json
+{
+  "token_type": "Bearer",
+  "expires_in": 3599,
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJS..."
+}
+```
+
+**✅ Success Criteria:**
+- HTTP 200 OK
+- `access_token` present
+- `expires_in` = 3599 seconds (59 minutes)
+
+**❌ If Failed:**
+- Verify tenant ID, client ID, client secret
+- Check API permissions granted in Azure Portal
+- Ensure resource URL matches Dataverse instance
+- **DO NOT use ReqBin or curl on Windows** (encoding issues)
 
 ---
 
