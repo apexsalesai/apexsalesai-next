@@ -12,34 +12,30 @@ const choice = <T>(arr: T[]) => arr[rand(0, arr.length - 1)];
 type AnyModel = keyof PrismaClient;
 
 async function createSafe(model: AnyModel, data: any, note?: string) {
-  // @ts-ignore
-  const client = prisma[model];
+  const client = prisma[model] as any;
   if (!client?.create) {
-    console.log(`⚠️  Skipped ${note ?? model} (model not found)`);
+    console.log(`⚠️  Skipped ${String(note ?? model)} (model not found)`);
     return null;
   }
   try {
-    // @ts-ignore
     return await client.create({ data });
   } catch (e: any) {
-    console.log(`⚠️  Skipped ${note ?? model}: ${e?.message || e}`);
+    console.log(`⚠️  Skipped ${String(note ?? model)}: ${e?.message || e}`);
     return null;
   }
 }
 
 async function createManySafe(model: AnyModel, data: any[], note?: string) {
-  // @ts-ignore
-  const client = prisma[model];
+  const client = prisma[model] as any;
   if (!client?.createMany) {
     const results = [];
     for (const d of data) results.push(await createSafe(model, d, note));
     return results;
   }
   try {
-    // @ts-ignore
     return await client.createMany({ data, skipDuplicates: true });
   } catch (e: any) {
-    console.log(`⚠️  Skipped bulk for ${note ?? model}: ${e?.message || e}`);
+    console.log(`⚠️  Skipped bulk for ${String(note ?? model)}: ${e?.message || e}`);
     const results = [];
     for (const d of data) results.push(await createSafe(model, d, note));
     return results;
@@ -125,6 +121,8 @@ async function main() {
     where: { userId: realEstateAgent.id },
     update: { status: 'active', model: 'gpt-4o' },
     create: {
+      name: 'Sarah Agent',
+      role: 'Real Estate Sales Agent',
       userId: realEstateAgent.id,
       model: 'gpt-4o',
       status: 'active'
@@ -135,6 +133,8 @@ async function main() {
     where: { userId: mortgageOfficer.id },
     update: { status: 'active', model: 'gpt-4o' },
     create: {
+      name: 'Michael Agent',
+      role: 'Mortgage Loan Officer Agent',
       userId: mortgageOfficer.id,
       model: 'gpt-4o',
       status: 'active'
