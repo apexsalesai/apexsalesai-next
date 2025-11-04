@@ -5,12 +5,25 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// Type definition for publish jobs
+type PublishJob = {
+  id: string;
+  platform: string;
+  status: 'queued' | 'posting' | 'posted' | 'failed';
+  scheduledAt: string | null;
+  postedAt: string | null;
+  postUrl: string | null;
+  errorMessage: string | null;
+  assetId: string;
+  createdAt: string;
+};
+
 // Mock data
-const mockJobs = [
+const mockJobs: PublishJob[] = [
   {
     id: '1',
     platform: 'linkedin',
-    status: 'success',
+    status: 'posted',
     scheduledAt: null,
     postedAt: new Date().toISOString(),
     postUrl: 'https://linkedin.com/post/demo1',
@@ -51,7 +64,7 @@ export async function POST(req: NextRequest) {
     const newJob = {
       id: String(mockJobs.length + 1),
       platform,
-      status: scheduledAt ? 'queued' : 'posting',
+      status: (scheduledAt ? 'queued' : 'posting') as PublishJob['status'],
       scheduledAt: scheduledAt || null,
       postedAt: scheduledAt ? null : new Date().toISOString(),
       postUrl: scheduledAt ? null : `https://${platform}.com/post/demo`,

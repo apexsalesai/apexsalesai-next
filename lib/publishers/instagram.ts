@@ -28,7 +28,8 @@ export async function publish(context: PublishContext): Promise<PublishResult> {
 
     // Decrypt access token
     const accessToken = decrypt(token.accessToken);
-    const igUserId = token.metadata?.igUserId;
+    const metadata = token.metadata as { igUserId?: string } | null;
+    const igUserId = metadata?.igUserId;
 
     if (!igUserId) {
       return {

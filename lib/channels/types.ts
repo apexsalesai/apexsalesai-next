@@ -122,7 +122,7 @@ export interface ChannelConfig {
   defaultOptions?: Partial<PublishOptions>;
 }
 
-export interface ChannelRegistry {
+export interface ChannelConfigRegistry {
   blog?: ChannelConfig;
   email?: ChannelConfig;
   linkedin?: ChannelConfig;
