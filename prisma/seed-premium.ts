@@ -14,15 +14,16 @@ type AnyModel = keyof PrismaClient;
 async function createSafe(model: AnyModel, data: any, note?: string) {
   // @ts-ignore
   const client = prisma[model];
+  // @ts-ignore
   if (!client?.create) {
-    console.log(`⚠️  Skipped ${note ?? model} (model not found)`);
+    console.log(`⚠️  Skipped ${String(note ?? model)} (model not found)`);
     return null;
   }
   try {
     // @ts-ignore
     return await client.create({ data });
   } catch (e: any) {
-    console.log(`⚠️  Skipped ${note ?? model}: ${e?.message || e}`);
+    console.log(`⚠️  Skipped ${String(note ?? model)}: ${e?.message || e}`);
     return null;
   }
 }
@@ -30,6 +31,7 @@ async function createSafe(model: AnyModel, data: any, note?: string) {
 async function createManySafe(model: AnyModel, data: any[], note?: string) {
   // @ts-ignore
   const client = prisma[model];
+  // @ts-ignore
   if (!client?.createMany) {
     const results = [];
     for (const d of data) results.push(await createSafe(model, d, note));
@@ -39,7 +41,7 @@ async function createManySafe(model: AnyModel, data: any[], note?: string) {
     // @ts-ignore
     return await client.createMany({ data, skipDuplicates: true });
   } catch (e: any) {
-    console.log(`⚠️  Skipped bulk for ${note ?? model}: ${e?.message || e}`);
+    console.log(`⚠️  Skipped bulk for ${String(note ?? model)}: ${e?.message || e}`);
     const results = [];
     for (const d of data) results.push(await createSafe(model, d, note));
     return results;

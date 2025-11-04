@@ -75,8 +75,9 @@ export function verifyState(state: string): OAuthState {
 /**
  * Set secure HTTP-only cookie
  */
-export function setAuthCookie(name: string, value: string, maxAge?: number) {
-  cookies().set(name, value, {
+export async function setAuthCookie(name: string, value: string, maxAge?: number) {
+  const cookieStore = await cookies();
+  cookieStore.set(name, value, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -88,15 +89,17 @@ export function setAuthCookie(name: string, value: string, maxAge?: number) {
 /**
  * Get cookie value
  */
-export function getAuthCookie(name: string): string | undefined {
-  return cookies().get(name)?.value;
+export async function getAuthCookie(name: string): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get(name)?.value;
 }
 
 /**
  * Delete cookie
  */
-export function deleteAuthCookie(name: string) {
-  cookies().delete(name);
+export async function deleteAuthCookie(name: string) {
+  const cookieStore = await cookies();
+  cookieStore.delete(name);
 }
 
 /**

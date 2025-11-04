@@ -481,7 +481,10 @@ As AI becomes more capable, the stakes get higher. Organizations that prioritize
     await prisma.blogPost.upsert({
       where: { slug: blog.slug },
       update: {},
-      create: blog,
+      create: {
+        ...blog,
+        status: blog.status as any, // Type assertion for enum
+      },
     });
   }
   console.log(`  ✅ BlogPosts (${blogCount + newBlogCount} total, ${newBlogCount} new)`);

@@ -27,9 +27,9 @@ export default async function handler(
 
     // Calculate some metrics for the forecast
     const totalLeads = leads.length;
-    const highConfidenceLeads = leads.filter(lead => lead.confidence_score >= 0.8).length;
-    const mediumConfidenceLeads = leads.filter(lead => lead.confidence_score >= 0.5 && lead.confidence_score < 0.8).length;
-    const lowConfidenceLeads = leads.filter(lead => lead.confidence_score < 0.5).length;
+    const highConfidenceLeads = leads.filter(lead => (lead.confidence_score ?? 0) >= 0.8).length;
+    const mediumConfidenceLeads = leads.filter(lead => (lead.confidence_score ?? 0) >= 0.5 && (lead.confidence_score ?? 0) < 0.8).length;
+    const lowConfidenceLeads = leads.filter(lead => (lead.confidence_score ?? 0) < 0.5).length;
 
     // Calculate average deal size (this would come from real data in a production system)
     const avgDealSize = 125000; // $125k average deal size

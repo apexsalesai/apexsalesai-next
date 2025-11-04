@@ -7,7 +7,7 @@
 
 export * from './types';
 export * from './base';
-export * from './registry';
+export { ChannelRegistry } from './registry';
 
 // Export individual adapters
 export { NextJSBlogAdapter } from './adapters/nextjs-blog';

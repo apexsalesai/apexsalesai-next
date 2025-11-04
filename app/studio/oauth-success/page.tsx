@@ -15,10 +15,10 @@ import { CheckCircle2, Copy, ExternalLink } from 'lucide-react';
 
 export default function OAuthSuccessPage() {
   const searchParams = useSearchParams();
-  const channel = searchParams.get('channel') || 'unknown';
-  const accessToken = searchParams.get('access_token') || '';
-  const refreshToken = searchParams.get('refresh_token') || '';
-  const expiresIn = searchParams.get('expires_in') || '';
+  const channel = searchParams?.get('channel') || 'unknown';
+  const accessToken = searchParams?.get('access_token') || '';
+  const refreshToken = searchParams?.get('refresh_token') || '';
+  const expiresIn = searchParams?.get('expires_in') || '';
 
   const [copiedAccess, setCopiedAccess] = useState(false);
   const [copiedRefresh, setCopiedRefresh] = useState(false);
