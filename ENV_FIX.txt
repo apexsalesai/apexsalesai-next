@@ -1,0 +1,8 @@
+Copy these lines EXACTLY into your .env file (lines 1-3):
+Make sure each DATABASE_URL and DIRECT_URL is on ONE SINGLE LINE with NO line breaks!
+
+DATABASE_URL="postgresql://neondb_owner:ApexMax42XyZ@ep-misty-surf-adv6olws-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&pgbouncer=true&connect_timeout=15"
+DIRECT_URL="postgresql://neondb_owner:ApexMax42XyZ@ep-misty-surf-adv6olws.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+USE_DB=true
+
+CRITICAL: Each URL must be on ONE line. No line breaks in the middle of the URL!

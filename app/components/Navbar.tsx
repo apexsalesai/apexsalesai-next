@@ -14,12 +14,10 @@ export default function Navbar() {
     { href: '/', label: 'Home' },
     { href: '/about', label: 'About' },
     { href: '/platform', label: 'Platform' },
-    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/studio', label: 'Studio' },
+    { href: '/career', label: 'Career' },
     { href: '/pricing', label: 'Pricing' },
-    { href: '/consulting', label: 'Consulting' },
     { href: '/demo', label: 'Demo' },
-    { href: '/reseller', label: 'Reseller' },
-    { href: '/onboarding', label: 'Onboarding' },
     { href: '/blog', label: 'Blog' },
     { href: '/contact', label: 'Contact' }
   ];
