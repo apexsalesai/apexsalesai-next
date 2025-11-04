@@ -8,12 +8,12 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Copy, ExternalLink } from 'lucide-react';
 
-export default function OAuthSuccessPage() {
+function OAuthSuccessContent() {
   const searchParams = useSearchParams();
   const channel = searchParams?.get('channel') || 'unknown';
   const accessToken = searchParams?.get('access_token') || '';
@@ -155,5 +155,13 @@ ${refreshToken ? `YOUTUBE_REFRESH_TOKEN="${refreshToken}"` : ''}`}
         </p>
       </div>
     </div>
+  );
+}
+
+export default function OAuthSuccessPage() {
+  return (
+    <Suspense fallback={<div className="container max-w-4xl py-10">Loading...</div>}>
+      <OAuthSuccessContent />
+    </Suspense>
   );
 }
