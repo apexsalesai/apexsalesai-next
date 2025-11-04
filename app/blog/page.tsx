@@ -1,47 +1,49 @@
 'use client';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { NewsletterSubscribe } from '../components/NewsletterSubscribe';
+import Navbar from '../components/Navbar';
 
-const featuredPost = {
-  title: "The Rise of Autonomous Revenue Teams",
-  date: "April 22, 2025",
-  author: "ApexSalesAI Editorial",
-  image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80", // Teamwork/AI
-  excerpt: "Discover how AI agents are reshaping go-to-market operations, helping teams do more with less — and scale without headcount. This comprehensive analysis explores real-world case studies from Fortune 500 companies deploying AI agents across their revenue org.",
-  tags: ["AI Agents", "Revenue Operations", "Enterprise Strategy"],
-  slug: "ai-revenue-teams"
-};
+interface BlogPost {
+  slug: string;
+  title: string;
+  date: string;
+  author: string;
+  excerpt: string;
+  image: string;
+  tags: string[];
+}
 
-const blogPosts = [
+// Default fallback posts
+const defaultPosts: BlogPost[] = [
   {
-    title: "The Future of Sales: How AI is Reshaping Revenue Operations",
-    date: "May 15, 2025",
-    author: "Dr. Sarah Chen, AI Strategy Director",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80", // Futuristic sales
-    excerpt: "The convergence of AI and sales operations is creating unprecedented opportunities for revenue growth. Learn how predictive analytics and autonomous execution are transforming the sales landscape.",
-    tags: ["AI", "Sales Strategy", "Revenue Operations"],
-    slug: "ai-sales-future"
+    slug: 'ai-revenue-teams',
+    title: 'The Rise of Autonomous Revenue Teams',
+    date: '2025-04-22',
+    author: 'ApexSalesAI Editorial',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'Discover how AI agents are reshaping go-to-market operations, helping teams do more with less — and scale without headcount.',
+    tags: ['AI Agents', 'Revenue Operations', 'Enterprise Strategy'],
   },
   {
-    title: "Maximizing ROI with Predictive Sales Intelligence",
-    date: "May 10, 2025",
-    author: "Michael Thompson, Chief Revenue Officer",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80", // Analytics
-    excerpt: "Discover how leading enterprises are leveraging predictive analytics to identify high-value opportunities and optimize their sales funnels for maximum ROI.",
-    tags: ["Analytics", "ROI", "Sales Optimization"],
-    slug: "predictive-analytics"
+    slug: 'ai-sales-future',
+    title: 'The Future of Sales: How AI is Reshaping Revenue Operations',
+    date: '2025-05-15',
+    author: 'Dr. Sarah Chen, AI Strategy Director',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'The convergence of AI and sales operations is creating unprecedented opportunities for revenue growth.',
+    tags: ['AI', 'Sales Strategy', 'Revenue Operations'],
   },
   {
-    title: "The Rise of Autonomous Sales Execution",
-    date: "May 5, 2025",
-    author: "Lisa Martinez, AI Product Lead",
-    image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80", // Automation/AI
-    excerpt: "Explore the capabilities of our autonomous sales agents and how they're revolutionizing the way businesses engage with their customers at scale.",
-    tags: ["AI Agents", "Sales Automation", "Customer Engagement"],
-    slug: "autonomous-sales"
+    slug: 'predictive-analytics',
+    title: 'Maximizing ROI with Predictive Sales Intelligence',
+    date: '2025-05-10',
+    author: 'Michael Thompson, Chief Revenue Officer',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'Discover how leading enterprises are leveraging predictive analytics to identify high-value opportunities.',
+    tags: ['Analytics', 'ROI', 'Sales Optimization'],
   },
 ];
 
@@ -101,6 +103,35 @@ function NewsletterSubscribeForm() {
 }
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
+  const [selectedTag, setSelectedTag] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [featuredPost, setFeaturedPost] = useState<BlogPost>(defaultPosts[0]);
+  
+  // Filter posts based on selected tag
+  const filteredPosts = selectedTag === 'All' 
+    ? posts.slice(1) 
+    : posts.slice(1).filter(post => post.tags.some(tag => tag.toLowerCase().includes(selectedTag.toLowerCase())));
+
+  useEffect(() => {
+    // Fetch actual blog posts from API
+    fetch('/api/posts?status=PUBLISHED')
+      .then(res => res.json())
+      .then(data => {
+        if (data.posts && data.posts.length > 0) {
+          setPosts(data.posts);
+          setFeaturedPost(data.posts[0]);
+        }
+      })
+      .catch(err => {
+        console.error('Error loading blog posts:', err);
+        // Keep default posts on error
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const otherPosts = posts.slice(1);
+
   return (
     <>
       <Head>
@@ -120,8 +151,14 @@ export default function BlogPage() {
         <link rel="icon" href="/images/favicon.ico" />
         <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
       </Head>
-<main className="container mx-auto px-4 py-20">
+      
+      {/* Navigation Ribbon */}
+      <Navbar />
+      
+      <main className="container mx-auto px-4 py-20 mt-16">
         <header className="relative text-center text-white py-24 overflow-hidden">
+          {/* Animated Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00c2cb]/10 via-transparent to-[#005f6b]/10 animate-gradient"></div>
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" className="w-full h-full">
               <circle cx="200" cy="200" r="150" fill="#00c2cb" className="opacity-15 animate-float" />
@@ -129,60 +166,98 @@ export default function BlogPage() {
             </svg>
           </div>
           <div className="container mx-auto px-4 relative z-10">
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Insights That Drive Execution</h1>
-            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">Explore practical AI use cases, GTM strategies, and automation frameworks designed to accelerate revenue outcomes.</p>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Insights That Drive Execution</h1>
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8">Explore practical AI use cases, GTM strategies, and automation frameworks designed to accelerate revenue outcomes.</p>
+            <a href="#subscribe" className="inline-block bg-gradient-to-r from-[#00c2cb] to-[#00a8b3] text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+              Subscribe for AI Sales Insights
+            </a>
           </div>
         </header>
 
         {/* Featured Post */}
         <section className="mb-16">
-          <div className="bg-[#1a202c] rounded-2xl overflow-hidden shadow-lg relative flex flex-col md:flex-row">
-            <span className="absolute top-4 right-4 bg-[#00c2cb] text-[#0d1321] px-4 py-1 rounded-full font-semibold text-xs">Featured</span>
-            <div className="md:w-1/2 w-full h-72 md:h-auto relative">
-              <Image src={featuredPost.image} alt={featuredPost.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" className="object-cover" />
-            </div>
-            <div className="md:w-1/2 w-full p-8 flex flex-col justify-center">
+          <div className="bg-[#1a202c] rounded-2xl overflow-hidden shadow-lg relative flex flex-col md:flex-row hover:shadow-2xl hover:scale-[1.02] transition-all duration-300">
+            <span className="absolute top-4 right-4 bg-[#00c2cb] text-[#0d1321] px-4 py-1 rounded-full font-semibold text-xs z-10">Featured</span>
+            {featuredPost.image && (
+              <div className="md:w-1/2 w-full h-72 md:h-auto relative flex-shrink-0">
+                <Image 
+                  src={featuredPost.image} 
+                  alt={featuredPost.title} 
+                  fill 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" 
+                  className="object-cover" 
+                />
+              </div>
+            )}
+            <div className={`${featuredPost.image ? 'md:w-1/2' : 'w-full'} p-8 flex flex-col justify-center`}>
               <span className="text-[#00c2cb] text-sm mb-2">{featuredPost.date}</span>
               <div className="flex flex-wrap gap-2 mb-4">
                 {featuredPost.tags.map((tag, i) => (
                   <span key={i} className="bg-[#00c2cb]/10 text-[#00c2cb] px-3 py-1 rounded-full text-xs font-medium">{tag}</span>
                 ))}
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">{featuredPost.title}</h2>
-              <p className="text-gray-300 mb-4">{featuredPost.excerpt}</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2 leading-tight">{featuredPost.title}</h2>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed">{featuredPost.excerpt}</p>
               <a href={`/blog/${featuredPost.slug}`} className="inline-block bg-[#00c2cb] text-[#0d1321] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#00a8b3] transition">Read Article</a>
             </div>
           </div>
         </section>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-12 p-4 bg-[#1a202c]/70 rounded-lg justify-center">
-          {['All', 'AI & Automation', 'Sales Strategy', 'Customer Support', 'Industry Insights', 'Case Studies'].map((filter, i) => (
-            <button key={i} className={`border border-[#00c2cb] px-4 py-2 rounded-full font-medium text-sm transition ${i===0 ? 'bg-[#00c2cb] text-[#0d1321]' : 'bg-transparent text-[#00c2cb] hover:bg-[#00c2cb] hover:text-[#0d1321]'}`}>{filter}</button>
+        <div className="flex flex-wrap gap-2 mb-8 p-4 bg-[#1a202c]/70 rounded-lg justify-center">
+          {['All', 'AI & Automation', 'Sales Strategy', 'Customer Support', 'Industry Insights', 'Case Studies'].map((filter) => (
+            <button 
+              key={filter}
+              onClick={() => setSelectedTag(filter)}
+              className={`border border-[#00c2cb] px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 ${
+                selectedTag === filter 
+                  ? 'bg-[#00c2cb] text-[#0d1321] shadow-lg scale-105' 
+                  : 'bg-transparent text-[#00c2cb] hover:bg-[#00c2cb] hover:text-[#0d1321]'
+              }`}
+            >
+              {filter}
+            </button>
           ))}
+        </div>
+        
+        {/* Results Counter */}
+        <div className="text-center mb-8">
+          <p className="text-gray-400 text-sm">
+            {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'} found
+            {selectedTag !== 'All' && (
+              <button 
+                onClick={() => setSelectedTag('All')}
+                className="ml-2 text-[#00c2cb] hover:underline"
+              >
+                Clear filter
+              </button>
+            )}
+          </p>
         </div>
 
         {/* Blog Grid */}
         <section className="grid md:grid-cols-3 gap-8 mb-16">
-          {blogPosts.map((post, index) => (
+          {filteredPosts.map((post, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-[#1a1e29] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col"
+              className="bg-[#1a1e29] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group"
             >
               <article>
-                <div className="relative h-48">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                </div>
+                {post.image && (
+                  <div className="relative h-48">
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                      className="object-cover"
+                      priority={index === 0}
+                    />
+                  </div>
+                )}
                 <div className="p-6 flex flex-col flex-1">
                   <span className="text-[#00c2cb] text-xs mb-2">{post.date}</span>
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -195,18 +270,18 @@ export default function BlogPage() {
                       </span>
                     ))}
                   </div>
-                  <h2 className="text-xl font-bold text-white mb-2">
+                  <h2 className="text-lg font-bold text-white mb-2 leading-tight line-clamp-2">
                     {post.title}
                   </h2>
-                  <p className="text-gray-300 mb-4 flex-1">
+                  <p className="text-sm text-gray-300 mb-4 flex-1 leading-relaxed line-clamp-3">
                     {post.excerpt}
                   </p>
                   <a
                     href={`/blog/${post.slug}`}
-                    className="inline-block mt-4 text-blue-600 hover:underline font-semibold"
+                    className="inline-block mt-4 text-[#00c2cb] hover:text-[#00a8b3] font-semibold transition-colors group-hover:translate-x-1 transform duration-200"
                     aria-label={`Read full article: ${post.title}`}
                   >
-                    Read Article
+                    Read Article →
                   </a>
                 </div>
               </article>
@@ -215,11 +290,7 @@ export default function BlogPage() {
         </section>
 
         {/* Newsletter Section */}
-        <section className="bg-[#1a202c] rounded-2xl p-10 text-center max-w-2xl mx-auto">
-          <h3 className="text-2xl font-bold text-white mb-2">Stay Updated on AI Sales & Support Trends</h3>
-          <p className="text-gray-300 mb-6">Join 15,000+ revenue leaders receiving our bi-weekly insights on AI-powered GTM execution.</p>
-          <NewsletterSubscribeForm />
-        </section>
+        <NewsletterSubscribe />
       </main>
     </>
   );

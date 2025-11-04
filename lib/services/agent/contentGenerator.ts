@@ -4,20 +4,28 @@
  */
 
 import OpenAI from 'openai';
-import { logger } from '@lib/logger';
+import { logger } from '../../logger';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
-});
+// Robust API key fallback logic
+const openaiKey = 
+  process.env.OPENAI_API_KEY || 
+  process.env.AZURE_OPENAI_API_KEY || 
+  process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+
+// Initialize OpenAI client (will be checked at runtime)
+const openai = openaiKey ? new OpenAI({
+  apiKey: openaiKey,
+}) : null;
 
 export interface ContentGenerationRequest {
   topic: string;
-  contentType: 'blog' | 'social' | 'email' | 'case-study';
+  contentType: 'blog' | 'social' | 'email' | 'case-study' | 'video' | 'jobboard';
   tone?: 'professional' | 'casual' | 'technical' | 'executive';
   targetAudience?: string;
   keywords?: string[];
   length?: 'short' | 'medium' | 'long';
   vertical?: string;
+  platform?: 'LinkedIn' | 'Twitter' | 'Facebook' | 'Instagram';
 }
 
 export interface BlogPost {
@@ -42,12 +50,17 @@ export class ContentGenerator {
    */
   static async generateBlogPost(request: ContentGenerationRequest): Promise<BlogPost> {
     try {
-      logger.info('Generating blog post', { topic: request.topic, vertical: request.vertical });
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
+      logger.info(`Generating blog post: ${request.topic} (${request.vertical || 'general'})`);
 
       const prompt = this.buildBlogPrompt(request);
       
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -102,11 +115,11 @@ Format your response as JSON with these fields:
         }
       };
 
-      logger.info('Blog post generated successfully', { slug, title: blogPost.title });
+      logger.info(`Blog post generated successfully: ${blogPost.title} (${slug})`);
 
       return blogPost;
     } catch (error) {
-      logger.error('Error generating blog post', { error, request });
+      logger.error(`Error generating blog post: ${error}`);
       throw new Error(`Failed to generate blog post: ${error}`);
     }
   }
@@ -120,6 +133,11 @@ Format your response as JSON with these fields:
     facebook: string;
   }> {
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
       const prompt = `Create engaging social media posts about: ${request.topic}
       
 Target audience: ${request.targetAudience || 'Revenue leaders and sales professionals'}
@@ -133,7 +151,7 @@ Create posts for LinkedIn, Twitter, and Facebook that:
 - Are optimized for each platform's best practices`;
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -151,7 +169,7 @@ Create posts for LinkedIn, Twitter, and Facebook that:
       const response = JSON.parse(completion.choices[0].message.content || '{}');
       return response;
     } catch (error) {
-      logger.error('Error generating social content', { error, request });
+      logger.error(`Error generating social content: ${error}`);
       throw new Error(`Failed to generate social content: ${error}`);
     }
   }
@@ -166,6 +184,11 @@ Create posts for LinkedIn, Twitter, and Facebook that:
     cta: string;
   }> {
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
       const prompt = `Create a compelling marketing email about: ${request.topic}
       
 Target audience: ${request.targetAudience || 'Revenue leaders'}
@@ -179,7 +202,7 @@ Include:
 - Clear call-to-action`;
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -197,8 +220,137 @@ Include:
       const response = JSON.parse(completion.choices[0].message.content || '{}');
       return response;
     } catch (error) {
-      logger.error('Error generating email content', { error, request });
+      logger.error(`Error generating email content: ${error}`);
       throw new Error(`Failed to generate email content: ${error}`);
+    }
+  }
+
+  /**
+   * Generate video script content
+   */
+  static async generateVideoScript(request: ContentGenerationRequest): Promise<{
+    title: string;
+    duration: string;
+    script: string;
+    scenes: Array<{ timestamp: string; description: string; visuals: string; audio: string }>;
+    cta: string;
+  }> {
+    try {
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
+      const lengthMap = {
+        short: '30-60 seconds',
+        medium: '2-3 minutes',
+        long: '5-7 minutes'
+      };
+
+      const prompt = `Create a professional video script about: ${request.topic}
+      
+Target audience: ${request.targetAudience || 'Business professionals'}
+Tone: ${request.tone || 'professional'}
+Duration: ${lengthMap[request.length || 'medium']}
+
+Include:
+- Compelling hook (first 5 seconds)
+- Clear problem statement
+- Solution presentation
+- Benefits and outcomes
+- Social proof or statistics
+- Strong call-to-action
+- Scene-by-scene breakdown with timestamps
+- Visual and audio cues for production`;
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a video production expert specializing in B2B marketing videos. Create engaging scripts that convert viewers into customers.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      });
+
+      const response = JSON.parse(completion.choices[0].message.content || '{}');
+      return response;
+    } catch (error) {
+      logger.error(`Error generating video script: ${error}`);
+      throw new Error(`Failed to generate video script: ${error}`);
+    }
+  }
+
+  /**
+   * Generate job board posting
+   */
+  static async generateJobPosting(request: ContentGenerationRequest): Promise<{
+    title: string;
+    company: string;
+    location: string;
+    type: string;
+    description: string;
+    responsibilities: string[];
+    qualifications: string[];
+    benefits: string[];
+    salary: string;
+    applicationInstructions: string;
+  }> {
+    try {
+      if (!openai) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY in environment variables.');
+      }
+
+      const prompt = `Create a compelling job posting for: ${request.topic}
+      
+Company: ApexSalesAI
+Industry: AI-powered sales automation
+Tone: ${request.tone || 'professional'}
+Target candidates: ${request.targetAudience || 'Experienced professionals'}
+
+Include:
+- Engaging job title
+- Compelling company overview
+- Detailed role description
+- 5-7 key responsibilities
+- Required qualifications
+- Preferred qualifications
+- Benefits and perks
+- Salary range (competitive)
+- Application instructions
+- Company culture highlights`;
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a talent acquisition expert specializing in tech recruiting. Create job postings that attract top talent while accurately representing the role and company culture.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      });
+
+      const response = JSON.parse(completion.choices[0].message.content || '{}');
+      return {
+        company: 'ApexSalesAI',
+        location: 'Remote (US)',
+        type: 'Full-time',
+        ...response
+      };
+    } catch (error) {
+      logger.error(`Error generating job posting: ${error}`);
+      throw new Error(`Failed to generate job posting: ${error}`);
     }
   }
 
@@ -274,37 +426,120 @@ Focus on:
   }
 
   /**
-   * Save blog post to file system
+   * Save blog post to database (NEW: Database-driven publishing)
    */
-  static async saveBlogPost(blogPost: BlogPost): Promise<void> {
-    const fs = require('fs').promises;
-    const path = require('path');
-
+  static async saveBlogPost(blogPost: BlogPost): Promise<{ postId: string; slug: string; url: string }> {
     try {
-      const blogDir = path.join(process.cwd(), 'app', 'blog');
-      const filePath = path.join(blogDir, `${blogPost.slug}.md`);
-
-      // Create markdown content with frontmatter
-      const markdown = `---
-title: "${blogPost.title}"
-date: "${blogPost.date}"
-author: "${blogPost.author}"
-excerpt: "${blogPost.excerpt}"
-image: "${blogPost.image}"
-tags: [${blogPost.tags.map(t => `"${t}"`).join(', ')}]
-metaTitle: "${blogPost.seoMetadata?.metaTitle}"
-metaDescription: "${blogPost.seoMetadata?.metaDescription}"
-keywords: [${blogPost.seoMetadata?.keywords.map(k => `"${k}"`).join(', ')}]
----
-
-${blogPost.content}
-`;
-
-      await fs.writeFile(filePath, markdown, 'utf-8');
-      logger.info('Blog post saved to file', { filePath, slug: blogPost.slug });
+      const startTime = Date.now();
+      
+      // Call the database API to create the post
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+      const protocol = baseUrl.startsWith('localhost') ? 'http://' : 'https://';
+      const fullUrl = baseUrl.startsWith('http') ? baseUrl : `${protocol}${baseUrl}`;
+      
+      const response = await fetch(`${fullUrl}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          slug: blogPost.slug,
+          title: blogPost.title,
+          content: blogPost.content,
+          excerpt: blogPost.excerpt,
+          image: blogPost.image,
+          author: blogPost.author,
+          tags: blogPost.tags,
+          keywords: blogPost.seoMetadata?.keywords || [],
+          metaTitle: blogPost.seoMetadata?.metaTitle || blogPost.title,
+          metaDescription: blogPost.seoMetadata?.metaDescription || blogPost.excerpt,
+          status: 'DRAFT', // Start as draft
+          generatedBy: 'Max Content Agent',
+          generationModel: 'gpt-4o',
+          generationCost: 0, // TODO: Calculate actual cost
+          generationTokens: 0, // TODO: Track actual tokens
+          generationTime: Date.now() - startTime,
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to save post: ${error.message || response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const post = data.post;
+      
+      logger.info(`✅ Blog post saved to database: ${post.slug} (${data.responseTime}ms)`);
+      
+      // Optionally: Export to GitHub as backup
+      try {
+        const { publishMarkdown } = await import('./publishToGithub');
+        await publishMarkdown({
+          title: blogPost.title,
+          slug: blogPost.slug,
+          frontmatter: {
+            title: blogPost.title,
+            date: blogPost.date,
+            author: blogPost.author,
+            excerpt: blogPost.excerpt,
+            image: blogPost.image || '',
+            tags: blogPost.tags,
+            metaTitle: blogPost.seoMetadata?.metaTitle || blogPost.title,
+            metaDescription: blogPost.seoMetadata?.metaDescription || blogPost.excerpt,
+            keywords: blogPost.seoMetadata?.keywords || []
+          },
+          body: blogPost.content
+        });
+        logger.info(`📦 Blog post backed up to GitHub: ${post.slug}`);
+      } catch (backupError) {
+        // Non-fatal - log but don't fail
+        logger.warn(`⚠️  GitHub backup failed (non-fatal): ${backupError}`);
+      }
+      
+      return {
+        postId: post.id,
+        slug: post.slug,
+        url: `${fullUrl}/blog/${post.slug}`
+      };
     } catch (error) {
-      logger.error('Error saving blog post', { error, slug: blogPost.slug });
+      logger.error(`❌ Error saving blog post to database: ${error}`);
       throw new Error(`Failed to save blog post: ${error}`);
+    }
+  }
+  
+  /**
+   * Publish a draft blog post (make it live)
+   */
+  static async publishBlogPost(slug: string): Promise<{ success: boolean; url: string }> {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+      const protocol = baseUrl.startsWith('localhost') ? 'http://' : 'https://';
+      const fullUrl = baseUrl.startsWith('http') ? baseUrl : `${protocol}${baseUrl}`;
+      
+      const response = await fetch(`${fullUrl}/api/posts/${slug}/publish`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to publish post: ${error.message || response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      logger.info(`🚀 Blog post published: ${slug} (${data.responseTime}ms)`);
+      
+      return {
+        success: true,
+        url: `${fullUrl}/blog/${slug}`
+      };
+    } catch (error) {
+      logger.error(`❌ Error publishing blog post: ${error}`);
+      throw new Error(`Failed to publish blog post: ${error}`);
     }
   }
 }

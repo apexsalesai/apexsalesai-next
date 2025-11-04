@@ -108,13 +108,16 @@ export default function LeadsPage() {
     setNextActions('');
     setNbaLoading(true);
     try {
-      const res = await fetch('/api/leads/next-actions.ts', {
+      const res = await fetch('/api/leads/next-actions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ leadId: lead.id }),
       });
       const data = await res.json();
-      setNextActions(data.actions || 'No actions returned.');
+      const actionsText = Array.isArray(data.actions) 
+        ? data.actions.join('\n') 
+        : (data.actions || 'No actions returned.');
+      setNextActions(actionsText);
     } catch (e) {
       setNextActions('Error fetching next actions.');
     } finally {
@@ -140,13 +143,13 @@ export default function LeadsPage() {
     setAiRecs([]);
     setAiLoading(true);
     try {
-      const res = await fetch('/api/leads/ai-score.ts', {
+      const res = await fetch('/api/leads/ai-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ leadId: lead.id }),
       });
       const data = await res.json();
-      setAiScore(data.aiScore || 'No score returned');
+      setAiScore(`Overall Score: ${data.overallScore}/100\n\n${data.nextBestAction || 'No score returned'}`);
       setAiRecs(data.recommendations || []);
     } catch (e) {
       setAiScore('Error fetching AI insights');

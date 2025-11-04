@@ -1,0 +1,45 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ "main", "feature/**" ]
+    paths-ignore:
+      - "public/**"
+      - ".next/**"
+      - "dist/**"
+      - "coverage/**"
+      - "node_modules/**"
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: "0 5 * * 0" # Sundays 05:00 UTC
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ "javascript", "typescript" ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Disable autobuild for JavaScript/TypeScript (not needed)
+          queries: security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

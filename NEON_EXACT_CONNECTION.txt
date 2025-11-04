@@ -1,0 +1,12 @@
+Based on your Neon screenshot, use these EXACT connection strings:
+
+FOR POOLED CONNECTION (DATABASE_URL):
+DATABASE_URL="postgresql://neondb_owner:ApexMax42XyZ@ep-misty-surf-adv6olws-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+FOR DIRECT CONNECTION (DIRECT_URL):
+DIRECT_URL="postgresql://neondb_owner:ApexMax42XyZ@ep-misty-surf-adv6olws.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+NOTE: I removed &channel_binding=require because Prisma doesn't support it.
+NOTE: I removed &pgbouncer=true because Neon's pooler already handles that.
+
+Replace lines 4-5 in your .env file with these two lines.
