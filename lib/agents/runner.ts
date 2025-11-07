@@ -9,6 +9,7 @@ import { copyAgent } from './copyAgent';
 import { visualAgent } from './visualAgent';
 import { videoScriptAgent } from './videoScriptAgent';
 import { personalizeAgent } from './personalizeAgent';
+import { trackAgentTaskCompleted, trackAgentTaskError } from '@/lib/telemetry/collector';
 
 const REGISTRY: Record<AgentName, Agent> = {
   strategy: strategyAgent,
@@ -152,6 +153,19 @@ export async function runAgents(
         },
       });
 
+      // Track telemetry (async, non-blocking)
+      trackAgentTaskCompleted({
+        campaignId,
+        taskId: task.id,
+        tokensIn: result.tokensIn,
+        tokensOut: result.tokensOut,
+        latencyMs: result.ms,
+        costUsd,
+        agentName,
+      }).catch(err => {
+        console.error('[Telemetry] Failed to track agent task:', err);
+      });
+
       // Log metrics
       await metric('agent.latency', result.ms, { agent: agentName, campaignId }, 'ms');
       await metric('agent.tokens.in', result.tokensIn, { agent: agentName, campaignId }, 'tokens');
@@ -185,6 +199,16 @@ export async function runAgents(
           error: error.message || String(error),
           completedAt: new Date(),
         },
+      });
+
+      // Track telemetry error (async, non-blocking)
+      trackAgentTaskError({
+        campaignId,
+        taskId: task.id,
+        error: error.message || String(error),
+        agentName,
+      }).catch(err => {
+        console.error('[Telemetry] Failed to track agent error:', err);
       });
 
       // Log error

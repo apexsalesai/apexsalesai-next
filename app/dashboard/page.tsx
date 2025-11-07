@@ -17,22 +17,43 @@ const tabs = [
   { id:"support", label:"Support" },
 ];
 
+const REFRESH_INTERVAL = 15000; // 15 seconds
+
 export default function DashboardPage() {
   const [tab, setTab] = useState("exec");
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(()=>{
-    let mounted = true;
-    fetch("/api/dashboard/kpis").then(r=>r.json()).then(payload=>{
+  const fetchData = async () => {
+    try {
+      const response = await fetch("/api/dashboard/kpis");
+      
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}`);
+      }
+      
+      const payload = await response.json();
       const safe = assertViewPayload(payload);
-      if(mounted){ setData(safe); setLoading(false); }
-    }).catch(err => {
-      console.error("Dashboard API error:", err);
-      if(mounted) setLoading(false);
-    });
-    return ()=>{ mounted=false; };
-  },[]);
+      setData(safe);
+      setError(null);
+      setLoading(false);
+    } catch (err) {
+      console.error("[Dashboard] API error:", err);
+      setError(err instanceof Error ? err.message : "Failed to load data");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Initial fetch
+    fetchData();
+
+    // Auto-refresh every 15 seconds
+    const interval = setInterval(fetchData, REFRESH_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -47,8 +68,21 @@ export default function DashboardPage() {
           <div className="animate-pulse">Loading intelligence…</div>
         </div>
       )}
+
+      {error && !loading && (
+        <div className="glass p-10 text-center">
+          <div className="text-red-400 mb-2">⚠️ Failed to load dashboard data</div>
+          <div className="text-slate-400 text-sm">{error}</div>
+          <button 
+            onClick={fetchData}
+            className="mt-4 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-slate-200 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       
-      {!loading && data && (
+      {!loading && !error && data && (
         <div className="animate-fadeIn">
           {tab==="exec"      && <ExecutiveView data={data} />}
           {tab==="sales"     && <SalesView data={data} />}
