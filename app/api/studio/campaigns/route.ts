@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, requireJson } from '@lib/telemetry-phase2';
+import { trackCampaignCreated } from '@/lib/telemetry/collector';
 
 export async function GET(request: NextRequest) {
   try {
@@ -79,6 +80,14 @@ export async function POST(request: NextRequest) {
         status: true,
         createdAt: true,
       },
+    });
+
+    // Track telemetry (async, non-blocking)
+    trackCampaignCreated({
+      campaignId: campaign.id,
+      userId: 'system-user', // TODO: Get from auth session
+    }).catch(err => {
+      console.error('[Telemetry] Failed to track campaign creation:', err);
     });
 
     return NextResponse.json(campaign, { status: 201 });
