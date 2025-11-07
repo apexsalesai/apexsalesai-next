@@ -558,6 +558,73 @@ export type OpsKpis = z.infer<typeof OpsKpisSchema>;
 export type SupportKpis = z.infer<typeof SupportKpisSchema>;
 
 // ============================================================================
+// TELEMETRY SCHEMAS (Phase 5.1 - Dataverse)
+// ============================================================================
+
+export const TelemetryEventType = z.enum([
+  "campaign_created",
+  "campaign_updated",
+  "agent_task_started",
+  "agent_task_completed",
+  "agent_task_error",
+  "asset_created",
+  "asset_published",
+  "asset_publish_failed",
+  "kpi_ping"
+]);
+
+export const TelemetrySeverity = z.enum(["debug", "info", "warn", "error", "critical"]);
+
+export const AgentTaskPayload = z.object({
+  model: z.string().optional(),
+  tokensIn: z.number().int().nonnegative().optional(),
+  tokensOut: z.number().int().nonnegative().optional(),
+  latencyMs: z.number().int().nonnegative().optional(),
+  costUsd: z.number().nonnegative().optional(),
+  agentName: z.string().optional(),
+  error: z.string().optional()
+}).optional();
+
+export const PublishPayload = z.object({
+  channel: z.enum(["blog", "email", "linkedin", "x", "youtube", "instagram"]).optional(),
+  scheduledAt: z.string().datetime().optional(),
+  postedAt: z.string().datetime().optional(),
+  postUrl: z.string().url().optional()
+}).optional();
+
+export const TelemetryEvent = z.object({
+  eventType: TelemetryEventType,
+  severity: TelemetrySeverity.default("info"),
+  timestamp: z.string().datetime(),
+  campaignId: z.string().optional(),
+  userId: z.string().optional(),
+  tenantId: z.string().optional(),
+  assetId: z.string().optional(),
+  taskId: z.string().optional(),
+  requestId: z.string().optional(),
+  payload: z.object({
+    agentTask: AgentTaskPayload,
+    publish: PublishPayload,
+    meta: z.record(z.any()).optional()
+  }).optional()
+});
+
+export const KpiCounter = z.object({
+  metricName: z.string(),
+  value: z.number().int().nonnegative(),
+  lastUpdated: z.string().datetime(),
+  period: z.enum(["daily", "weekly", "monthly", "all_time"]).default("all_time"),
+  tenantId: z.string().optional()
+});
+
+export type TelemetryEventType = z.infer<typeof TelemetryEventType>;
+export type TelemetrySeverity = z.infer<typeof TelemetrySeverity>;
+export type TelemetryEvent = z.infer<typeof TelemetryEvent>;
+export type AgentTaskPayload = z.infer<typeof AgentTaskPayload>;
+export type PublishPayload = z.infer<typeof PublishPayload>;
+export type KpiCounter = z.infer<typeof KpiCounter>;
+
+// ============================================================================
 // MOCK DATA FLAG
 // ============================================================================
 
