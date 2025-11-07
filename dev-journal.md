@@ -2007,3 +2007,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-11-07: Finalized security fix: next-auth 4.24.12 with nodemailer 7.x compatibility
 - ✅ 2025-11-07: Security hardening: patched cookie vulnerability (GHSA-pxg6-pf52-xh8x) and aligned next-auth to 4.24.13
 - ✅ 2025-11-07: feat(telemetry): Phase 5.1 Dataverse telemetry collector and live KPI endpoint
+- ✅ 2025-11-07: feat(telemetry): wire dashboard auto-refresh and agent integration hooks

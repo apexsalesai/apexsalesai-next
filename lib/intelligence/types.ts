@@ -605,7 +605,7 @@ export const TelemetryEvent = z.object({
   payload: z.object({
     agentTask: AgentTaskPayload,
     publish: PublishPayload,
-    meta: z.record(z.any()).optional()
+    meta: z.record(z.string(), z.any()).optional()
   }).optional()
 });
 
