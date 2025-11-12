@@ -22,11 +22,11 @@
   "license": "ISC",
   "description": "",
   "overrides": {
-    "@auth/core": "0.37.2",
+    "@auth/core": "0.34.3",
     "next-auth": "4.24.13"
   },
   "dependencies": {
-    "@auth/core": "0.37.2",
+    "@auth/core": "0.34.3",
     "@auth0/nextjs-auth0": "^4.11.1",
     "@azure/identity": "^4.13.0",
     "@azure/keyvault-secrets": "^4.10.0",
