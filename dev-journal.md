@@ -2011,3 +2011,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-11-07: fix(types): correct Zod record schema syntax
 - ✅ 2025-11-12: docs: Phase 5.1 completion audit log and documentation
 - ✅ 2025-11-12: Fix next-auth version pinning
+- ✅ 2025-11-12: Lock next-auth and @auth/core versions for Vercel
