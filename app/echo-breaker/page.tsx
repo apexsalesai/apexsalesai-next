@@ -1,15 +1,7 @@
-import ReplyWithProof from "../components/ReplyWithProof";
+"use client";
 
-export const metadata = {
-  title: "Echo Breaker | ProofLayer by ApexSalesAI",
-  description:
-    "Verify claims, break misinformation loops, and generate shareable ProofCards with sources and confidence.",
-};
+import EchoBreakerClient from "./EchoBreakerClient";
 
 export default function EchoBreakerPage() {
-  return (
-    <main className="min-h-screen bg-black text-white">
-      <ReplyWithProof />
-    </main>
-  );
+  return <EchoBreakerClient />;
 }
