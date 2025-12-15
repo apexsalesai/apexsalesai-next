@@ -34,6 +34,7 @@ export default function EchoBreakerClient() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<VerificationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const buildId = process.env.NEXT_PUBLIC_BUILD_ID || "unknown";
 
   const confidenceLabel = useMemo(() => {
     const c = Math.round(result?.confidence || 0);
@@ -83,6 +84,9 @@ export default function EchoBreakerClient() {
         <div className="flex items-center gap-2 text-sm text-indigo-200">
           <span className="px-2 py-1 rounded-full bg-indigo-900/50 border border-indigo-700">ProofLayer · Verification</span>
           <span className="px-2 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">21 claims verified</span>
+          <span className="px-2 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs">
+            Build {buildId}
+          </span>
         </div>
 
         <header className="space-y-2">

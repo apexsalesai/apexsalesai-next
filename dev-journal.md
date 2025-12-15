@@ -2027,3 +2027,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-15: fix: serve reality-scan via pages API POST
 - ✅ 2025-12-15: chore: confirm pages reality-scan POST handler
 - ✅ 2025-12-15: test: log and handle reality-scan POST in pages api
+- ✅ 2025-12-15: fix: add app router reality-scan POST diagnostic and remove pages route
