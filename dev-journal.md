@@ -2013,3 +2013,5 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-11-12: Fix next-auth version pinning
 - ✅ 2025-11-12: Lock next-auth and @auth/core versions for Vercel
 - ✅ 2025-12-14: Force Vercel to use latest package.json
+- ✅ 2025-12-14: chore: bump next to 15.5.9
+- ✅ 2025-12-14: chore: bump next to 15.5.9
