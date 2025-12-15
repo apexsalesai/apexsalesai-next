@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log("REALITY SCAN HIT", req.method);
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -8,8 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { claim, link } = req.body || {};
-    const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.apexsalesai.com";
+    if (!claim || typeof claim !== "string" || !claim.trim()) {
+      return res.status(400).json({ error: "Claim is required" });
+    }
 
+    const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.apexsalesai.com";
     const upstream = await fetch(`${base.replace(/\/$/, "")}/api/llm-verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -27,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json(json);
   } catch (err: any) {
+    console.error("REALITY SCAN ERROR", err);
     return res.status(500).json({
       error: err?.message || "Internal server error",
     });
