@@ -55,9 +55,12 @@ export default function EchoBreakerClient() {
         body: JSON.stringify({ claim, link }),
       });
       const text = await res.text();
+      if (!text) {
+        throw new Error(res.ok ? "Empty response from verifier" : `Verifier error (${res.status})`);
+      }
       let json: any = null;
       try {
-        json = text ? JSON.parse(text) : {};
+        json = JSON.parse(text);
       } catch {
         throw new Error("Unexpected response from verifier");
       }

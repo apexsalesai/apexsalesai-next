@@ -10,21 +10,42 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Claim is required" }, { status: 400 });
     }
 
-    // Forward to the verifier if available
-    try {
-      const res = await fetch(`${DEFAULT_BASE.replace(/\/$/, "")}/api/llm-verify`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ claim, link: body?.link }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        return NextResponse.json({ error: json?.error || "Verification failed" }, { status: res.status });
+    const base = (() => {
+      try {
+        return new URL(req.url).origin;
+      } catch {
+        return DEFAULT_BASE.replace(/\/$/, "");
       }
-      return NextResponse.json(json, { status: 200 });
-    } catch (err: any) {
+    })();
+
+    // Forward to the verifier if available
+    const target = `${base.replace(/\/$/, "")}/api/llm-verify`;
+    const res = await fetch(target, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ claim, link: body?.link }),
+    }).catch((err: any) => {
       return NextResponse.json({ error: err?.message || "Verification service unavailable" }, { status: 502 });
+    });
+
+    // If fetch failed and returned a Response from catch, short-circuit
+    if (res instanceof NextResponse) {
+      return res;
     }
+
+    const text = await res.text();
+    let json: any = {};
+    try {
+      json = text ? JSON.parse(text) : {};
+    } catch {
+      return NextResponse.json({ error: "Upstream verifier returned invalid JSON" }, { status: 502 });
+    }
+
+    if (!res.ok) {
+      return NextResponse.json({ error: json?.error || "Verification failed" }, { status: res.status });
+    }
+
+    return NextResponse.json(json, { status: 200 });
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
