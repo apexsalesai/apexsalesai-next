@@ -2019,3 +2019,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-14: feat: expose Echo Breaker public page
 - ✅ 2025-12-14: feat: add Echo Breaker UI with verification form
 - ✅ 2025-12-14: fix: add reality-scan API to support Echo Breaker
+- ✅ 2025-12-15: feat: match Echo Breaker UI to approved design and add client handler
