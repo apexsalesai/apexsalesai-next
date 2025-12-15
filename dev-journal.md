@@ -2021,3 +2021,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-14: fix: add reality-scan API to support Echo Breaker
 - ✅ 2025-12-14: feat: match Echo Breaker UI to approved design and add client handler
 - ✅ 2025-12-14: fix: harden reality-scan proxy and client error handling
+- ✅ 2025-12-14: fix: move reality-scan to pages API to ensure production route
