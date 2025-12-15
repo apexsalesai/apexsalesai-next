@@ -1,4 +1,4 @@
-import ReplyWithProof from "@/components/ReplyWithProof";
+import ReplyWithProof from "../components/ReplyWithProof";
 
 export const metadata = {
   title: "Echo Breaker | ProofLayer by ApexSalesAI",
