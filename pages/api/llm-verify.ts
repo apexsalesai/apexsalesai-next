@@ -294,6 +294,10 @@ async function callAnthropic(args: {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
 
+  // STEP 3: Force correct key verification at runtime
+  console.log("Anthropic key prefix:", apiKey.slice(0, 12));
+
+  // STEP 1: Hard-set headers (Messages API ONLY)
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -303,8 +307,8 @@ async function callAnthropic(args: {
     },
     body: JSON.stringify({
       model: args.model,
-      max_tokens: args.maxTokens ?? 900,
-      temperature: args.temperature ?? 0.2,
+      max_tokens: args.maxTokens ?? 1200,
+      temperature: args.temperature ?? 0.3,
       system: args.system,
       messages: [
         {
@@ -322,13 +326,10 @@ async function callAnthropic(args: {
 
   const json = await res.json();
   
-  // STEP 2: Flatten Anthropic response (CRITICAL - prevents SDK serialization errors)
-  const text =
-    json?.content?.[0]?.text ??
-    json?.message?.content?.[0]?.text ??
-    "";
-
-  if (!text) throw new Error("Empty LLM response");
+  // STEP 2: Extract text ONLY (nothing else crosses API boundary)
+  const text = json?.content?.[0]?.text;
+  if (!text) throw new Error("Empty Claude response");
+  
   return text;
 }
 
@@ -528,8 +529,8 @@ Return STRICT JSON only, matching the required output shape.
       system,
       user,
       model,
-      temperature: 0.2,
-      maxTokens: 950,
+      temperature: 0.3,
+      maxTokens: 1200,
     });
 
     const jsonText = stripJsonFence(raw);
