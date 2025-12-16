@@ -2034,3 +2034,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-16: feat: prioritize government sources - dual search strategy with tier-based sorting and visual badges
 - ✅ 2025-12-16: fix: strip markdown code blocks from Claude JSON response
 - ✅ 2025-12-16: feat: GOLD STANDARD verification engine with tier-based source ranking and enhanced UX
+- ✅ 2025-12-16: CRITICAL: harden all API routes - env guards, no-throw Brave/Anthropic, safe error handling
