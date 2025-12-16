@@ -187,14 +187,23 @@ async function callAnthropic(
       : "No external sources were found. Use general knowledge and clearly state uncertainty.";
 
   const prompt = `
-You are ProofLayer, a neutral, evidence-first verifier. Use the sources to fact-check the claim. Output JSON ONLY with keys:
-verdict (one of ["true","false","misleading","disputed"]),
-confidence (0-1),
-summary (1–3 sentences),
-bottomLine (1 sentence),
-whatDataShows (array of concise bullet sentences),
-spreadFactors (array of concise bullet sentences),
-sources (array with {title,url,domain,tier}).
+You are ProofLayer, a neutral, evidence-first verifier. Use the sources to fact-check the claim. 
+
+Output ONLY valid JSON with these exact keys:
+{
+  "verdict": "true" | "false" | "misleading" | "disputed",
+  "confidence": 0.0 to 1.0,
+  "summary": "1-3 sentence summary of findings",
+  "bottomLine": "1 sentence conclusion",
+  "whatDataShows": ["bullet point 1", "bullet point 2", "bullet point 3"],
+  "spreadFactors": ["reason 1 why this spreads", "reason 2", "reason 3"],
+  "sources": [{"title": "...", "url": "...", "domain": "...", "tier": 1-3}]
+}
+
+IMPORTANT: 
+- whatDataShows: 3-5 bullet points about what the evidence actually reveals
+- spreadFactors: 2-4 bullet points explaining why this claim might spread (emotional appeal, confirmation bias, etc)
+- Always include both arrays even if claim is true
 
 Claim:
 ${claim}
@@ -211,7 +220,7 @@ ${searchQueries.join("; ")}
       const client = new Anthropic({ apiKey });
       const msg = await client.messages.create({
         model,
-        max_tokens: 900,
+        max_tokens: 2048,
         temperature: 0.45,
         system:
           "Be calm, boringly trustworthy, and concise. Ground outputs in sources. If uncertain, set verdict to disputed with lower confidence. Do not echo raw JSON except as structured output.",
