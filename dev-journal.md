@@ -2021,3 +2021,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-14: fix: add reality-scan API to support Echo Breaker
 - ✅ 2025-12-15: feat: match Echo Breaker UI to approved design and add client handler
 - ✅ 2025-12-16: chore: pin prooflayer api surface and patch next
+- ✅ 2025-12-16: feat: restore real llm verifier for prooflayer
