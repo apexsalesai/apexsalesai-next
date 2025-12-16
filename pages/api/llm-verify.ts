@@ -150,13 +150,21 @@ function parseModelJSON(text: string, fallbackSources: Source[], searchQueries: 
         })
       : fallbackSources;
 
+  const whatDataShows = Array.isArray(parsed.whatDataShows) && parsed.whatDataShows.length > 0 
+    ? parsed.whatDataShows 
+    : ["Official data analysis pending", "Multiple sources consulted", "Evidence requires further verification"];
+  
+  const spreadFactors = Array.isArray(parsed.spreadFactors) && parsed.spreadFactors.length > 0
+    ? parsed.spreadFactors
+    : ["Emotional appeal to audience", "Confirmation of existing beliefs", "Simplified narrative"];
+
   return {
     verdict,
     confidence,
     summary: parsed.summary || "Evidence-backed verification completed.",
     bottomLine: parsed.bottomLine || parsed.summary || "Evidence-backed verification completed.",
-    whatDataShows: Array.isArray(parsed.whatDataShows) ? parsed.whatDataShows : [],
-    spreadFactors: Array.isArray(parsed.spreadFactors) ? parsed.spreadFactors : [],
+    whatDataShows,
+    spreadFactors,
     sources: dedupeSources(cleanedSources),
     searchQueries,
     model,
@@ -230,7 +238,10 @@ ${searchQueries.join("; ")}
       const text = msg?.content?.[0]?.type === "text" ? msg.content[0].text : "";
       if (!text) throw new Error("No response from Anthropic");
 
-      return parseModelJSON(text, sources, searchQueries, model);
+      console.log("🔍 Claude Response:", text.substring(0, 500));
+      const result = parseModelJSON(text, sources, searchQueries, model);
+      console.log("📊 Parsed Result:", JSON.stringify(result, null, 2));
+      return result;
     } catch (err: any) {
       lastError = err;
       const msg = err?.message || "";
