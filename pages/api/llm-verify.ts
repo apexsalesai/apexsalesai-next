@@ -217,30 +217,32 @@ function dedupeByUrl<T extends { url: string }>(items: T[]): T[] {
 }
 
 async function braveWebSearch(query: string, count: number): Promise<any[]> {
+  // STEP 3: Harden Brave Search (NEVER THROW)
   const apiKey = process.env.BRAVE_SEARCH_API_KEY;
-  if (!apiKey) throw new Error("Missing BRAVE_SEARCH_API_KEY");
+  if (!apiKey) return []; // Fail silently - env guard catches this upstream
 
-  const url = new URL("https://api.search.brave.com/res/v1/web/search");
-  url.searchParams.set("q", query);
-  url.searchParams.set("count", String(Math.min(Math.max(count, 3), 10)));
-  url.searchParams.set("safesearch", "moderate");
-  url.searchParams.set("freshness", "year"); // sane default; adjust later if you want
+  try {
+    const url = new URL("https://api.search.brave.com/res/v1/web/search");
+    url.searchParams.set("q", query);
+    url.searchParams.set("count", String(Math.min(Math.max(count, 3), 10)));
+    url.searchParams.set("safesearch", "moderate");
+    url.searchParams.set("freshness", "year");
 
-  const res = await fetch(url.toString(), {
-    headers: {
-      Accept: "application/json",
-      "X-Subscription-Token": apiKey,
-    },
-  });
+    const res = await fetch(url.toString(), {
+      headers: {
+        Accept: "application/json",
+        "X-Subscription-Token": apiKey,
+      },
+    });
 
-  if (!res.ok) {
-    const body = await safeReadText(res);
-    throw new Error(`Brave search failed (${res.status}): ${body?.slice(0, 300) ?? ""}`);
+    if (!res.ok) return []; // Network error - return empty, don't throw
+
+    const json = await res.json();
+    const results = json?.web?.results ?? [];
+    return Array.isArray(results) ? results : [];
+  } catch {
+    return []; // ANY error - return empty array
   }
-
-  const json = await res.json();
-  const results = json?.web?.results ?? [];
-  return Array.isArray(results) ? results : [];
 }
 
 async function safeReadText(res: Response): Promise<string | null> {
@@ -367,6 +369,27 @@ function stripJsonFence(s: string): string {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<VerifyResponse | ErrorResponse>) {
+  // STEP 1: Environment guards (MANDATORY - fail fast)
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(500).json({
+      error: {
+        code: "env_missing",
+        message: "Missing ANTHROPIC_API_KEY",
+        details: { stage: "env-check" }
+      }
+    });
+  }
+
+  if (!process.env.BRAVE_SEARCH_API_KEY) {
+    return res.status(500).json({
+      error: {
+        code: "env_missing",
+        message: "Missing BRAVE_SEARCH_API_KEY",
+        details: { stage: "env-check" }
+      }
+    });
+  }
+
   // Only POST
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -507,13 +530,28 @@ ${JSON.stringify(sourcesForModel, null, 2)}
 Return STRICT JSON only, matching the required output shape.
 `.trim();
 
-    const raw = await callAnthropic({
-      system,
-      user,
-      model,
-      temperature: 0.2,
-      maxTokens: 950,
-    });
+    // STEP 2: Wrap Anthropic call (NO THROW EVER)
+    let raw: string;
+    try {
+      raw = await callAnthropic({
+        system,
+        user,
+        model,
+        temperature: 0.2,
+        maxTokens: 950,
+      });
+    } catch (err: any) {
+      return res.status(500).json({
+        error: {
+          code: "anthropic_failed",
+          message: "Anthropic request failed",
+          details: {
+            stage: "anthropic",
+            reason: err?.message ?? "Unknown error"
+          }
+        }
+      });
+    }
 
     const jsonText = stripJsonFence(raw);
     const parsed = safeJsonParse<{
