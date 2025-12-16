@@ -17,12 +17,8 @@ type VerificationResponse = {
   error?: string;
 };
 
-const PRIMARY_MODEL = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-latest";
-const FALLBACK_MODELS = [
-  "claude-3-5-sonnet-20241022",
-  "claude-3-sonnet-20240229",
-  "claude-sonnet-4-5-20250929",
-];
+const PRIMARY_MODEL = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
+const FALLBACK_MODELS = ["claude-3-5-sonnet-20241022", "claude-3-sonnet-20240229", "claude-sonnet-4-5-20250929"];
 const BRAVE_KEY = process.env.BRAVE_SEARCH_API_KEY || "";
 const MAX_SOURCES = 12;
 
