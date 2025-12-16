@@ -48,6 +48,11 @@ function dedupeSources(items: Source[]): Source[] {
     seen.add(key);
     out.push(s);
   }
+  // Sort by tier (1=gov/edu first, 2=major news, 3=other), then by original order
+  out.sort((a, b) => {
+    const tierDiff = (a.tier || 3) - (b.tier || 3);
+    return tierDiff;
+  });
   return out.slice(0, MAX_SOURCES);
 }
 
@@ -82,28 +87,64 @@ function jitterConfidence(base: number): number {
 
 async function braveSearch(query: string): Promise<Source[]> {
   if (!BRAVE_KEY) return [];
-  const searchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${MAX_SOURCES}`;
+  
+  // First search: prioritize government and official sources
+  const govQuery = `${query} site:.gov OR site:.edu OR site:who.int OR site:worldbank.org`;
+  const govSearchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(govQuery)}&count=6`;
+  
+  // Second search: general search for additional sources
+  const generalSearchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${MAX_SOURCES}`;
+  
+  const allSources: Source[] = [];
+  
   try {
-    const resp = await fetch(searchUrl, {
+    // Get government sources first
+    const govResp = await fetch(govSearchUrl, {
       headers: {
         "X-Subscription-Token": BRAVE_KEY,
         Accept: "application/json",
       },
     });
-    if (!resp.ok) return [];
-    const data = (await resp.json()) as any;
-    const web = data?.web?.results || [];
-    const mapped = web.slice(0, MAX_SOURCES).map((r: any, idx: number) => {
-      const domain = parseDomain(r.url);
-      return {
-        sourceId: r.id || `src-${idx + 1}`,
-        title: r.title || r.url,
-        url: r.url,
-        domain,
-        tier: scoreTier(domain),
-      };
+    if (govResp.ok) {
+      const govData = (await govResp.json()) as any;
+      const govWeb = govData?.web?.results || [];
+      const govMapped = govWeb.map((r: any, idx: number) => {
+        const domain = parseDomain(r.url);
+        return {
+          sourceId: r.id || `gov-src-${idx + 1}`,
+          title: r.title || r.url,
+          url: r.url,
+          domain,
+          tier: scoreTier(domain),
+        };
+      });
+      allSources.push(...govMapped);
+    }
+    
+    // Get general sources
+    const resp = await fetch(generalSearchUrl, {
+      headers: {
+        "X-Subscription-Token": BRAVE_KEY,
+        Accept: "application/json",
+      },
     });
-    return dedupeSources(mapped);
+    if (resp.ok) {
+      const data = (await resp.json()) as any;
+      const web = data?.web?.results || [];
+      const mapped = web.map((r: any, idx: number) => {
+        const domain = parseDomain(r.url);
+        return {
+          sourceId: r.id || `src-${idx + 1}`,
+          title: r.title || r.url,
+          url: r.url,
+          domain,
+          tier: scoreTier(domain),
+        };
+      });
+      allSources.push(...mapped);
+    }
+    
+    return dedupeSources(allSources);
   } catch {
     return [];
   }
