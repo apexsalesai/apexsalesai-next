@@ -17,7 +17,12 @@ type VerificationResponse = {
   error?: string;
 };
 
-const DEFAULT_MODEL = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-latest";
+const PRIMARY_MODEL = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-latest";
+const FALLBACK_MODELS = [
+  "claude-3-5-sonnet-20241022",
+  "claude-3-sonnet-20240229",
+  "claude-sonnet-4-5-20250929",
+];
 const BRAVE_KEY = process.env.BRAVE_SEARCH_API_KEY || "";
 const MAX_SOURCES = 12;
 
@@ -83,6 +88,10 @@ function buildSearchQueries(claim: string): string[] {
   if (lower.includes("economy") || lower.includes("jobs")) {
     queries.add("US job growth 2024 bureau of labor statistics");
   }
+  if (lower.includes("election")) {
+    queries.add("2020 election audit results");
+    queries.add("federal election security report 2020");
+  }
   return Array.from(queries).slice(0, 6);
 }
 
@@ -92,11 +101,16 @@ function jitterConfidence(base: number): number {
   return Math.round(val * 1000) / 1000;
 }
 
-async function callAnthropic(claim: string, sources: Source[], searchQueries: string[]): Promise<Omit<VerificationResponse, "verificationId">> {
+async function callAnthropic(
+  claim: string,
+  sources: Source[],
+  searchQueries: string[]
+): Promise<Omit<VerificationResponse, "verificationId">> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
-  const client = new Anthropic({ apiKey });
+  const modelsToTry = [PRIMARY_MODEL, ...FALLBACK_MODELS];
+  let lastError: any = null;
 
   const sourcesForPrompt =
     sources && sources.length
@@ -130,65 +144,83 @@ Search queries used:
 ${searchQueries.join("; ")}
 `;
 
-  const msg = await client.messages.create({
-    model: DEFAULT_MODEL,
-    max_tokens: 900,
-    temperature: 0.55,
-    system:
-      "Be calm, boringly trustworthy, and concise. Ground outputs in sources. If uncertain, mark verdict as disputed with lower confidence.",
-    messages: [{ role: "user", content: prompt }],
-  });
+  for (const model of modelsToTry) {
+    try {
+      const client = new Anthropic({ apiKey });
+      const msg = await client.messages.create({
+        model,
+        max_tokens: 900,
+        temperature: 0.55,
+        system:
+          "Be calm, boringly trustworthy, and concise. Ground outputs in sources. If uncertain, mark verdict as disputed with lower confidence.",
+        messages: [{ role: "user", content: prompt }],
+      });
 
-  const text = msg?.content?.[0]?.type === "text" ? msg.content[0].text : "";
-  if (!text) throw new Error("No response from Anthropic");
+      const text = msg?.content?.[0]?.type === "text" ? msg.content[0].text : "";
+      if (!text) throw new Error("No response from Anthropic");
 
-  let parsed: any = {};
-  try {
-    parsed = JSON.parse(text.trim());
-  } catch {
-    parsed = {
-      verdict: "disputed",
-      confidence: 0.45,
-      summary: text.slice(0, 400),
-      bottomLine: "Further review required; evidence is inconclusive.",
-      whatDataShows: [],
-      spreadFactors: [],
-      sources,
-    };
+      let parsed: any = {};
+      try {
+        parsed = JSON.parse(text.trim());
+      } catch {
+        parsed = {
+          verdict: "disputed",
+          confidence: 0.45,
+          summary: text.slice(0, 400),
+          bottomLine: "Further review required; evidence is inconclusive.",
+          whatDataShows: [],
+          spreadFactors: [],
+          sources,
+        };
+      }
+
+      const allowed = ["true", "false", "misleading", "disputed"];
+      const verdict = allowed.includes((parsed.verdict || "").toLowerCase())
+        ? (parsed.verdict as string).toLowerCase()
+        : "disputed";
+      const rawConfidence =
+        typeof parsed.confidence === "number" && parsed.confidence >= 0 && parsed.confidence <= 1
+          ? parsed.confidence
+          : 0.52;
+      const confidence = jitterConfidence(rawConfidence);
+
+      const cleanedSources: Source[] =
+        Array.isArray(parsed.sources) && parsed.sources.length
+          ? parsed.sources.map((s: any, idx: number) => {
+              const url = s.url || sources[idx]?.url;
+              const domain = s.domain || parseDomain(url);
+              return {
+                sourceId: s.sourceId || `src-${idx + 1}`,
+                title: s.title || s.url || sources[idx]?.title || "Source",
+                url,
+                domain,
+                tier: typeof s.tier === "number" ? s.tier : scoreTier(domain),
+              };
+            })
+          : sources;
+
+      return {
+        verdict,
+        confidence,
+        summary: parsed.summary || "Evidence-backed verification completed.",
+        bottomLine: parsed.bottomLine || parsed.summary || "Evidence-backed verification completed.",
+        whatDataShows: Array.isArray(parsed.whatDataShows) ? parsed.whatDataShows : [],
+        spreadFactors: Array.isArray(parsed.spreadFactors) ? parsed.spreadFactors : [],
+        sources: cleanedSources,
+        searchQueries,
+        model,
+      };
+    } catch (err: any) {
+      lastError = err;
+      // If Anthropic returns not_found for model, continue to next
+      const msg = err?.message || "";
+      if (msg.includes("not_found") || msg.includes("404")) continue;
+      // For other errors, break and return
+      break;
+    }
   }
 
-  const allowed = ["true", "false", "misleading", "disputed"];
-  const verdict = allowed.includes((parsed.verdict || "").toLowerCase()) ? (parsed.verdict as string).toLowerCase() : "disputed";
-  const rawConfidence =
-    typeof parsed.confidence === "number" && parsed.confidence >= 0 && parsed.confidence <= 1 ? parsed.confidence : 0.52;
-  const confidence = jitterConfidence(rawConfidence);
-
-  const cleanedSources: Source[] =
-    Array.isArray(parsed.sources) && parsed.sources.length
-      ? parsed.sources.map((s: any, idx: number) => {
-          const url = s.url || sources[idx]?.url;
-          const domain = s.domain || parseDomain(url);
-          return {
-            sourceId: s.sourceId || `src-${idx + 1}`,
-            title: s.title || s.url || sources[idx]?.title || "Source",
-            url,
-            domain,
-            tier: typeof s.tier === "number" ? s.tier : scoreTier(domain),
-          };
-        })
-      : sources;
-
-  return {
-    verdict,
-    confidence,
-    summary: parsed.summary || "Evidence-backed verification completed.",
-    bottomLine: parsed.bottomLine || parsed.summary || "Evidence-backed verification completed.",
-    whatDataShows: Array.isArray(parsed.whatDataShows) ? parsed.whatDataShows : [],
-    spreadFactors: Array.isArray(parsed.spreadFactors) ? parsed.spreadFactors : [],
-    sources: cleanedSources,
-    searchQueries,
-    model: DEFAULT_MODEL,
-  };
+  throw lastError || new Error("Verification failed");
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<VerificationResponse | { error: string }>) {
