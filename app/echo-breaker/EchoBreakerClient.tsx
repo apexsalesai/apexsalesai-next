@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 
+type Source = {
+  title: string;
+  url: string;
+  domain: string;
+  snippet?: string;
+  tier: string;
+  reason: string;
+};
+
 type VerificationResponse = {
   verificationId?: string;
   verdict?: string;
@@ -10,7 +19,11 @@ type VerificationResponse = {
   bottomLine?: string;
   spreadFactors?: string[];
   whatDataShows?: string[];
-  sources?: { sourceId?: string; title?: string; url?: string; domain?: string; tier?: number }[];
+  sources?: {
+    tier1?: Source[];
+    tier2?: Source[];
+    tier3?: Source[];
+  };
   error?: string;
 };
 
@@ -240,7 +253,7 @@ export default function EchoBreakerClient() {
             )}
 
             {/* Top Verified Sources */}
-            {result.sources && result.sources.length > 0 && (
+            {result.sources && (result.sources.tier1?.length || result.sources.tier2?.length || result.sources.tier3?.length) && (
               <div className="border-t border-slate-700 pt-4">
                 <button
                   onClick={() => toggleSection('sources')}
@@ -250,24 +263,75 @@ export default function EchoBreakerClient() {
                   <span className="text-slate-500">{expandedSections.sources ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.sources && (
-                  <div className="space-y-2">
-                    {result.sources.slice(0, 8).map((s, idx) => (
-                      <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3">
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${
-                          s.tier === 1 ? 'bg-emerald-600 text-white' :
-                          s.tier === 2 ? 'bg-blue-600 text-white' :
-                          'bg-slate-600 text-slate-300'
-                        }`}>
-                          Tier {s.tier || 3}
-                        </span>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-slate-200">{s.title}</p>
-                          <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-emerald-400 hover:underline">
-                            {s.domain}
-                          </a>
+                  <div className="space-y-4">
+                    {/* Tier 1 Sources */}
+                    {result.sources.tier1 && result.sources.tier1.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase text-emerald-400 font-semibold mb-2">Tier 1: Official Sources</p>
+                        <div className="space-y-2">
+                          {result.sources.tier1.map((s, idx) => (
+                            <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3 border-l-2 border-emerald-500">
+                              <span className="px-2 py-1 rounded text-xs font-bold bg-emerald-600 text-white">
+                                Tier 1
+                              </span>
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold text-slate-200">{s.title}</p>
+                                <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-emerald-400 hover:underline">
+                                  {s.domain}
+                                </a>
+                                <p className="text-xs text-slate-400 mt-1">{s.reason}</p>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
+                    )}
+
+                    {/* Tier 2 Sources */}
+                    {result.sources.tier2 && result.sources.tier2.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase text-blue-400 font-semibold mb-2">Tier 2: Reputable News & Research</p>
+                        <div className="space-y-2">
+                          {result.sources.tier2.map((s, idx) => (
+                            <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3 border-l-2 border-blue-500">
+                              <span className="px-2 py-1 rounded text-xs font-bold bg-blue-600 text-white">
+                                Tier 2
+                              </span>
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold text-slate-200">{s.title}</p>
+                                <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline">
+                                  {s.domain}
+                                </a>
+                                <p className="text-xs text-slate-400 mt-1">{s.reason}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tier 3 Sources */}
+                    {result.sources.tier3 && result.sources.tier3.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase text-slate-400 font-semibold mb-2">Tier 3: Supporting Context</p>
+                        <div className="space-y-2">
+                          {result.sources.tier3.map((s, idx) => (
+                            <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3 border-l-2 border-slate-600">
+                              <span className="px-2 py-1 rounded text-xs font-bold bg-slate-600 text-slate-300">
+                                Tier 3
+                              </span>
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold text-slate-200">{s.title}</p>
+                                <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-slate-400 hover:underline">
+                                  {s.domain}
+                                </a>
+                                <p className="text-xs text-slate-400 mt-1">{s.reason}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

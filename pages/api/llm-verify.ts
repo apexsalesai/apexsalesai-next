@@ -1,333 +1,599 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Anthropic } from "@anthropic-ai/sdk";
-import { randomUUID } from "crypto";
+import crypto from "crypto";
 
-type Source = { sourceId?: string; title?: string; url?: string; domain?: string; tier?: number };
-type VerificationResponse = {
-  verificationId: string;
-  verdict: string;
-  confidence: number; // 0–1
-  summary: string;
-  bottomLine?: string;
-  spreadFactors?: string[];
-  whatDataShows?: string[];
-  sources: Source[];
-  searchQueries?: string[];
-  model?: string;
-  error?: string;
+type Verdict = "true" | "false" | "misleading" | "unverified";
+
+type Source = {
+  title: string;
+  url: string;
+  domain: string;
+  snippet?: string;
+  published?: string | null;
+  tier: "tier1" | "tier2" | "tier3" | "tier4";
+  score: number; // internal ranking
+  reason: string; // why it was placed in this tier
 };
 
-const PRIMARY_MODEL = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
-const FALLBACK_MODELS = ["claude-3-5-sonnet-20241022", "claude-3-sonnet-20240229", "claude-sonnet-4-5-20250929"];
-const BRAVE_KEY = process.env.BRAVE_SEARCH_API_KEY || "";
-const MAX_SOURCES = 12;
+type VerifyRequest = {
+  claim?: string;
+  url?: string; // optional: claim source url for context (not required)
+  contextUrl?: string; // alias
+  maxSources?: number; // optional: default 12
+};
 
-function parseDomain(url?: string) {
-  if (!url) return "";
+type VerifyResponse = {
+  verificationId: string;
+  verdict: Verdict;
+  confidence: number; // 0..1
+  summary: string;
+
+  bottomLine: string;
+
+  whatDataShows: string[];
+  spreadFactors: string[];
+
+  sources: {
+    tier1: Source[];
+    tier2: Source[];
+    tier3: Source[];
+    // tier4 intentionally omitted from "proof" sources; social can be returned separately if you want later
+  };
+
+  searchQueries: string[];
+  model: string;
+  generatedAt: string;
+
+  // Optional helper fields (safe)
+  warnings?: string[];
+};
+
+type ErrorResponse = {
+  error: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+};
+
+const DEFAULT_MODEL = "claude-3-5-sonnet-20241022";
+const MAX_QUERY_COUNT = 4;
+const DEFAULT_MAX_SOURCES = 12;
+
+const OFFICIAL_ORGS = new Set([
+  "who.int",
+  "un.org",
+  "oecd.org",
+  "worldbank.org",
+  "imf.org",
+  "europa.eu",
+  "cdc.gov",
+  "nih.gov",
+  "nasa.gov",
+  "noaa.gov",
+  "census.gov",
+  "bls.gov",
+  "bea.gov",
+  "fda.gov",
+  "sec.gov",
+  "justice.gov",
+  "whitehouse.gov",
+  "state.gov",
+  "uscis.gov",
+  "cbp.gov",
+  "dhs.gov",
+]);
+
+// Tier2 examples (non-exhaustive). This is NOT a whitelist — it's a biasing set.
+const REPUTABLE_NEWS_OR_RESEARCH = new Set([
+  "reuters.com",
+  "apnews.com",
+  "bbc.com",
+  "nytimes.com",
+  "wsj.com",
+  "ft.com",
+  "economist.com",
+  "bloomberg.com",
+  "washingtonpost.com",
+  "cnn.com",
+  "nbcnews.com",
+  "cbsnews.com",
+  "abcnews.go.com",
+  "theguardian.com",
+  "propublica.org",
+  "factcheck.org",
+  "politifact.com",
+  "snopes.com",
+  "pewresearch.org",
+  "rand.org",
+  "brookings.edu",
+  "cfr.org",
+]);
+
+const SOCIAL_DOMAINS = new Set([
+  "x.com",
+  "twitter.com",
+  "facebook.com",
+  "instagram.com",
+  "tiktok.com",
+  "youtube.com",
+  "youtu.be",
+  "reddit.com",
+  "truthsocial.com",
+  "rumble.com",
+  "telegram.me",
+  "t.me",
+]);
+
+function isString(x: any): x is string {
+  return typeof x === "string" && x.trim().length > 0;
+}
+
+function toDomain(url: string): string {
   try {
-    return new URL(url).hostname.replace(/^www\./, "");
+    const u = new URL(url);
+    return u.hostname.replace(/^www\./, "").toLowerCase();
   } catch {
     return "";
   }
 }
 
-function scoreTier(domain: string) {
-  if (!domain) return 3;
-  if (domain.endsWith(".gov") || domain.endsWith(".gov.uk") || domain.endsWith(".edu")) return 1;
-  if (/(who\.int|worldbank\.org|oecd\.org|un\.org|imf\.org)/i.test(domain)) return 1;
-  if (/(reuters|apnews|ap\.org|associatedpress|bbc\.co\.uk|bbc\.com|bloomberg|ft\.com|wsj\.com)/i.test(domain)) return 2;
-  return 3;
+function domainIsGovEduMil(domain: string): boolean {
+  return (
+    domain.endsWith(".gov") ||
+    domain.endsWith(".mil") ||
+    domain.endsWith(".edu") ||
+    domain.includes(".gov.") ||
+    domain.includes(".mil.") ||
+    domain.includes(".edu.")
+  );
 }
 
-function dedupeSources(items: Source[]): Source[] {
-  const seen = new Set<string>();
-  const out: Source[] = [];
-  for (const s of items) {
-    const key = (s.url || s.title || "").toLowerCase();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push(s);
+function classifyTier(domain: string): { tier: Source["tier"]; reason: string } {
+  if (!domain) return { tier: "tier3", reason: "Unknown domain" };
+
+  if (domainIsGovEduMil(domain)) {
+    return { tier: "tier1", reason: "Government / military / academic domain" };
   }
-  // Sort by tier (1=gov/edu first, 2=major news, 3=other), then by original order
-  out.sort((a, b) => {
-    const tierDiff = (a.tier || 3) - (b.tier || 3);
-    return tierDiff;
+
+  if (OFFICIAL_ORGS.has(domain) || [...OFFICIAL_ORGS].some((d) => domain.endsWith("." + d))) {
+    return { tier: "tier1", reason: "Official institution / international org" };
+  }
+
+  if (SOCIAL_DOMAINS.has(domain) || [...SOCIAL_DOMAINS].some((d) => domain.endsWith("." + d))) {
+    return { tier: "tier4", reason: "Social / UGC platform (supporting only)" };
+  }
+
+  if (
+    REPUTABLE_NEWS_OR_RESEARCH.has(domain) ||
+    [...REPUTABLE_NEWS_OR_RESEARCH].some((d) => domain.endsWith("." + d))
+  ) {
+    return { tier: "tier2", reason: "Reputable news / research / fact-check outlet" };
+  }
+
+  // Wikipedia is useful context but not decisive.
+  if (domain === "wikipedia.org" || domain.endsWith(".wikipedia.org")) {
+    return { tier: "tier3", reason: "Encyclopedic context (not decisive evidence)" };
+  }
+
+  // Default: tier3
+  return { tier: "tier3", reason: "General web source (context unless corroborated)" };
+}
+
+function scoreSource(tier: Source["tier"], domain: string, title: string, snippet: string): number {
+  // Tier weight dominates.
+  const tierWeight =
+    tier === "tier1" ? 1000 : tier === "tier2" ? 700 : tier === "tier3" ? 350 : 50;
+
+  // Favor "fact check" / "report" language modestly (still tier-dominant)
+  const text = `${domain} ${title} ${snippet}`.toLowerCase();
+  const bonus =
+    (text.includes("report") ? 25 : 0) +
+    (text.includes("data") ? 20 : 0) +
+    (text.includes("statistics") ? 20 : 0) +
+    (text.includes("fact check") || text.includes("fact-check") ? 35 : 0) +
+    (text.includes("press release") ? 15 : 0);
+
+  // Slightly penalize obviously low-signal "blog" vibes
+  const penalty =
+    (text.includes("opinion") ? 20 : 0) +
+    (text.includes("blog") ? 15 : 0) +
+    (text.includes("forum") ? 15 : 0);
+
+  return tierWeight + bonus - penalty;
+}
+
+function dedupeByUrl<T extends { url: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const it of items) {
+    const key = it.url.trim();
+    if (!key) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(it);
+  }
+  return out;
+}
+
+async function braveWebSearch(query: string, count: number): Promise<any[]> {
+  const apiKey = process.env.BRAVE_SEARCH_API_KEY;
+  if (!apiKey) throw new Error("Missing BRAVE_SEARCH_API_KEY");
+
+  const url = new URL("https://api.search.brave.com/res/v1/web/search");
+  url.searchParams.set("q", query);
+  url.searchParams.set("count", String(Math.min(Math.max(count, 3), 10)));
+  url.searchParams.set("safesearch", "moderate");
+  url.searchParams.set("freshness", "year"); // sane default; adjust later if you want
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      Accept: "application/json",
+      "X-Subscription-Token": apiKey,
+    },
   });
-  return out.slice(0, MAX_SOURCES);
+
+  if (!res.ok) {
+    const body = await safeReadText(res);
+    throw new Error(`Brave search failed (${res.status}): ${body?.slice(0, 300) ?? ""}`);
+  }
+
+  const json = await res.json();
+  const results = json?.web?.results ?? [];
+  return Array.isArray(results) ? results : [];
+}
+
+async function safeReadText(res: Response): Promise<string | null> {
+  try {
+    return await res.text();
+  } catch {
+    return null;
+  }
 }
 
 function buildSearchQueries(claim: string): string[] {
-  const lower = claim.toLowerCase();
-  const queries = new Set<string>();
-  queries.add(claim.slice(0, 180));
-  if (lower.match(/\d+/)) {
-    queries.add(`${claim} fact check`);
-    queries.add(`${claim} data`);
-  }
-  if (lower.includes("immigr")) queries.add("unauthorized immigrant population US 2016 2024");
-  if (lower.includes("taliban") || lower.includes("afghanistan")) {
-    queries.add("cash shipments Afghanistan Taliban aid oversight 2024");
-    queries.add("US aid to Afghanistan taliban diversion verification");
-  }
-  if (lower.includes("economy") || lower.includes("jobs")) {
-    queries.add("US job growth 2024 bureau of labor statistics");
-  }
-  if (lower.includes("election")) {
-    queries.add("2020 election audit results");
-    queries.add("federal election security report 2020");
-  }
-  return Array.from(queries).slice(0, 6);
+  const clean = claim.trim().replace(/\s+/g, " ");
+
+  // Hard-coded "gold" query set: official-first + fact-check assist
+  const q1 = `${clean} site:.gov OR site:.mil OR site:.edu`;
+  const q2 = `${clean} data report statistics`;
+  const q3 = `${clean} fact check`;
+  const q4 = `${clean} Pew Research OR CDC OR Census OR BLS OR UN OR WHO`;
+
+  return [q1, q2, q3, q4].slice(0, MAX_QUERY_COUNT);
 }
 
-function jitterConfidence(base: number): number {
-  const noise = (Math.random() - 0.5) * 0.12; // +/- 0.06
-  const val = Math.max(0, Math.min(1, base + noise));
-  return Math.round(val * 1000) / 1000;
+function normalizeBraveResult(r: any): { title: string; url: string; snippet: string; published?: string | null } | null {
+  const url = r?.url;
+  const title = r?.title;
+  const snippet = r?.description ?? r?.snippet ?? "";
+  const published = r?.page_age ?? r?.age ?? r?.published ?? null;
+
+  if (!isString(url) || !isString(title)) return null;
+  return { title: String(title), url: String(url), snippet: String(snippet ?? ""), published };
 }
 
-async function braveSearch(query: string): Promise<Source[]> {
-  if (!BRAVE_KEY) return [];
-  
-  // First search: prioritize government and official sources
-  const govQuery = `${query} site:.gov OR site:.edu OR site:who.int OR site:worldbank.org`;
-  const govSearchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(govQuery)}&count=6`;
-  
-  // Second search: general search for additional sources
-  const generalSearchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${MAX_SOURCES}`;
-  
-  const allSources: Source[] = [];
-  
-  try {
-    // Get government sources first
-    const govResp = await fetch(govSearchUrl, {
-      headers: {
-        "X-Subscription-Token": BRAVE_KEY,
-        Accept: "application/json",
-      },
-    });
-    if (govResp.ok) {
-      const govData = (await govResp.json()) as any;
-      const govWeb = govData?.web?.results || [];
-      const govMapped = govWeb.map((r: any, idx: number) => {
-        const domain = parseDomain(r.url);
-        return {
-          sourceId: r.id || `gov-src-${idx + 1}`,
-          title: r.title || r.url,
-          url: r.url,
-          domain,
-          tier: scoreTier(domain),
-        };
-      });
-      allSources.push(...govMapped);
-    }
-    
-    // Get general sources
-    const resp = await fetch(generalSearchUrl, {
-      headers: {
-        "X-Subscription-Token": BRAVE_KEY,
-        Accept: "application/json",
-      },
-    });
-    if (resp.ok) {
-      const data = (await resp.json()) as any;
-      const web = data?.web?.results || [];
-      const mapped = web.map((r: any, idx: number) => {
-        const domain = parseDomain(r.url);
-        return {
-          sourceId: r.id || `src-${idx + 1}`,
-          title: r.title || r.url,
-          url: r.url,
-          domain,
-          tier: scoreTier(domain),
-        };
-      });
-      allSources.push(...mapped);
-    }
-    
-    return dedupeSources(allSources);
-  } catch {
-    return [];
-  }
+function splitTiers(sources: Source[]) {
+  const tier1 = sources.filter((s) => s.tier === "tier1");
+  const tier2 = sources.filter((s) => s.tier === "tier2");
+  const tier3 = sources.filter((s) => s.tier === "tier3");
+
+  // tier4 intentionally excluded from proof sources
+  return { tier1, tier2, tier3 };
 }
 
-function normalizeVerdict(input: string): string {
-  const allowed = ["true", "false", "misleading", "disputed"];
-  const v = (input || "").toLowerCase();
-  return allowed.includes(v) ? v : "disputed";
-}
-
-function parseModelJSON(text: string, fallbackSources: Source[], searchQueries: string[], model: string) {
-  let parsed: any = {};
-  try {
-    // Strip markdown code blocks if present
-    let cleanText = text.trim();
-    if (cleanText.startsWith('```')) {
-      // Remove ```json or ``` at start and ``` at end
-      cleanText = cleanText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
-    }
-    parsed = JSON.parse(cleanText.trim());
-  } catch (err) {
-    console.error("❌ JSON Parse Error:", err);
-    console.error("Raw text:", text.substring(0, 200));
-    parsed = {
-      verdict: "disputed",
-      confidence: 0.52,
-      summary: text.slice(0, 400),
-      bottomLine: "Further review required; evidence is inconclusive.",
-      whatDataShows: [],
-      spreadFactors: [],
-      sources: fallbackSources,
-    };
-  }
-  const verdict = normalizeVerdict(parsed.verdict);
-  const rawConf =
-    typeof parsed.confidence === "number" && parsed.confidence >= 0 && parsed.confidence <= 1 ? parsed.confidence : 0.52;
-  const confidence = jitterConfidence(rawConf);
-
-  const cleanedSources: Source[] =
-    Array.isArray(parsed.sources) && parsed.sources.length
-      ? parsed.sources.map((s: any, idx: number) => {
-          const url = s.url || fallbackSources[idx]?.url;
-          const domain = s.domain || parseDomain(url);
-          return {
-            sourceId: s.sourceId || `src-${idx + 1}`,
-            title: s.title || s.url || fallbackSources[idx]?.title || "Source",
-            url,
-            domain,
-            tier: typeof s.tier === "number" ? s.tier : scoreTier(domain),
-          };
-        })
-      : fallbackSources;
-
-  const whatDataShows = Array.isArray(parsed.whatDataShows) && parsed.whatDataShows.length > 0 
-    ? parsed.whatDataShows 
-    : ["Official data analysis pending", "Multiple sources consulted", "Evidence requires further verification"];
-  
-  const spreadFactors = Array.isArray(parsed.spreadFactors) && parsed.spreadFactors.length > 0
-    ? parsed.spreadFactors
-    : ["Emotional appeal to audience", "Confirmation of existing beliefs", "Simplified narrative"];
-
-  return {
-    verdict,
-    confidence,
-    summary: parsed.summary || "Evidence-backed verification completed.",
-    bottomLine: parsed.bottomLine || parsed.summary || "Evidence-backed verification completed.",
-    whatDataShows,
-    spreadFactors,
-    sources: dedupeSources(cleanedSources),
-    searchQueries,
-    model,
-  };
-}
-
-async function callAnthropic(
-  claim: string,
-  sources: Source[],
-  searchQueries: string[]
-): Promise<Omit<VerificationResponse, "verificationId">> {
+async function callAnthropic(args: {
+  system: string;
+  user: string;
+  model: string;
+  temperature?: number;
+  maxTokens?: number;
+}): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+  if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
 
-  const modelsToTry = [PRIMARY_MODEL, ...FALLBACK_MODELS];
-  let lastError: any = null;
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: args.model,
+      max_tokens: args.maxTokens ?? 900,
+      temperature: args.temperature ?? 0.2,
+      system: args.system,
+      messages: [
+        {
+          role: "user",
+          content: args.user,
+        },
+      ],
+    }),
+  });
 
-  const sourcesForPrompt =
-    sources && sources.length
-      ? sources
-          .map(
-            (s, idx) =>
-              `${idx + 1}. ${s.title || s.url || "Source"} — ${s.url || ""} (domain: ${s.domain || "unknown"}, tier: ${
-                s.tier || 3
-              })`
-          )
-          .join("\n")
-      : "No external sources were found. Use general knowledge and clearly state uncertainty.";
-
-  const prompt = `
-You are ProofLayer, a neutral, evidence-first verifier. Use the sources to fact-check the claim. 
-
-Output ONLY valid JSON with these exact keys:
-{
-  "verdict": "true" | "false" | "misleading" | "disputed",
-  "confidence": 0.0 to 1.0,
-  "summary": "1-3 sentence summary of findings",
-  "bottomLine": "1 sentence conclusion",
-  "whatDataShows": ["bullet point 1", "bullet point 2", "bullet point 3"],
-  "spreadFactors": ["reason 1 why this spreads", "reason 2", "reason 3"],
-  "sources": [{"title": "...", "url": "...", "domain": "...", "tier": 1-3}]
-}
-
-IMPORTANT: 
-- whatDataShows: 3-5 bullet points about what the evidence actually reveals
-- spreadFactors: 2-4 bullet points explaining why this claim might spread (emotional appeal, confirmation bias, etc)
-- Always include both arrays even if claim is true
-
-Claim:
-${claim}
-
-Sources:
-${sourcesForPrompt}
-
-Search queries used:
-${searchQueries.join("; ")}
-`;
-
-  for (const model of modelsToTry) {
-    try {
-      const client = new Anthropic({ apiKey });
-      const msg = await client.messages.create({
-        model,
-        max_tokens: 2048,
-        temperature: 0.45,
-        system:
-          "Be calm, boringly trustworthy, and concise. Ground outputs in sources. If uncertain, set verdict to disputed with lower confidence. Return ONLY raw JSON without markdown code blocks or formatting.",
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      const text = msg?.content?.[0]?.type === "text" ? msg.content[0].text : "";
-      if (!text) throw new Error("No response from Anthropic");
-
-      console.log("🔍 Claude Response:", text.substring(0, 500));
-      const result = parseModelJSON(text, sources, searchQueries, model);
-      console.log("📊 Parsed Result:", JSON.stringify(result, null, 2));
-      return result;
-    } catch (err: any) {
-      lastError = err;
-      const msg = err?.message || "";
-      if (msg.includes("not_found") || msg.includes("404")) continue;
-      break;
-    }
+  if (!res.ok) {
+    const body = await safeReadText(res);
+    throw new Error(`Anthropic failed (${res.status}): ${body?.slice(0, 400) ?? ""}`);
   }
 
-  throw lastError || new Error("Verification failed");
+  const json = await res.json();
+  const content = json?.content;
+  if (!Array.isArray(content)) throw new Error("Anthropic response missing content array");
+
+  // Concatenate all text blocks
+  const text = content
+    .map((c: any) => (c?.type === "text" ? String(c?.text ?? "") : ""))
+    .join("\n")
+    .trim();
+
+  if (!text) throw new Error("Anthropic returned empty text");
+  return text;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<VerificationResponse | { error: string }>) {
+function safeJsonParse<T>(s: string): T | null {
+  try {
+    return JSON.parse(s) as T;
+  } catch {
+    return null;
+  }
+}
+
+function clamp01(n: number): number {
+  if (Number.isNaN(n)) return 0;
+  return Math.max(0, Math.min(1, n));
+}
+
+function ensureArrayOfStrings(x: any, fallback: string[]): string[] {
+  if (!Array.isArray(x)) return fallback;
+  const cleaned = x.map((v) => (typeof v === "string" ? v.trim() : "")).filter(Boolean);
+  return cleaned.length ? cleaned.slice(0, 10) : fallback;
+}
+
+function normalizeVerdict(v: any): Verdict {
+  const s = String(v ?? "").toLowerCase().trim();
+  if (s === "true") return "true";
+  if (s === "false") return "false";
+  if (s === "misleading") return "misleading";
+  return "unverified";
+}
+
+function stripJsonFence(s: string): string {
+  // If model wraps in ```json ... ```
+  const trimmed = s.trim();
+  const m = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  return m ? m[1].trim() : trimmed;
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<VerifyResponse | ErrorResponse>) {
+  // Only POST
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({
+      error: { code: "method_not_allowed", message: "Use POST." },
+    });
   }
 
+  const verificationId = crypto.randomUUID();
+  const generatedAt = new Date().toISOString();
+  const warnings: string[] = [];
+
   try {
-    const claim = typeof req.body?.claim === "string" ? req.body.claim.trim() : "";
-    const link = typeof req.body?.link === "string" ? req.body.link.trim() : "";
+    const body: VerifyRequest = typeof req.body === "string" ? safeJsonParse(req.body) ?? {} : (req.body ?? {});
+    const claim = isString(body.claim) ? body.claim.trim() : "";
+    const contextUrl = isString(body.url) ? body.url.trim() : isString(body.contextUrl) ? body.contextUrl.trim() : "";
+    const maxSources = Number.isFinite(body.maxSources as any) ? Math.max(6, Math.min(18, Number(body.maxSources))) : DEFAULT_MAX_SOURCES;
+
     if (!claim) {
-      return res.status(400).json({ error: "Claim is required" });
+      return res.status(400).json({
+        error: { code: "bad_request", message: "Missing claim." },
+      });
     }
 
+    // 1) Build deterministic queries (official-first bias)
     const searchQueries = buildSearchQueries(claim);
-    const sources = await braveSearch(claim);
 
-    const llm = await callAnthropic(claim, sources, searchQueries);
+    // 2) Brave search in parallel
+    const braveResultsNested = await Promise.all(
+      searchQueries.map(async (q) => {
+        try {
+          return await braveWebSearch(q, 6);
+        } catch (e: any) {
+          warnings.push(`Search query failed: "${q}" (${String(e?.message ?? e)})`);
+          return [];
+        }
+      })
+    );
 
-    const verificationId = randomUUID();
-    return res.status(200).json({
-      verificationId,
-      ...llm,
-      sources: llm.sources || [],
-      ...(link ? { link } : {}),
+    const braveResults = braveResultsNested.flat().map(normalizeBraveResult).filter(Boolean) as Array<{
+      title: string;
+      url: string;
+      snippet: string;
+      published?: string | null;
+    }>;
+
+    // 3) Normalize → classify → score → dedupe
+    const sourcesAll: Source[] = dedupeByUrl(
+      braveResults.map((r) => {
+        const domain = toDomain(r.url);
+        const { tier, reason } = classifyTier(domain);
+        const score = scoreSource(tier, domain, r.title, r.snippet);
+        return {
+          title: r.title,
+          url: r.url,
+          domain,
+          snippet: r.snippet,
+          published: r.published ?? null,
+          tier,
+          score,
+          reason,
+        };
+      })
+    )
+      // Drop obvious junk (no domain, etc.)
+      .filter((s) => !!s.domain && !!s.url);
+
+    // 4) Rank sources: tier first, then score
+    sourcesAll.sort((a, b) => b.score - a.score);
+
+    // 5) Construct proof-grade set: exclude tier4 from the evidence set
+    const proofSources = sourcesAll.filter((s) => s.tier !== "tier4").slice(0, maxSources);
+
+    const { tier1, tier2, tier3 } = splitTiers(proofSources);
+
+    if (tier1.length === 0) {
+      warnings.push("No Tier 1 (official) sources found. Verdict confidence will be constrained.");
+    }
+
+    // 6) Call Claude with strict JSON contract
+    const model = process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL;
+
+    const system = `
+You are ProofLayer, an evidence-first verification engine.
+Your job: verify the user's claim with a GOLD standard approach.
+
+NON-NEGOTIABLE RULES:
+1) Prioritize sources by tier:
+   - Tier 1: .gov/.mil/.edu and official institutions (highest trust)
+   - Tier 2: reputable news/research/fact-check outlets
+   - Tier 3: general web context only (never decisive by itself)
+   - Social/UGC is NEVER decisive evidence.
+2) If Tier 1 conflicts with Tier 2 or Tier 3, Tier 1 wins.
+3) Do not hallucinate citations. Only cite URLs provided.
+4) Return STRICT JSON only (no markdown, no prose).
+5) If evidence is insufficient or conflicting, verdict must be "unverified" or "misleading" with reduced confidence.
+
+OUTPUT JSON SHAPE:
+{
+  "verdict": "true|false|misleading|unverified",
+  "confidence": number (0..1),
+  "summary": string (1-3 sentences, plain),
+  "bottomLine": string (one sentence, decisive and actionable),
+  "whatDataShows": string[] (3-6 crisp bullets),
+  "spreadFactors": string[] (3-6 crisp bullets),
+  "citations": {
+    "tier1": string[],
+    "tier2": string[],
+    "tier3": string[]
+  }
+}
+`.trim();
+
+    const sourcesForModel = {
+      claim,
+      contextUrl: contextUrl || null,
+      sources: {
+        tier1: tier1.map((s) => ({ title: s.title, url: s.url, snippet: s.snippet })),
+        tier2: tier2.map((s) => ({ title: s.title, url: s.url, snippet: s.snippet })),
+        tier3: tier3.map((s) => ({ title: s.title, url: s.url, snippet: s.snippet })),
+      },
+      policy: {
+        decisiveEvidence: "Tier1 > Tier2 > Tier3",
+        neverDecisive: "Social/UGC (not provided here)",
+      },
+    };
+
+    const user = `
+Verify this claim:
+"${claim}"
+
+If a context URL exists, it is only context:
+${contextUrl ? contextUrl : "(none)"}
+
+Evidence sources by tier (use in order; do not invent anything):
+${JSON.stringify(sourcesForModel, null, 2)}
+
+Return STRICT JSON only, matching the required output shape.
+`.trim();
+
+    const raw = await callAnthropic({
+      system,
+      user,
+      model,
+      temperature: 0.2,
+      maxTokens: 950,
     });
-  } catch (err: any) {
-    return res.status(500).json({ error: err?.message || "Verification failed" });
+
+    const jsonText = stripJsonFence(raw);
+    const parsed = safeJsonParse<{
+      verdict: any;
+      confidence: any;
+      summary: any;
+      bottomLine: any;
+      whatDataShows: any;
+      spreadFactors: any;
+      citations?: { tier1?: any; tier2?: any; tier3?: any };
+    }>(jsonText);
+
+    if (!parsed) {
+      // If Claude returned malformed JSON, fail safely with constrained output
+      warnings.push("Model output was not valid JSON; returning constrained unverified response.");
+      const resp: VerifyResponse = {
+        verificationId,
+        verdict: "unverified",
+        confidence: 0.2,
+        summary: "Unable to parse the verification response. Please retry.",
+        bottomLine: "Verification incomplete due to response formatting issues.",
+        whatDataShows: ["Evidence extraction succeeded, but synthesis formatting failed."],
+        spreadFactors: ["Claims often spread faster than corrections when phrased as absolutes."],
+        sources: { tier1, tier2, tier3 },
+        searchQueries,
+        model,
+        generatedAt,
+        warnings,
+      };
+      return res.status(200).json(resp);
+    }
+
+    const verdict = normalizeVerdict(parsed.verdict);
+    const confidence = clamp01(Number(parsed.confidence));
+
+    // Confidence constraint: no Tier 1 sources => cap confidence
+    const constrainedConfidence = tier1.length === 0 ? Math.min(confidence, 0.65) : confidence;
+
+    const summary = isString(parsed.summary) ? parsed.summary.trim() : "Verification completed.";
+    const bottomLine = isString(parsed.bottomLine) ? parsed.bottomLine.trim() : "Review the evidence and sources.";
+
+    const whatDataShows = ensureArrayOfStrings(parsed.whatDataShows, [
+      "Multiple sources were reviewed, but the available evidence is limited.",
+      "Consider checking primary (official) data for a definitive answer.",
+      "Some sources may be interpreting the same data differently.",
+    ]);
+
+    const spreadFactors = ensureArrayOfStrings(parsed.spreadFactors, [
+      "High-emotion framing increases sharing even when details are unclear.",
+      "Short, absolute claims often omit definitions and timeframes.",
+      "Repetition across channels can create a false sense of certainty.",
+    ]);
+
+    const resp: VerifyResponse = {
+      verificationId,
+      verdict,
+      confidence: constrainedConfidence,
+      summary,
+      bottomLine,
+      whatDataShows,
+      spreadFactors,
+      sources: { tier1, tier2, tier3 },
+      searchQueries,
+      model,
+      generatedAt,
+      ...(warnings.length ? { warnings } : {}),
+    };
+
+    return res.status(200).json(resp);
+  } catch (e: any) {
+    const msg = String(e?.message ?? e ?? "Unknown error");
+    return res.status(500).json({
+      error: {
+        code: "verify_failed",
+        message: "Verification failed.",
+        details: {
+          verificationId,
+          reason: msg,
+        },
+      },
+    });
   }
 }
