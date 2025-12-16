@@ -22,8 +22,8 @@ export default function EchoBreakerClient() {
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     whatData: true,
-    whySpread: false,
-    sources: false,
+    whySpread: true,
+    sources: true,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -167,7 +167,7 @@ export default function EchoBreakerClient() {
           <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6 space-y-6">
             {/* Verdict Header */}
             <div className="flex items-start gap-4">
-              <div className={`${getVerdictColor(result.verdict)} p-4 rounded-full text-white text-3xl font-bold flex items-center justify-center w-16 h-16`}>
+              <div className={`${getVerdictColor(result.verdict)} p-6 rounded-2xl text-white text-5xl font-bold flex items-center justify-center w-24 h-24 shadow-lg`}>
                 {getVerdictIcon(result.verdict)}
               </div>
               <div className="flex-1">
@@ -251,12 +251,21 @@ export default function EchoBreakerClient() {
                 </button>
                 {expandedSections.sources && (
                   <div className="space-y-2">
-                    {result.sources.slice(0, 5).map((s, idx) => (
-                      <div key={idx} className="bg-slate-800/50 rounded-lg p-3">
-                        <p className="text-sm font-semibold text-slate-200">{s.title}</p>
-                        <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-emerald-400 hover:underline">
-                          {s.domain}
-                        </a>
+                    {result.sources.slice(0, 8).map((s, idx) => (
+                      <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3">
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          s.tier === 1 ? 'bg-emerald-600 text-white' :
+                          s.tier === 2 ? 'bg-blue-600 text-white' :
+                          'bg-slate-600 text-slate-300'
+                        }`}>
+                          Tier {s.tier || 3}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-slate-200">{s.title}</p>
+                          <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-emerald-400 hover:underline">
+                            {s.domain}
+                          </a>
+                        </div>
                       </div>
                     ))}
                   </div>
