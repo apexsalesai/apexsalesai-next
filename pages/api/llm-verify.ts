@@ -291,11 +291,14 @@ async function callAnthropic(args: {
   temperature?: number;
   maxTokens?: number;
 }): Promise<string> {
+  // GOLD STANDARD: Verify key is loaded
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
+  if (!apiKey) {
+    throw new Error("Anthropic API key not loaded");
+  }
 
-  // STEP 3: Force correct key verification at runtime
-  console.log("Anthropic key prefix:", apiKey.slice(0, 12));
+  console.log("Anthropic key loaded:", !!apiKey);
+  console.log("Anthropic key prefix:", apiKey.slice(0, 15));
   console.log("Requesting model:", args.model);
 
   // STEP 1: Hard-set headers (Messages API ONLY)
@@ -326,15 +329,25 @@ async function callAnthropic(args: {
 
   if (!res.ok) {
     const body = await safeReadText(res);
-    console.error("FULL ANTHROPIC ERROR:", body);
+    console.error("=== FULL ANTHROPIC ERROR ===");
+    console.error("Status:", res.status);
+    console.error("Body:", body);
+    console.error("=== END ERROR ===");
     throw new Error(`Anthropic failed (${res.status}): ${body?.slice(0, 400) ?? ""}`);
   }
 
   const json = await res.json();
   
-  // STEP 2: Extract text ONLY (nothing else crosses API boundary)
-  const text = json?.content?.[0]?.text;
-  if (!text) throw new Error("Empty Claude response");
+  // STEP 2: Extract text ONLY - support both SDK formats
+  const text = 
+    json?.content?.[0]?.text ?? 
+    json?.message?.content?.[0]?.text ?? 
+    "";
+  
+  if (!text) {
+    console.error("Anthropic response structure:", JSON.stringify(json).slice(0, 500));
+    throw new Error("Empty Claude response");
+  }
   
   return text;
 }
@@ -623,7 +636,8 @@ Return STRICT JSON only, matching the required output shape.
       generatedAt: new Date().toISOString(),
       model: DEFAULT_MODEL,
       searchQueries: [],
-      error: "verifier_runtime_error"
+      error: "verifier_runtime_error",
+      debug: err?.message?.slice(0, 500) // Include error message for debugging
     });
   }
 }
