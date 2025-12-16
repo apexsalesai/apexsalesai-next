@@ -2025,3 +2025,5 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-16: feat: rebuild llm verifier to match approved behavior
 - ✅ 2025-12-16: fix: add anthropic model fallbacks and richer search cues
 - ✅ 2025-12-16: fix: use claude-3-5-sonnet-20241022 and keep fallbacks
+- ✅ 2025-12-16: restore llm verifier file with anthopic fallbacks
+- ✅ 2025-12-16: restore llm verifier file with anthopic fallbacks
