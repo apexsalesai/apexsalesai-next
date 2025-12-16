@@ -159,8 +159,16 @@ function normalizeVerdict(input: string): string {
 function parseModelJSON(text: string, fallbackSources: Source[], searchQueries: string[], model: string) {
   let parsed: any = {};
   try {
-    parsed = JSON.parse(text.trim());
-  } catch {
+    // Strip markdown code blocks if present
+    let cleanText = text.trim();
+    if (cleanText.startsWith('```')) {
+      // Remove ```json or ``` at start and ``` at end
+      cleanText = cleanText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+    }
+    parsed = JSON.parse(cleanText.trim());
+  } catch (err) {
+    console.error("❌ JSON Parse Error:", err);
+    console.error("Raw text:", text.substring(0, 200));
     parsed = {
       verdict: "disputed",
       confidence: 0.52,
@@ -272,7 +280,7 @@ ${searchQueries.join("; ")}
         max_tokens: 2048,
         temperature: 0.45,
         system:
-          "Be calm, boringly trustworthy, and concise. Ground outputs in sources. If uncertain, set verdict to disputed with lower confidence. Do not echo raw JSON except as structured output.",
+          "Be calm, boringly trustworthy, and concise. Ground outputs in sources. If uncertain, set verdict to disputed with lower confidence. Return ONLY raw JSON without markdown code blocks or formatting.",
         messages: [{ role: "user", content: prompt }],
       });
 
