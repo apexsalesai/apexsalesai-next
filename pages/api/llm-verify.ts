@@ -321,16 +321,14 @@ async function callAnthropic(args: {
   }
 
   const json = await res.json();
-  const content = json?.content;
-  if (!Array.isArray(content)) throw new Error("Anthropic response missing content array");
+  
+  // STEP 2: Flatten Anthropic response (CRITICAL - prevents SDK serialization errors)
+  const text =
+    json?.content?.[0]?.text ??
+    json?.message?.content?.[0]?.text ??
+    "";
 
-  // Concatenate all text blocks
-  const text = content
-    .map((c: any) => (c?.type === "text" ? String(c?.text ?? "") : ""))
-    .join("\n")
-    .trim();
-
-  if (!text) throw new Error("Anthropic returned empty text");
+  if (!text) throw new Error("Empty LLM response");
   return text;
 }
 
@@ -368,41 +366,38 @@ function stripJsonFence(s: string): string {
   return m ? m[1].trim() : trimmed;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<VerifyResponse | ErrorResponse>) {
-  // STEP 1: Environment guards (MANDATORY - fail fast)
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(500).json({
-      error: {
-        code: "env_missing",
-        message: "Missing ANTHROPIC_API_KEY",
-        details: { stage: "env-check" }
-      }
-    });
-  }
-
-  if (!process.env.BRAVE_SEARCH_API_KEY) {
-    return res.status(500).json({
-      error: {
-        code: "env_missing",
-        message: "Missing BRAVE_SEARCH_API_KEY",
-        details: { stage: "env-check" }
-      }
-    });
-  }
-
-  // Only POST
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({
-      error: { code: "method_not_allowed", message: "Use POST." },
-    });
-  }
-
-  const verificationId = crypto.randomUUID();
-  const generatedAt = new Date().toISOString();
-  const warnings: string[] = [];
-
+export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
+  // STEP 1: Hard wrap entire handler (NO 500s)
   try {
+    // Environment guards
+    if (!process.env.ANTHROPIC_API_KEY || !process.env.BRAVE_SEARCH_API_KEY) {
+      return res.status(200).json({
+        verdict: "unknown",
+        confidence: 0,
+        summary: "Verification unavailable due to missing API configuration.",
+        bottomLine: "Unable to verify at this time.",
+        whatDataShows: [],
+        spreadFactors: [],
+        sources: { tier1: [], tier2: [], tier3: [] },
+        verificationId: crypto.randomUUID(),
+        generatedAt: new Date().toISOString(),
+        model: DEFAULT_MODEL,
+        searchQueries: [],
+        error: "env_missing"
+      });
+    }
+
+    // Only POST
+    if (req.method !== "POST") {
+      res.setHeader("Allow", "POST");
+      return res.status(405).json({
+        error: "Method not allowed"
+      });
+    }
+
+    const verificationId = crypto.randomUUID();
+    const generatedAt = new Date().toISOString();
+    const warnings: string[] = [];
     const body: VerifyRequest = typeof req.body === "string" ? safeJsonParse(req.body) ?? {} : (req.body ?? {});
     const claim = isString(body.claim) ? body.claim.trim() : "";
     const contextUrl = isString(body.url) ? body.url.trim() : isString(body.contextUrl) ? body.contextUrl.trim() : "";
@@ -474,32 +469,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const system = `
 You are ProofLayer, an evidence-first verification engine.
-Your job: verify the user's claim with a GOLD standard approach.
 
-NON-NEGOTIABLE RULES:
-1) Prioritize sources by tier:
-   - Tier 1: .gov/.mil/.edu and official institutions (highest trust)
-   - Tier 2: reputable news/research/fact-check outlets
-   - Tier 3: general web context only (never decisive by itself)
-   - Social/UGC is NEVER decisive evidence.
-2) If Tier 1 conflicts with Tier 2 or Tier 3, Tier 1 wins.
-3) Do not hallucinate citations. Only cite URLs provided.
-4) Return STRICT JSON only (no markdown, no prose).
-5) If evidence is insufficient or conflicting, verdict must be "unverified" or "misleading" with reduced confidence.
+CRITICAL OUTPUT RULES:
+You MUST return valid JSON only.
+Do not include markdown.
+Do not include explanations outside JSON.
+Do not wrap in \`\`\` blocks.
 
-OUTPUT JSON SHAPE:
+SOURCE HIERARCHY:
+- Tier 1: .gov/.mil/.edu and official institutions (DECISIVE)
+- Tier 2: reputable news/research/fact-check outlets (SUPPORTING)
+- Tier 3: general web context only (NEVER decisive by itself)
+- Social/UGC is NEVER decisive evidence
+
+If Tier 1 conflicts with Tier 2 or Tier 3, Tier 1 wins.
+Do not hallucinate citations. Only cite URLs provided.
+
+OUTPUT JSON SCHEMA:
 {
   "verdict": "true|false|misleading|unverified",
-  "confidence": number (0..1),
-  "summary": string (1-3 sentences, plain),
-  "bottomLine": string (one sentence, decisive and actionable),
-  "whatDataShows": string[] (3-6 crisp bullets),
-  "spreadFactors": string[] (3-6 crisp bullets),
-  "citations": {
-    "tier1": string[],
-    "tier2": string[],
-    "tier3": string[]
-  }
+  "confidence": 0.0 to 1.0,
+  "summary": "1-3 sentences",
+  "bottomLine": "one decisive sentence",
+  "whatDataShows": ["bullet 1", "bullet 2", "bullet 3"],
+  "spreadFactors": ["reason 1", "reason 2", "reason 3"]
 }
 `.trim();
 
@@ -530,28 +523,14 @@ ${JSON.stringify(sourcesForModel, null, 2)}
 Return STRICT JSON only, matching the required output shape.
 `.trim();
 
-    // STEP 2: Wrap Anthropic call (NO THROW EVER)
-    let raw: string;
-    try {
-      raw = await callAnthropic({
-        system,
-        user,
-        model,
-        temperature: 0.2,
-        maxTokens: 950,
-      });
-    } catch (err: any) {
-      return res.status(500).json({
-        error: {
-          code: "anthropic_failed",
-          message: "Anthropic request failed",
-          details: {
-            stage: "anthropic",
-            reason: err?.message ?? "Unknown error"
-          }
-        }
-      });
-    }
+    // Call Anthropic (outer catch handles errors)
+    const raw = await callAnthropic({
+      system,
+      user,
+      model,
+      temperature: 0.2,
+      maxTokens: 950,
+    });
 
     const jsonText = stripJsonFence(raw);
     const parsed = safeJsonParse<{
@@ -621,17 +600,23 @@ Return STRICT JSON only, matching the required output shape.
     };
 
     return res.status(200).json(resp);
-  } catch (e: any) {
-    const msg = String(e?.message ?? e ?? "Unknown error");
-    return res.status(500).json({
-      error: {
-        code: "verify_failed",
-        message: "Verification failed.",
-        details: {
-          verificationId,
-          reason: msg,
-        },
-      },
+  } catch (err: any) {
+    // STEP 1: Final catch - return 200 with fallback JSON (NO 500s)
+    console.error("LLM VERIFY ERROR:", err);
+
+    return res.status(200).json({
+      verdict: "unknown",
+      confidence: 0,
+      summary: "Verification failed due to an internal error.",
+      bottomLine: "Unable to verify at this time.",
+      whatDataShows: [],
+      spreadFactors: [],
+      sources: { tier1: [], tier2: [], tier3: [] },
+      verificationId: crypto.randomUUID(),
+      generatedAt: new Date().toISOString(),
+      model: DEFAULT_MODEL,
+      searchQueries: [],
+      error: "verifier_runtime_error"
     });
   }
 }
