@@ -296,8 +296,24 @@ async function callAnthropic(args: {
 
   // STEP 3: Force correct key verification at runtime
   console.log("Anthropic key prefix:", apiKey.slice(0, 12));
+  console.log("Requesting model:", args.model);
 
   // STEP 1: Hard-set headers (Messages API ONLY)
+  const requestBody = {
+    model: args.model,
+    max_tokens: args.maxTokens ?? 1200,
+    temperature: args.temperature ?? 0.3,
+    system: args.system,
+    messages: [
+      {
+        role: "user",
+        content: args.user,
+      },
+    ],
+  };
+
+  console.log("Request body:", JSON.stringify(requestBody).slice(0, 200));
+
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -305,22 +321,12 @@ async function callAnthropic(args: {
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
     },
-    body: JSON.stringify({
-      model: args.model,
-      max_tokens: args.maxTokens ?? 1200,
-      temperature: args.temperature ?? 0.3,
-      system: args.system,
-      messages: [
-        {
-          role: "user",
-          content: args.user,
-        },
-      ],
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!res.ok) {
     const body = await safeReadText(res);
+    console.error("FULL ANTHROPIC ERROR:", body);
     throw new Error(`Anthropic failed (${res.status}): ${body?.slice(0, 400) ?? ""}`);
   }
 
