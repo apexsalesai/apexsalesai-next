@@ -2036,3 +2036,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-16: feat: GOLD STANDARD verification engine with tier-based source ranking and enhanced UX
 - ✅ 2025-12-16: CRITICAL: harden all API routes - env guards, no-throw Brave/Anthropic, safe error handling
 - ✅ 2025-12-16: fix: update Anthropic model name to claude-3-5-sonnet-20240620
+- ✅ 2025-12-16: CRITICAL FIX: no 500s, flatten Anthropic response, enforce JSON-only, confidence cap enforced
