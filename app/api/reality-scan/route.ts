@@ -75,14 +75,14 @@ Analyze and return JSON with:
 
 Return ONLY valid JSON, no markdown.`;
 
-    const requestBody = {
+    const requestBody: Anthropic.MessageCreateParams = {
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20241022",
       max_tokens: 4000,
       temperature: 0.3,
       system: systemPrompt,
       messages: [
         {
-          role: "user",
+          role: "user" as const,
           content: userPrompt,
         },
       ],
