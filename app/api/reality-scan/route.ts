@@ -84,8 +84,13 @@ Analyze and return JSON with:
 
 Return ONLY valid JSON, no markdown.`;
 
+    // Use the correct Anthropic model name
+    const modelName = process.env.ANTHROPIC_MODEL === "claude-sonnet-4-5" 
+      ? "claude-sonnet-4-20250514" 
+      : (process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514");
+
     const requestBody: Anthropic.MessageCreateParams = {
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20241022",
+      model: modelName,
       max_tokens: 4000,
       temperature: 0.3,
       system: systemPrompt,
