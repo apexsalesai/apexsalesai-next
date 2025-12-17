@@ -193,17 +193,17 @@ export default function EchoBreakerClient() {
         {/* Header */}
         <div className="flex items-center gap-2 text-sm">
           <span className="px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 text-indigo-200">
-            ProofLayer · Verification
+            ProofLayer · Reality Infrastructure
           </span>
         </div>
 
         {/* Hero */}
         <div className="space-y-3">
           <h1 className="text-4xl font-bold tracking-tight">
-            Scan the claim before you share it
+            Verify reality before you publish
           </h1>
           <p className="text-lg text-slate-400">
-            Paste any claim, headline, or viral stat — verify it with evidence and ProofLayer. Insight and advanced features are delivered.
+            Paste any claim, headline, or viral stat — get verified evidence from official sources. Share with confidence.
           </p>
         </div>
 
@@ -319,7 +319,7 @@ export default function EchoBreakerClient() {
                     <p className="text-lg font-bold text-slate-200 uppercase tracking-wide">
                       {(result.confidence || 0) >= 85 ? "High Confidence" : (result.confidence || 0) >= 50 ? "Moderate Confidence" : "Low Confidence"}
                     </p>
-                    <p className="text-xs text-slate-500 mt-1">Confidence Score</p>
+                    <p className="text-xs text-slate-500 mt-1">Confidence Level</p>
                   </div>
                 </div>
               )}
@@ -360,7 +360,7 @@ export default function EchoBreakerClient() {
                 >
                   <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
                     <span className="text-2xl">🔥</span>
-                    Why This Claim Spread
+                    How This Claim Took Hold
                   </h3>
                   <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.whySpread ? '▼' : '▶'}</span>
                 </button>
@@ -379,7 +379,7 @@ export default function EchoBreakerClient() {
               <div className="border-t border-slate-700 pt-6 space-y-6">
                 <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
                   <span className="text-2xl">🔗</span>
-                  Evidence Sources
+                  Verified Evidence
                 </h3>
 
                 {/* Tier 1 */}
@@ -471,9 +471,10 @@ export default function EchoBreakerClient() {
               </div>
             )}
 
-            {/* Share Section - Expanded */}
+            {/* Share Section */}
             <div className="border-t border-slate-700 pt-6">
-              <h3 className="text-lg font-bold text-slate-100 mb-4">Stop this claim from spreading</h3>
+              <h3 className="text-2xl font-bold text-slate-100 mb-2">Share with confidence</h3>
+              <p className="text-sm text-slate-400 mb-4">This claim has been independently verified using official and trusted sources.</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <button
                   onClick={() => setShowProofCard(true)}
