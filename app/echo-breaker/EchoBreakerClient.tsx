@@ -516,7 +516,21 @@ export default function EchoBreakerClient() {
             {/* Share Section */}
             <div className="border-t border-slate-700 pt-6">
               <h3 className="text-2xl font-bold text-slate-100 mb-2">Verified insight — ready to share or cite</h3>
-              <p className="text-sm text-slate-400 mb-4">This verification is publication-ready and backed by official sources.</p>
+              <p className="text-sm text-slate-400 mb-3">This verification is publication-ready and backed by official sources.</p>
+              
+              {/* Share Presets */}
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <button className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors">
+                  📊 Share Summary
+                </button>
+                <button className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors">
+                  🔗 Share Sources
+                </button>
+                <button className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors">
+                  📝 Share Full Analysis
+                </button>
+              </div>
+              
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <button
                   onClick={() => setShowProofCard(true)}
