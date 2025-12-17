@@ -309,53 +309,66 @@ export default function EchoBreakerClient() {
           </div>
         )}
 
-        {/* Verdict Card - Apple Pay Style */}
+        {/* Verdict Card - Executive Grade */}
         {result && !loading && (
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-slate-700 rounded-2xl p-8 space-y-8 shadow-2xl">
-            {/* Verdict Header with Large Icon */}
-            <div className="text-center space-y-6">
-              <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full ${getVerdictColor(result.verdict)} shadow-2xl`}>
-                <span className="text-6xl text-white font-bold">{getVerdictIcon(result.verdict)}</span>
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+            {/* Bottom Line Executive Strip */}
+            {result.bottomLine && (
+              <div className={`px-6 py-4 border-l-4 ${confidenceColors?.ring} bg-slate-800/80 backdrop-blur-sm`}>
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl mt-1">📊</div>
+                  <div className="flex-1">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Bottom Line</h3>
+                    <p className="text-base text-slate-100 leading-relaxed">{result.bottomLine}</p>
+                  </div>
+                </div>
               </div>
-              
-              <div>
-                <h2 className="text-5xl font-black mb-4 tracking-tight">{getVerdictLabel(result.verdict)}</h2>
-                <p className="text-2xl text-slate-200 max-w-3xl mx-auto font-medium leading-relaxed">
-                  {result.summary || result.bottomLine}
-                </p>
+            )}
+
+            <div className="p-8 space-y-6">
+              {/* Verdict Header - Streamlined */}
+              <div className="flex items-center gap-6">
+                <div className={`flex-shrink-0 inline-flex items-center justify-center w-20 h-20 rounded-full ${getVerdictColor(result.verdict)} shadow-xl`}>
+                  <span className="text-4xl text-white font-bold">{getVerdictIcon(result.verdict)}</span>
+                </div>
+                
+                <div className="flex-1 text-left">
+                  <h2 className="text-3xl font-black mb-2 tracking-tight">{getVerdictLabel(result.verdict)}</h2>
+                  <p className="text-sm text-slate-400">{result.summary}</p>
+                </div>
               </div>
 
-              {/* DOMINANT Confidence Badge - Institutional Grade */}
+              {/* Confidence Metrics - Contextual */}
               {confidenceColors && (
-                <div className="inline-flex flex-col items-center gap-4 p-8 rounded-3xl bg-slate-800/50 border-2 border-slate-700 shadow-2xl max-w-md mx-auto">
-                  <div className={`relative inline-flex items-center justify-center w-48 h-48 rounded-full ring-[16px] ${confidenceColors.ring} ring-opacity-40 ${confidenceColors.bg} bg-opacity-10 shadow-[0_0_60px_rgba(0,0,0,0.3)]`}>
-                    <div className="absolute inset-0 rounded-full ${confidenceColors.bg} opacity-20 blur-2xl"></div>
-                    <div className="text-center relative z-10">
-                      <div className={`text-2xl font-bold text-slate-300 mb-1 uppercase tracking-wider`}>
-                        {getConfidenceBand(result.confidence || 0)}
-                      </div>
-                      <div className={`text-5xl font-black ${confidenceColors.text} drop-shadow-lg`}>
-                        {(result.confidence || 0) < 20 ? "<20%" : getConfidenceRange(result.confidence || 0)}
-                      </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+                    <div className={`text-3xl font-black ${confidenceColors.text} mb-1`}>
+                      {getConfidenceBand(result.confidence || 0)}
+                    </div>
+                    <div className="text-xs text-slate-400 uppercase tracking-wide">Confidence</div>
+                    <div className={`text-sm font-bold ${confidenceColors.text} mt-1`}>
+                      {(result.confidence || 0) < 20 ? "<20%" : getConfidenceRange(result.confidence || 0)}
                     </div>
                   </div>
-                  <div className="text-center space-y-2 w-full">
-                    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/50 rounded-lg">
-                      <span className="text-xs text-slate-400 uppercase tracking-wide">Evidence Strength</span>
-                      <span className="text-sm font-bold text-slate-200">{getEvidenceStrength(result.confidence || 0)}</span>
+                  <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+                    <div className="text-3xl font-black text-slate-200 mb-1">
+                      {getEvidenceStrength(result.confidence || 0)}
                     </div>
-                    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/50 rounded-lg">
-                      <span className="text-xs text-slate-400 uppercase tracking-wide">Source Consensus</span>
-                      <span className="text-sm font-bold text-slate-200">{result.sources?.tier1?.length || 0} Tier-1 sources</span>
+                    <div className="text-xs text-slate-400 uppercase tracking-wide">Evidence</div>
+                    <div className="text-sm font-bold text-slate-300 mt-1">Strength</div>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+                    <div className="text-3xl font-black text-slate-200 mb-1">
+                      {result.sources?.tier1?.length || 0}
                     </div>
-                    <p className="text-xs text-slate-500 mt-3">Confidence Level</p>
+                    <div className="text-xs text-slate-400 uppercase tracking-wide">Tier-1</div>
+                    <div className="text-sm font-bold text-slate-300 mt-1">Sources</div>
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* What the Data Shows */}
-            {result.whatDataShows && result.whatDataShows.length > 0 && (
+              {/* What the Data Shows */}
+              {result.whatDataShows && result.whatDataShows.length > 0 && (
               <div className="border-t border-slate-700 pt-6">
                 <button
                   onClick={() => toggleSection('whatData')}
@@ -547,6 +560,7 @@ export default function EchoBreakerClient() {
             {/* Branding */}
             <div className="text-center text-sm text-slate-500 pt-4 border-t border-slate-700">
               ProofLayer by ApexSalesAI · Verification ID: {result.verificationId?.slice(0, 8)}
+            </div>
             </div>
           </div>
         )}
