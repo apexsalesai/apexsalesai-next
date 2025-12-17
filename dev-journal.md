@@ -2056,3 +2056,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-17: FIX: Correct Anthropic model name (claude-sonnet-4-20250514 not claude-sonnet-4-5)
 - ✅ 2025-12-17: CRITICAL FIX: Force Node.js runtime for reality-scan API (Edge runtime incompatible with Anthropic SDK)
 - ✅ 2025-12-17: FIX: Use valid Anthropic model name (claude-3-5-sonnet-20241022)
+- ✅ 2025-12-17: RESTORE: Revert to working pages/api/reality-scan.ts that calls llm-verify (was working before)
