@@ -2052,3 +2052,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-17: CRITICAL FIX: Add missing /api/reality-scan route for Echo Breaker
 - ✅ 2025-12-17: FIX: Remove conflicting pages/api/reality-scan.ts (using app router now)
 - ✅ 2025-12-17: FIX: TypeScript error in reality-scan route - explicitly type Anthropic params
+- ✅ 2025-12-17: IMPROVE: Better error handling for missing ANTHROPIC_API_KEY
