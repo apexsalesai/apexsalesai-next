@@ -2042,3 +2042,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-16: EXACT FIX: hard-set headers, verify key at runtime, Messages API only, correct params
 - ✅ 2025-12-16: debug: add detailed logging for Anthropic API calls
 - ✅ 2025-12-16: GOLD STANDARD: explicit key check, support both SDK formats, hard-code model
+- ✅ 2025-12-16: PHASE 1 UX RESTORATION: confidence display, animation, verdict card, ProofCard, sharing

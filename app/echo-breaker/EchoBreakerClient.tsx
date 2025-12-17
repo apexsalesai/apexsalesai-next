@@ -298,21 +298,29 @@ export default function EchoBreakerClient() {
               </div>
               
               <div>
-                <h2 className="text-4xl font-bold mb-3">{getVerdictLabel(result.verdict)}</h2>
-                <p className="text-xl text-slate-300 max-w-2xl mx-auto">{result.bottomLine}</p>
+                <h2 className="text-5xl font-black mb-4 tracking-tight">{getVerdictLabel(result.verdict)}</h2>
+                <p className="text-2xl text-slate-200 max-w-3xl mx-auto font-medium leading-relaxed">
+                  {result.summary || result.bottomLine}
+                </p>
               </div>
 
-              {/* Large Confidence Badge */}
+              {/* DOMINANT Confidence Badge */}
               {confidenceColors && (
-                <div className="inline-flex flex-col items-center gap-3 p-6 rounded-2xl bg-slate-800/50 border-2 border-slate-700">
-                  <div className={`relative inline-flex items-center justify-center w-32 h-32 rounded-full ring-8 ${confidenceColors.ring} ring-opacity-30`}>
-                    <div className="text-center">
-                      <div className={`text-5xl font-bold ${confidenceColors.text}`}>
+                <div className="inline-flex flex-col items-center gap-4 p-8 rounded-3xl bg-slate-800/50 border-2 border-slate-700 shadow-2xl">
+                  <div className={`relative inline-flex items-center justify-center w-48 h-48 rounded-full ring-[16px] ${confidenceColors.ring} ring-opacity-40 ${confidenceColors.bg} bg-opacity-10 shadow-[0_0_60px_rgba(0,0,0,0.3)]`}>
+                    <div className="absolute inset-0 rounded-full ${confidenceColors.bg} opacity-20 blur-2xl"></div>
+                    <div className="text-center relative z-10">
+                      <div className={`text-7xl font-black ${confidenceColors.text} drop-shadow-lg`}>
                         {Math.round(animatedConfidence)}%
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Confidence</p>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-slate-200 uppercase tracking-wide">
+                      {(result.confidence || 0) >= 85 ? "High Confidence" : (result.confidence || 0) >= 50 ? "Moderate Confidence" : "Low Confidence"}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">Confidence Score</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -527,17 +535,26 @@ export default function EchoBreakerClient() {
                 </button>
               </div>
               
-              {/* ProofCard Content */}
-              <div className="bg-white text-slate-900 rounded-xl p-8 space-y-6">
-                <div className="text-center">
-                  <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full ${getVerdictColor(result?.verdict)} mb-4`}>
-                    <span className="text-4xl text-white font-bold">{getVerdictIcon(result?.verdict)}</span>
+              {/* ProofCard Content - VIRAL OPTIMIZED */}
+              <div className={`bg-gradient-to-br from-white to-slate-50 text-slate-900 rounded-2xl p-10 space-y-8 relative overflow-hidden shadow-2xl`}>
+                {/* Color Glow Effect */}
+                <div className={`absolute inset-0 ${confidenceColors?.bg} opacity-5 blur-3xl`}></div>
+                
+                <div className="text-center relative z-10">
+                  <div className={`inline-flex items-center justify-center w-28 h-28 rounded-full ${getVerdictColor(result?.verdict)} mb-6 shadow-2xl ring-8 ring-white/50`}>
+                    <span className="text-5xl text-white font-bold">{getVerdictIcon(result?.verdict)}</span>
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">{getVerdictLabel(result?.verdict)}</h3>
-                  <p className="text-lg text-slate-600 mb-4">"{claim}"</p>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
-                    <span className="font-bold text-2xl">{Math.round(result?.confidence || 0)}%</span>
-                    <span className="text-sm text-slate-600">Confidence</span>
+                  <h3 className="text-3xl font-black mb-3 tracking-tight">{getVerdictLabel(result?.verdict)}</h3>
+                  <p className="text-xl text-slate-700 mb-6 font-medium leading-relaxed max-w-lg mx-auto">"{claim.length > 120 ? claim.slice(0, 120) + '...' : claim}"</p>
+                  
+                  {/* DOMINANT Confidence Badge */}
+                  <div className={`inline-flex flex-col items-center gap-3 px-8 py-6 rounded-2xl ${confidenceColors?.bg} bg-opacity-10 border-2 ${confidenceColors?.ring} shadow-lg`}>
+                    <div className={`text-6xl font-black ${confidenceColors?.text}`}>
+                      {Math.round(result?.confidence || 0)}%
+                    </div>
+                    <div className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                      {(result?.confidence || 0) >= 85 ? "High Confidence" : (result?.confidence || 0) >= 50 ? "Moderate Confidence" : "Low Confidence"}
+                    </div>
                   </div>
                 </div>
 
@@ -550,8 +567,12 @@ export default function EchoBreakerClient() {
                   </ul>
                 </div>
 
-                <div className="text-center text-xs text-slate-500 pt-4 border-t border-slate-200">
-                  Verified by ProofLayer · apexsalesai.com
+                <div className="text-center pt-6 border-t-2 border-slate-200 relative z-10">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">P</div>
+                    <span className="font-bold text-slate-900 text-lg">ProofLayer</span>
+                  </div>
+                  <p className="text-xs text-slate-500">by ApexSalesAI · apexsalesai.com</p>
                 </div>
               </div>
 
