@@ -16,6 +16,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if API key exists
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error("ANTHROPIC_API_KEY is not set!");
+      return NextResponse.json(
+        { error: "API configuration error - ANTHROPIC_API_KEY not set" },
+        { status: 500 }
+      );
+    }
+
     console.log("Anthropic key loaded:", !!process.env.ANTHROPIC_API_KEY);
     console.log("Anthropic key prefix:", process.env.ANTHROPIC_API_KEY?.slice(0, 15));
     console.log("Requesting model:", process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20241022");
