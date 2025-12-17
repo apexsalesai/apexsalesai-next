@@ -87,10 +87,9 @@ Analyze and return JSON with:
 
 Return ONLY valid JSON, no markdown.`;
 
-    // Use the correct Anthropic model name
-    const modelName = process.env.ANTHROPIC_MODEL === "claude-sonnet-4-5" 
-      ? "claude-sonnet-4-20250514" 
-      : (process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514");
+    // Use a valid Anthropic model name
+    // Valid models: claude-3-5-sonnet-20241022, claude-3-opus-20240229, claude-3-sonnet-20240229
+    const modelName = "claude-3-5-sonnet-20241022";
 
     const requestBody: Anthropic.MessageCreateParams = {
       model: modelName,
