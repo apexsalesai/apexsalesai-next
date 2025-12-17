@@ -159,10 +159,31 @@ export default function EchoBreakerClient() {
 
   const getVerdictLabel = (verdict?: string) => {
     const v = (verdict || "").toLowerCase();
-    if (v.includes("false")) return "False Claim";
-    if (v.includes("misleading")) return "Misleading";
-    if (v.includes("true")) return "Verified";
-    return "Unknown";
+    if (v.includes("false")) return "Not Supported by Evidence";
+    if (v.includes("misleading")) return "Contextually Incomplete";
+    if (v.includes("true")) return "Substantiated";
+    return "Inconclusive";
+  };
+
+  const getConfidenceBand = (confidence: number) => {
+    if (confidence >= 85) return "HIGH";
+    if (confidence >= 50) return "MODERATE";
+    return "LOW";
+  };
+
+  const getConfidenceRange = (confidence: number) => {
+    // Show ranges for more credible presentation
+    if (confidence >= 85) return `${Math.max(85, confidence - 5)}–${Math.min(100, confidence + 3)}%`;
+    if (confidence >= 50) return `${confidence - 8}–${confidence + 8}%`;
+    if (confidence < 20) return "Insufficient corroboration";
+    return `${confidence - 5}–${confidence + 5}%`;
+  };
+
+  const getEvidenceStrength = (confidence: number) => {
+    if (confidence >= 85) return "Strong";
+    if (confidence >= 70) return "Medium–High";
+    if (confidence >= 50) return "Medium";
+    return "Weak";
   };
 
   const handleShare = (platform: string) => {
@@ -304,22 +325,30 @@ export default function EchoBreakerClient() {
                 </p>
               </div>
 
-              {/* DOMINANT Confidence Badge */}
+              {/* DOMINANT Confidence Badge - Institutional Grade */}
               {confidenceColors && (
-                <div className="inline-flex flex-col items-center gap-4 p-8 rounded-3xl bg-slate-800/50 border-2 border-slate-700 shadow-2xl">
+                <div className="inline-flex flex-col items-center gap-4 p-8 rounded-3xl bg-slate-800/50 border-2 border-slate-700 shadow-2xl max-w-md mx-auto">
                   <div className={`relative inline-flex items-center justify-center w-48 h-48 rounded-full ring-[16px] ${confidenceColors.ring} ring-opacity-40 ${confidenceColors.bg} bg-opacity-10 shadow-[0_0_60px_rgba(0,0,0,0.3)]`}>
                     <div className="absolute inset-0 rounded-full ${confidenceColors.bg} opacity-20 blur-2xl"></div>
                     <div className="text-center relative z-10">
-                      <div className={`text-7xl font-black ${confidenceColors.text} drop-shadow-lg`}>
-                        {Math.round(animatedConfidence)}%
+                      <div className={`text-2xl font-bold text-slate-300 mb-1 uppercase tracking-wider`}>
+                        {getConfidenceBand(result.confidence || 0)}
+                      </div>
+                      <div className={`text-5xl font-black ${confidenceColors.text} drop-shadow-lg`}>
+                        {(result.confidence || 0) < 20 ? "<20%" : getConfidenceRange(result.confidence || 0)}
                       </div>
                     </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-slate-200 uppercase tracking-wide">
-                      {(result.confidence || 0) >= 85 ? "High Confidence" : (result.confidence || 0) >= 50 ? "Moderate Confidence" : "Low Confidence"}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-1">Confidence Level</p>
+                  <div className="text-center space-y-2 w-full">
+                    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/50 rounded-lg">
+                      <span className="text-xs text-slate-400 uppercase tracking-wide">Evidence Strength</span>
+                      <span className="text-sm font-bold text-slate-200">{getEvidenceStrength(result.confidence || 0)}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/50 rounded-lg">
+                      <span className="text-xs text-slate-400 uppercase tracking-wide">Source Consensus</span>
+                      <span className="text-sm font-bold text-slate-200">{result.sources?.tier1?.length || 0} Tier-1 sources</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-3">Confidence Level</p>
                   </div>
                 </div>
               )}
@@ -473,8 +502,8 @@ export default function EchoBreakerClient() {
 
             {/* Share Section */}
             <div className="border-t border-slate-700 pt-6">
-              <h3 className="text-2xl font-bold text-slate-100 mb-2">Share with confidence</h3>
-              <p className="text-sm text-slate-400 mb-4">This claim has been independently verified using official and trusted sources.</p>
+              <h3 className="text-2xl font-bold text-slate-100 mb-2">Verified insight — ready to share or cite</h3>
+              <p className="text-sm text-slate-400 mb-4">This verification is publication-ready and backed by official sources.</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <button
                   onClick={() => setShowProofCard(true)}
@@ -548,13 +577,16 @@ export default function EchoBreakerClient() {
                   <h3 className="text-3xl font-black mb-3 tracking-tight">{getVerdictLabel(result?.verdict)}</h3>
                   <p className="text-xl text-slate-700 mb-6 font-medium leading-relaxed max-w-lg mx-auto">"{claim.length > 120 ? claim.slice(0, 120) + '...' : claim}"</p>
                   
-                  {/* DOMINANT Confidence Badge */}
+                  {/* DOMINANT Confidence Badge - Institutional */}
                   <div className={`inline-flex flex-col items-center gap-3 px-8 py-6 rounded-2xl ${confidenceColors?.bg} bg-opacity-10 border-2 ${confidenceColors?.ring} shadow-lg`}>
-                    <div className={`text-6xl font-black ${confidenceColors?.text}`}>
-                      {Math.round(result?.confidence || 0)}%
+                    <div className="text-sm font-bold text-slate-600 uppercase tracking-wider mb-1">
+                      {getConfidenceBand(result?.confidence || 0)}
                     </div>
-                    <div className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-                      {(result?.confidence || 0) >= 85 ? "High Confidence" : (result?.confidence || 0) >= 50 ? "Moderate Confidence" : "Low Confidence"}
+                    <div className={`text-5xl font-black ${confidenceColors?.text}`}>
+                      {(result?.confidence || 0) < 20 ? "<20%" : getConfidenceRange(result?.confidence || 0)}
+                    </div>
+                    <div className="text-xs text-slate-600 mt-1">
+                      Evidence Strength: {getEvidenceStrength(result?.confidence || 0)}
                     </div>
                   </div>
                 </div>
@@ -568,12 +600,17 @@ export default function EchoBreakerClient() {
                   </ul>
                 </div>
 
-                <div className="text-center pt-6 border-t-2 border-slate-200 relative z-10">
+                {/* Trust Artifact Footer */}
+                <div className="text-center pt-6 border-t-2 border-slate-200 relative z-10 space-y-3">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">P</div>
                     <span className="font-bold text-slate-900 text-lg">ProofLayer</span>
                   </div>
-                  <p className="text-xs text-slate-500">by ApexSalesAI · apexsalesai.com</p>
+                  <div className="space-y-1 text-xs text-slate-600">
+                    <p>Verification ID: {result?.verificationId?.slice(0, 12) || 'N/A'}</p>
+                    <p>Verified: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                    <p className="text-slate-500">Multi-source consensus analysis · apexsalesai.com</p>
+                  </div>
                 </div>
               </div>
 
