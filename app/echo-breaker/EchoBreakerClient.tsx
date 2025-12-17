@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Source = {
   title: string;
@@ -27,23 +27,74 @@ type VerificationResponse = {
   error?: string;
 };
 
+type AnalysisPhase = {
+  id: number;
+  label: string;
+  icon: string;
+};
+
+const ANALYSIS_PHASES: AnalysisPhase[] = [
+  { id: 1, label: "Parsing the Claim", icon: "🔍" },
+  { id: 2, label: "Searching Official Sources", icon: "🏛️" },
+  { id: 3, label: "Cross-Checking Independent Research", icon: "📊" },
+  { id: 4, label: "Evaluating Conflicts & Context", icon: "⚖️" },
+  { id: 5, label: "Final Verdict Generated", icon: "✨" },
+];
+
 export default function EchoBreakerClient() {
   const [claim, setClaim] = useState("");
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentPhase, setCurrentPhase] = useState(0);
   const [result, setResult] = useState<VerificationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [animatedConfidence, setAnimatedConfidence] = useState(0);
+  const [showProofCard, setShowProofCard] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     whatData: true,
     whySpread: true,
-    sources: true,
+    tier1: true,
+    tier2: true,
+    tier3: false, // Tier 3 collapsed by default
   });
+
+  // Animate confidence from 0 to final value
+  useEffect(() => {
+    if (result?.confidence !== undefined) {
+      let start = 0;
+      const end = result.confidence;
+      const duration = 1500;
+      const increment = end / (duration / 16);
+      
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= end) {
+          setAnimatedConfidence(end);
+          clearInterval(timer);
+        } else {
+          setAnimatedConfidence(start);
+        }
+      }, 16);
+      
+      return () => clearInterval(timer);
+    }
+  }, [result?.confidence]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setResult(null);
+    setCurrentPhase(0);
+    setAnimatedConfidence(0);
+    
+    // Simulate multi-stage analysis (even if backend is faster)
+    const phaseInterval = setInterval(() => {
+      setCurrentPhase(prev => {
+        if (prev < ANALYSIS_PHASES.length - 1) return prev + 1;
+        return prev;
+      });
+    }, 600);
     
     try {
       const res = await fetch("/api/reality-scan", {
@@ -61,16 +112,33 @@ export default function EchoBreakerClient() {
       if (!res.ok || json?.error) {
         throw new Error(json?.error || "Verification failed");
       }
-      setResult(json as VerificationResponse);
+      
+      // Wait for all phases to complete before showing result
+      setTimeout(() => {
+        clearInterval(phaseInterval);
+        setCurrentPhase(ANALYSIS_PHASES.length);
+        setTimeout(() => {
+          setResult(json as VerificationResponse);
+          setLoading(false);
+        }, 400);
+      }, Math.max(0, 3000 - Date.now()));
+      
     } catch (err: any) {
+      clearInterval(phaseInterval);
       setError(err?.message || "Verification failed");
-    } finally {
       setLoading(false);
     }
   };
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Color system based on confidence
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 85) return { bg: "bg-emerald-500", text: "text-emerald-500", ring: "ring-emerald-500" };
+    if (confidence >= 50) return { bg: "bg-amber-500", text: "text-amber-500", ring: "ring-amber-500" };
+    return { bg: "bg-red-500", text: "text-red-500", ring: "ring-red-500" };
   };
 
   const getVerdictColor = (verdict?: string) => {
@@ -89,141 +157,184 @@ export default function EchoBreakerClient() {
     return "?";
   };
 
+  const getVerdictLabel = (verdict?: string) => {
+    const v = (verdict || "").toLowerCase();
+    if (v.includes("false")) return "False Claim";
+    if (v.includes("misleading")) return "Misleading";
+    if (v.includes("true")) return "Verified";
+    return "Unknown";
+  };
+
+  const handleShare = (platform: string) => {
+    const text = `Fact-checked: "${claim}" - Verdict: ${result?.verdict} (${Math.round(result?.confidence || 0)}% confidence)`;
+    const url = window.location.href;
+    
+    const shareUrls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      reddit: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`,
+      email: `mailto:?subject=${encodeURIComponent("Fact Check Result")}&body=${encodeURIComponent(text + "\n\n" + url)}`,
+    };
+    
+    if (platform === "copy") {
+      navigator.clipboard.writeText(url);
+      alert("Link copied to clipboard!");
+    } else if (shareUrls[platform]) {
+      window.open(shareUrls[platform], "_blank", "width=600,height=400");
+    }
+  };
+
+  const confidenceColors = result ? getConfidenceColor(result.confidence || 0) : null;
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
-      <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+      <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
+        {/* Header */}
         <div className="flex items-center gap-2 text-sm">
           <span className="px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 text-indigo-200">
             ProofLayer · Verification
           </span>
-          <span className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300">
-            21 claims verified
-          </span>
         </div>
 
-        <header>
-          <h1 className="text-3xl font-bold mb-2">Scan the claim before you share it</h1>
-          <p className="text-slate-400">
-            Paste any post, headline, or viral stat. Get a reality check with sources and a ProofCard. Insight and advanced features are deferred.
+        {/* Hero */}
+        <div className="space-y-3">
+          <h1 className="text-4xl font-bold tracking-tight">
+            Scan the claim before you share it
+          </h1>
+          <p className="text-lg text-slate-400">
+            Paste any claim, headline, or viral stat — verify it with evidence and ProofLayer. Insight and advanced features are delivered.
           </p>
-        </header>
+        </div>
 
-        <form onSubmit={handleSubmit} className="bg-slate-900/70 border border-slate-800 rounded-xl p-6 space-y-4">
-          <div className="flex gap-3 text-sm">
-            <button type="button" className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold">
-              Paste Text
-            </button>
-            <button type="button" className="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300">
-              Paste URL
-            </button>
-            <button
-              type="button"
-              onClick={() => { setClaim(""); setLink(""); setResult(null); setError(null); }}
-              className="ml-auto text-slate-400 hover:text-white text-sm"
-            >
-              Reset
-            </button>
-          </div>
-
+        {/* Input Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 bg-slate-900/50 border border-slate-800 rounded-xl p-6">
           <div>
-            <label className="text-xs uppercase text-slate-500 mb-2 block">Claim or headline</label>
+            <label className="block text-sm font-medium mb-2">Claim or statement</label>
             <textarea
               value={claim}
               onChange={(e) => setClaim(e.target.value)}
+              placeholder='e.g., "20 million illegal immigrants have entered the US since 2016"'
+              className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               rows={3}
-              className="w-full rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="20 million illegal immigrants have entered the US since 2016"
               required
             />
           </div>
 
           <div>
-            <label className="text-xs uppercase text-slate-500 mb-2 block">Link (optional)</label>
+            <label className="block text-sm font-medium mb-2">
+              Proof source link (for context) <span className="text-slate-500">(optional)</span>
+            </label>
             <input
+              type="url"
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              className="w-full rounded-lg bg-slate-800 border border-slate-700 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Paste source link for context (optional)"
+              placeholder="https://example.com/article"
+              className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-          </div>
-
-          <div className="flex gap-3 text-sm flex-wrap">
-            <span className="text-slate-500">Quick presets:</span>
-            <button type="button" className="text-indigo-400 hover:text-indigo-300">
-              A viral stat: "73% of Americans support mandatory voter ID laws"
-            </button>
-            <button type="button" className="text-indigo-400 hover:text-indigo-300">
-              A headline: "New policy will double taxes next year"
-            </button>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold disabled:opacity-60"
+            className="w-full px-6 py-4 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-lg disabled:opacity-60 transition-all"
           >
-            {loading ? "Verifying..." : "✓ Verify reality"}
+            {loading ? "Verifying..." : "✓ Verify Reality"}
           </button>
           {error && <p className="text-sm text-red-400">{error}</p>}
         </form>
 
+        {/* Multi-Stage Analysis Animation */}
         {loading && (
-          <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
-              <span className="text-slate-300">Analyzing claim...</span>
+          <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-8 space-y-6">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-600/20 mb-4">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500"></div>
+              </div>
+              <h3 className="text-xl font-semibold">Intelligence in Motion</h3>
+            </div>
+            
+            <div className="space-y-4">
+              {ANALYSIS_PHASES.map((phase, idx) => (
+                <div
+                  key={phase.id}
+                  className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-500 ${
+                    idx <= currentPhase
+                      ? "bg-indigo-900/30 border border-indigo-700/50"
+                      : "bg-slate-800/30 border border-slate-700/30"
+                  }`}
+                >
+                  <div className={`text-3xl transition-all duration-300 ${
+                    idx === currentPhase ? "animate-pulse scale-110" : ""
+                  }`}>
+                    {phase.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className={`font-medium transition-colors ${
+                      idx <= currentPhase ? "text-slate-200" : "text-slate-500"
+                    }`}>
+                      {phase.label}
+                    </p>
+                  </div>
+                  {idx < currentPhase && (
+                    <div className="text-emerald-400 text-xl">✓</div>
+                  )}
+                  {idx === currentPhase && (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-400"></div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {result && (
-          <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-6 space-y-6">
-            {/* Verdict Header */}
-            <div className="flex items-start gap-4">
-              <div className={`${getVerdictColor(result.verdict)} p-6 rounded-2xl text-white text-5xl font-bold flex items-center justify-center w-24 h-24 shadow-lg`}>
-                {getVerdictIcon(result.verdict)}
+        {/* Verdict Card - Apple Pay Style */}
+        {result && !loading && (
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-slate-700 rounded-2xl p-8 space-y-8 shadow-2xl">
+            {/* Verdict Header with Large Icon */}
+            <div className="text-center space-y-6">
+              <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full ${getVerdictColor(result.verdict)} shadow-2xl`}>
+                <span className="text-6xl text-white font-bold">{getVerdictIcon(result.verdict)}</span>
               </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-2">
-                  {result.verdict?.charAt(0).toUpperCase() + (result.verdict?.slice(1) || "")} Claim
-                </h2>
-                <p className="text-slate-400 mb-3">{result.summary}</p>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-500">Confidence Level</span>
-                  <div className="flex-1 max-w-xs bg-slate-800 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full ${getVerdictColor(result.verdict)}`}
-                      style={{ width: `${result.confidence || 0}%` }}
-                    ></div>
+              
+              <div>
+                <h2 className="text-4xl font-bold mb-3">{getVerdictLabel(result.verdict)}</h2>
+                <p className="text-xl text-slate-300 max-w-2xl mx-auto">{result.bottomLine}</p>
+              </div>
+
+              {/* Large Confidence Badge */}
+              {confidenceColors && (
+                <div className="inline-flex flex-col items-center gap-3 p-6 rounded-2xl bg-slate-800/50 border-2 border-slate-700">
+                  <div className={`relative inline-flex items-center justify-center w-32 h-32 rounded-full ring-8 ${confidenceColors.ring} ring-opacity-30`}>
+                    <div className="text-center">
+                      <div className={`text-5xl font-bold ${confidenceColors.text}`}>
+                        {Math.round(animatedConfidence)}%
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold">{Math.round(result.confidence || 0)}%</span>
+                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Confidence</p>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Bottom Line */}
-            {result.bottomLine && (
-              <div className="border-t border-slate-700 pt-4">
-                <h3 className="text-xs uppercase text-slate-500 mb-2">Bottom Line</h3>
-                <p className="text-slate-200">{result.bottomLine}</p>
-              </div>
-            )}
-
-            {/* What the Data Actually Shows */}
+            {/* What the Data Shows */}
             {result.whatDataShows && result.whatDataShows.length > 0 && (
-              <div className="border-t border-slate-700 pt-4">
+              <div className="border-t border-slate-700 pt-6">
                 <button
                   onClick={() => toggleSection('whatData')}
-                  className="flex items-center justify-between w-full text-left mb-3"
+                  className="flex items-center justify-between w-full text-left mb-4 group"
                 >
-                  <h3 className="text-sm font-semibold text-slate-200">📊 What the Data Actually Shows</h3>
-                  <span className="text-slate-500">{expandedSections.whatData ? '▼' : '▶'}</span>
+                  <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <span className="text-2xl">📊</span>
+                    What the Data Actually Shows
+                  </h3>
+                  <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.whatData ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.whatData && (
-                  <ul className="space-y-2">
+                  <ul className="space-y-3 pl-10">
                     {result.whatDataShows.map((item, idx) => (
-                      <li key={idx} className="flex gap-2 text-sm text-slate-300">
-                        <span className="text-emerald-400">✓</span>
+                      <li key={idx} className="flex gap-3 text-slate-200 leading-relaxed">
+                        <span className="text-emerald-400 text-xl flex-shrink-0">✓</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -234,102 +345,117 @@ export default function EchoBreakerClient() {
 
             {/* Why This Claim Spread */}
             {result.spreadFactors && result.spreadFactors.length > 0 && (
-              <div className="border-t border-slate-700 pt-4">
+              <div className="border-t border-slate-700 pt-6">
                 <button
                   onClick={() => toggleSection('whySpread')}
-                  className="flex items-center justify-between w-full text-left mb-3"
+                  className="flex items-center justify-between w-full text-left mb-4 group"
                 >
-                  <h3 className="text-sm font-semibold text-slate-200">🔥 Why This Claim Spread</h3>
-                  <span className="text-slate-500">{expandedSections.whySpread ? '▼' : '▶'}</span>
+                  <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <span className="text-2xl">🔥</span>
+                    Why This Claim Spread
+                  </h3>
+                  <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.whySpread ? '▼' : '▶'}</span>
                 </button>
                 {expandedSections.whySpread && (
-                  <ul className="space-y-2">
+                  <ul className="space-y-3 pl-10">
                     {result.spreadFactors.map((item, idx) => (
-                      <li key={idx} className="text-sm text-slate-300">• {item}</li>
+                      <li key={idx} className="text-slate-300 leading-relaxed">• {item}</li>
                     ))}
                   </ul>
                 )}
               </div>
             )}
 
-            {/* Top Verified Sources */}
+            {/* Sources - Improved Scannability */}
             {result.sources && (result.sources.tier1?.length || result.sources.tier2?.length || result.sources.tier3?.length) && (
-              <div className="border-t border-slate-700 pt-4">
-                <button
-                  onClick={() => toggleSection('sources')}
-                  className="flex items-center justify-between w-full text-left mb-3"
-                >
-                  <h3 className="text-sm font-semibold text-slate-200">🔗 Top Verified Sources</h3>
-                  <span className="text-slate-500">{expandedSections.sources ? '▼' : '▶'}</span>
-                </button>
-                {expandedSections.sources && (
-                  <div className="space-y-4">
-                    {/* Tier 1 Sources */}
-                    {result.sources.tier1 && result.sources.tier1.length > 0 && (
-                      <div>
-                        <p className="text-xs uppercase text-emerald-400 font-semibold mb-2">Tier 1: Official Sources</p>
-                        <div className="space-y-2">
-                          {result.sources.tier1.map((s, idx) => (
-                            <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3 border-l-2 border-emerald-500">
-                              <span className="px-2 py-1 rounded text-xs font-bold bg-emerald-600 text-white">
-                                Tier 1
-                              </span>
-                              <div className="flex-1">
-                                <p className="text-sm font-semibold text-slate-200">{s.title}</p>
-                                <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-emerald-400 hover:underline">
-                                  {s.domain}
-                                </a>
-                                <p className="text-xs text-slate-400 mt-1">{s.reason}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+              <div className="border-t border-slate-700 pt-6 space-y-6">
+                <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+                  <span className="text-2xl">🔗</span>
+                  Evidence Sources
+                </h3>
+
+                {/* Tier 1 */}
+                {result.sources.tier1 && result.sources.tier1.length > 0 && (
+                  <div>
+                    <button
+                      onClick={() => toggleSection('tier1')}
+                      className="flex items-center justify-between w-full text-left mb-3 group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold">TIER 1</span>
+                        <span className="text-sm font-semibold text-emerald-400">Official Government Data</span>
+                      </div>
+                      <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.tier1 ? '▼' : '▶'}</span>
+                    </button>
+                    {expandedSections.tier1 && (
+                      <div className="space-y-3">
+                        {result.sources.tier1.map((s, idx) => (
+                          <div key={idx} className="bg-emerald-900/20 rounded-lg p-4 border-l-4 border-emerald-500">
+                            <p className="font-semibold text-slate-100 mb-1">{s.title}</p>
+                            <a href={s.url} target="_blank" rel="noreferrer" className="text-sm text-emerald-400 hover:underline block mb-2">
+                              {s.domain} →
+                            </a>
+                            <p className="text-sm text-slate-400 italic">{s.reason}</p>
+                          </div>
+                        ))}
                       </div>
                     )}
+                  </div>
+                )}
 
-                    {/* Tier 2 Sources */}
-                    {result.sources.tier2 && result.sources.tier2.length > 0 && (
-                      <div>
-                        <p className="text-xs uppercase text-blue-400 font-semibold mb-2">Tier 2: Reputable News & Research</p>
-                        <div className="space-y-2">
-                          {result.sources.tier2.map((s, idx) => (
-                            <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3 border-l-2 border-blue-500">
-                              <span className="px-2 py-1 rounded text-xs font-bold bg-blue-600 text-white">
-                                Tier 2
-                              </span>
-                              <div className="flex-1">
-                                <p className="text-sm font-semibold text-slate-200">{s.title}</p>
-                                <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline">
-                                  {s.domain}
-                                </a>
-                                <p className="text-xs text-slate-400 mt-1">{s.reason}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                {/* Tier 2 */}
+                {result.sources.tier2 && result.sources.tier2.length > 0 && (
+                  <div>
+                    <button
+                      onClick={() => toggleSection('tier2')}
+                      className="flex items-center justify-between w-full text-left mb-3 group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold">TIER 2</span>
+                        <span className="text-sm font-semibold text-blue-400">Reputable News & Research</span>
+                      </div>
+                      <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.tier2 ? '▼' : '▶'}</span>
+                    </button>
+                    {expandedSections.tier2 && (
+                      <div className="space-y-3">
+                        {result.sources.tier2.map((s, idx) => (
+                          <div key={idx} className="bg-blue-900/20 rounded-lg p-4 border-l-4 border-blue-500">
+                            <p className="font-semibold text-slate-100 mb-1">{s.title}</p>
+                            <a href={s.url} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline block mb-2">
+                              {s.domain} →
+                            </a>
+                            <p className="text-sm text-slate-400 italic">{s.reason}</p>
+                          </div>
+                        ))}
                       </div>
                     )}
+                  </div>
+                )}
 
-                    {/* Tier 3 Sources */}
-                    {result.sources.tier3 && result.sources.tier3.length > 0 && (
-                      <div>
-                        <p className="text-xs uppercase text-slate-400 font-semibold mb-2">Tier 3: Supporting Context</p>
-                        <div className="space-y-2">
-                          {result.sources.tier3.map((s, idx) => (
-                            <div key={idx} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3 border-l-2 border-slate-600">
-                              <span className="px-2 py-1 rounded text-xs font-bold bg-slate-600 text-slate-300">
-                                Tier 3
-                              </span>
-                              <div className="flex-1">
-                                <p className="text-sm font-semibold text-slate-200">{s.title}</p>
-                                <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-slate-400 hover:underline">
-                                  {s.domain}
-                                </a>
-                                <p className="text-xs text-slate-400 mt-1">{s.reason}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                {/* Tier 3 - Collapsed by Default */}
+                {result.sources.tier3 && result.sources.tier3.length > 0 && (
+                  <div>
+                    <button
+                      onClick={() => toggleSection('tier3')}
+                      className="flex items-center justify-between w-full text-left mb-3 group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-slate-600 text-slate-300 text-xs font-bold">TIER 3</span>
+                        <span className="text-sm font-semibold text-slate-400">Supporting Context</span>
+                      </div>
+                      <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.tier3 ? '▼' : '▶'}</span>
+                    </button>
+                    {expandedSections.tier3 && (
+                      <div className="space-y-3">
+                        {result.sources.tier3.map((s, idx) => (
+                          <div key={idx} className="bg-slate-800/50 rounded-lg p-4 border-l-4 border-slate-600">
+                            <p className="font-semibold text-slate-100 mb-1">{s.title}</p>
+                            <a href={s.url} target="_blank" rel="noreferrer" className="text-sm text-slate-400 hover:underline block mb-2">
+                              {s.domain} →
+                            </a>
+                            <p className="text-sm text-slate-500 italic">{s.reason}</p>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -337,30 +463,110 @@ export default function EchoBreakerClient() {
               </div>
             )}
 
-            {/* Share Section */}
-            <div className="border-t border-slate-700 pt-4">
-              <h3 className="text-sm font-semibold text-slate-400 mb-3">Stop this claim from spreading</h3>
-              <div className="flex flex-wrap gap-3">
-                <button className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm">
+            {/* Share Section - Expanded */}
+            <div className="border-t border-slate-700 pt-6">
+              <h3 className="text-lg font-bold text-slate-100 mb-4">Stop this claim from spreading</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <button
+                  onClick={() => setShowProofCard(true)}
+                  className="px-4 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                >
                   📥 Generate ProofCard
                 </button>
-                <button className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm">
-                  🔗 Share to X
+                <button
+                  onClick={() => handleShare('twitter')}
+                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm transition-colors"
+                >
+                  𝕏 Share to X
                 </button>
-                <button className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm">
-                  💼 Share to LinkedIn
+                <button
+                  onClick={() => handleShare('linkedin')}
+                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm transition-colors"
+                >
+                  💼 LinkedIn
                 </button>
-                <button className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm">
-                  📋 Copy public link
+                <button
+                  onClick={() => handleShare('facebook')}
+                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm transition-colors"
+                >
+                  📘 Facebook
+                </button>
+                <button
+                  onClick={() => handleShare('reddit')}
+                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm transition-colors"
+                >
+                  🔴 Reddit
+                </button>
+                <button
+                  onClick={() => handleShare('copy')}
+                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm transition-colors"
+                >
+                  📋 Copy Link
                 </button>
               </div>
             </div>
 
-            {result.verificationId && (
-              <div className="text-xs text-slate-500">
-                ProofLayer by ApexSalesAI
+            {/* Branding */}
+            <div className="text-center text-sm text-slate-500 pt-4 border-t border-slate-700">
+              ProofLayer by ApexSalesAI · Verification ID: {result.verificationId?.slice(0, 8)}
+            </div>
+          </div>
+        )}
+
+        {/* ProofCard Modal (Placeholder for now) */}
+        {showProofCard && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-slate-900 border-2 border-slate-700 rounded-2xl p-8 max-w-2xl w-full">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">ProofCard</h2>
+                <button
+                  onClick={() => setShowProofCard(false)}
+                  className="text-slate-400 hover:text-slate-200 text-2xl"
+                >
+                  ✕
+                </button>
               </div>
-            )}
+              
+              {/* ProofCard Content */}
+              <div className="bg-white text-slate-900 rounded-xl p-8 space-y-6">
+                <div className="text-center">
+                  <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full ${getVerdictColor(result?.verdict)} mb-4`}>
+                    <span className="text-4xl text-white font-bold">{getVerdictIcon(result?.verdict)}</span>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">{getVerdictLabel(result?.verdict)}</h3>
+                  <p className="text-lg text-slate-600 mb-4">"{claim}"</p>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
+                    <span className="font-bold text-2xl">{Math.round(result?.confidence || 0)}%</span>
+                    <span className="text-sm text-slate-600">Confidence</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 pt-4">
+                  <h4 className="font-semibold mb-2">Top Sources:</h4>
+                  <ul className="space-y-1 text-sm">
+                    {result?.sources?.tier1?.slice(0, 3).map((s, idx) => (
+                      <li key={idx} className="text-slate-700">• {s.domain}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="text-center text-xs text-slate-500 pt-4 border-t border-slate-200">
+                  Verified by ProofLayer · apexsalesai.com
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold">
+                  📥 Download PNG
+                </button>
+                <button
+                  onClick={() => setShowProofCard(false)}
+                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
