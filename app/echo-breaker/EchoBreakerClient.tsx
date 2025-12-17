@@ -134,6 +134,23 @@ export default function EchoBreakerClient() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
+  const handleReset = () => {
+    setClaim("");
+    setLink("");
+    setResult(null);
+    setError(null);
+    setLoading(false);
+    setCurrentPhase(0);
+    setAnimatedConfidence(0);
+    setExpandedSections({
+      whatData: true,
+      whySpread: true,
+      tier1: true,
+      tier2: true,
+      tier3: false,
+    });
+  };
+
   // Color system based on confidence
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 85) return { bg: "bg-emerald-500", text: "text-emerald-500", ring: "ring-emerald-500" };
@@ -571,9 +588,17 @@ export default function EchoBreakerClient() {
               </div>
             </div>
 
-            {/* Branding */}
-            <div className="text-center text-sm text-slate-500 pt-4 border-t border-slate-700">
-              ProofLayer by ApexSalesAI · Verification ID: {result.verificationId?.slice(0, 8)}
+            {/* Branding & Reset */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-700">
+              <div className="text-sm text-slate-500">
+                ProofLayer by ApexSalesAI · Verification ID: {result.verificationId?.slice(0, 8)}
+              </div>
+              <button
+                onClick={handleReset}
+                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-medium transition-colors"
+              >
+                🔄 Analyze Another Claim
+              </button>
             </div>
             </div>
           </div>
