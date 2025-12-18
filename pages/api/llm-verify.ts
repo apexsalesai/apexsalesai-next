@@ -3,6 +3,15 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import crypto from "crypto";
 
 type Verdict = "true" | "false" | "misleading" | "unverified";
+type VerdictClassification = "SUBSTANTIATED" | "CONTEXTUALLY_INCOMPLETE" | "NOT_SUPPORTED";
+type ActionReadiness = "READY" | "LIMITED" | "NOT_RECOMMENDED";
+type DecisionConfidence = "HIGH" | "MODERATE" | "LOW";
+type TimeSensitivity = "LOW" | "MEDIUM" | "HIGH";
+type PrimaryRisk = "REPUTATIONAL" | "LEGAL" | "REGULATORY" | "NONE";
+type EvidenceStrength = "STRONG" | "MIXED" | "WEAK";
+type ConfidenceColor = "GREEN" | "YELLOW" | "RED";
+type ScenarioType = "PUBLISH" | "WAIT" | "IGNORE";
+type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
 
 type Source = {
   title: string;
@@ -22,31 +31,67 @@ type VerifyRequest = {
   maxSources?: number; // optional: default 12
 };
 
-type VerifyResponse = {
+type DecisionIntelligenceResult = {
   verificationId: string;
-  verdict: Verdict;
-  confidence: number; // 0..1
-  summary: string;
+  verifiedAt: string;
 
-  bottomLine: string;
+  decisionPanel: {
+    actionReadiness: ActionReadiness;
+    decisionConfidence: DecisionConfidence;
+    timeSensitivity: TimeSensitivity;
+    primaryRisk: PrimaryRisk;
+    recommendedAction: {
+      headline: string;
+      summary: string;
+      do: string[];
+      avoid: string[];
+    };
+  };
 
-  whatDataShows: string[];
-  spreadFactors: string[];
+  verdict: {
+    classification: VerdictClassification;
+    confidenceBand: string;
+    confidenceValue: number;
+    confidenceColor: ConfidenceColor;
+    evidenceStrength: EvidenceStrength;
+    sourceConsensus: {
+      tier1Count: number;
+      tier2Count: number;
+      tier3Count: number;
+      summary: string;
+    };
+  };
+
+  whatTheEvidenceShows: string[];
+  whyThisNarrativeSpread: string[];
+
+  actionScenarios: Array<{
+    scenario: ScenarioType;
+    risk: RiskLevel;
+    impact: RiskLevel;
+    notes: string;
+  }>;
 
   sources: {
     tier1: Source[];
     tier2: Source[];
     tier3: Source[];
-    // tier4 intentionally omitted from "proof" sources; social can be returned separately if you want later
   };
 
-  searchQueries: string[];
-  model: string;
-  generatedAt: string;
+  methodology: {
+    approach: string;
+    rankingLogic: string;
+    limitations: string[];
+  };
 
-  // Optional helper fields (safe)
+  // Internal fields
+  searchQueries?: string[];
+  model?: string;
   warnings?: string[];
 };
+
+// Legacy type for backward compatibility during migration
+type VerifyResponse = DecisionIntelligenceResult;
 
 type ErrorResponse = {
   error: {
@@ -388,21 +433,76 @@ function stripJsonFence(s: string): string {
   return m ? m[1].trim() : trimmed;
 }
 
+function getConfidenceBand(confidence: number): string {
+  if (confidence >= 0.85) return "85–100%";
+  if (confidence >= 0.75) return "75–84%";
+  if (confidence >= 0.62) return "62–74%";
+  if (confidence >= 0.50) return "50–61%";
+  if (confidence >= 0.20) return "20–49%";
+  return "0–19%";
+}
+
+function getConfidenceColor(confidence: number): ConfidenceColor {
+  if (confidence >= 0.85) return "GREEN";
+  if (confidence >= 0.50) return "YELLOW";
+  return "RED";
+}
+
+function getDecisionConfidence(confidence: number): DecisionConfidence {
+  if (confidence >= 0.85) return "HIGH";
+  if (confidence >= 0.50) return "MODERATE";
+  return "LOW";
+}
+
+function mapVerdictToClassification(verdict: Verdict, confidence: number): VerdictClassification {
+  if (verdict === "true" && confidence >= 0.70) return "SUBSTANTIATED";
+  if (verdict === "false" && confidence >= 0.70) return "NOT_SUPPORTED";
+  if (verdict === "misleading" || (confidence >= 0.40 && confidence < 0.70)) return "CONTEXTUALLY_INCOMPLETE";
+  return "NOT_SUPPORTED";
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   // STEP 1: Hard wrap entire handler (NO 500s)
   try {
     // Environment guards
     if (!process.env.ANTHROPIC_API_KEY || !process.env.BRAVE_SEARCH_API_KEY) {
       return res.status(200).json({
-        verdict: "unknown",
-        confidence: 0,
-        summary: "Verification unavailable due to missing API configuration.",
-        bottomLine: "Unable to verify at this time.",
-        whatDataShows: [],
-        spreadFactors: [],
-        sources: { tier1: [], tier2: [], tier3: [] },
         verificationId: crypto.randomUUID(),
-        generatedAt: new Date().toISOString(),
+        verifiedAt: new Date().toISOString(),
+        decisionPanel: {
+          actionReadiness: "NOT_RECOMMENDED",
+          decisionConfidence: "LOW",
+          timeSensitivity: "LOW",
+          primaryRisk: "NONE",
+          recommendedAction: {
+            headline: "Verification unavailable due to missing API configuration",
+            summary: "System configuration error. Please contact administrator.",
+            do: ["Contact system administrator"],
+            avoid: ["Attempting verification until configuration is resolved"]
+          }
+        },
+        verdict: {
+          classification: "NOT_SUPPORTED",
+          confidenceBand: "0–19%",
+          confidenceValue: 0,
+          confidenceColor: "RED",
+          evidenceStrength: "WEAK",
+          sourceConsensus: {
+            tier1Count: 0,
+            tier2Count: 0,
+            tier3Count: 0,
+            summary: "Configuration error prevented analysis"
+          }
+        },
+        whatTheEvidenceShows: [],
+        whyThisNarrativeSpread: [],
+        actionScenarios: [],
+        sources: { tier1: [], tier2: [], tier3: [] },
+        methodology: {
+          approach: "Multi-source consensus analysis",
+          rankingLogic: "Tier 1 (official) > Tier 2 (reputable) > Tier 3 (context)",
+          limitations: ["Missing API configuration"]
+        },
         model: DEFAULT_MODEL,
         searchQueries: [],
         error: "env_missing"
@@ -490,32 +590,65 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const model = process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL;
 
     const system = `
-You are ProofLayer, an evidence-first verification engine.
+You are ProofLayer, a decision-grade intelligence system for high-trust environments.
+
+Your role: Transform uncertain claims into clear, defensible decisions.
 
 CRITICAL OUTPUT RULES:
-You MUST return valid JSON only.
-Do not include markdown.
-Do not include explanations outside JSON.
-Do not wrap in \`\`\` blocks.
+- Return ONLY valid JSON
+- No markdown, no explanations outside JSON
+- No \`\`\` code blocks
+- Use calm, institutional language (never sensational)
+- Focus on actionability, not just truth
 
-SOURCE HIERARCHY:
-- Tier 1: .gov/.mil/.edu and official institutions (DECISIVE)
-- Tier 2: reputable news/research/fact-check outlets (SUPPORTING)
-- Tier 3: general web context only (NEVER decisive by itself)
-- Social/UGC is NEVER decisive evidence
+SOURCE HIERARCHY (ABSOLUTE):
+- Tier 1: .gov/.mil/.edu and official institutions (WHO, CDC, NIH, UN, OECD, World Bank, etc.) - DECISIVE
+- Tier 2: Reuters, AP, Bloomberg, FT, WSJ, BBC, reputable research - SUPPORTING
+- Tier 3: General web, Wikipedia - CONTEXT ONLY
+- Tier 4: Social media - NEVER affects verdict
 
-If Tier 1 conflicts with Tier 2 or Tier 3, Tier 1 wins.
-Do not hallucinate citations. Only cite URLs provided.
+If Tier 1 conflicts with Tier 2/3, Tier 1 wins.
+Do not hallucinate. Only cite provided URLs.
 
 OUTPUT JSON SCHEMA:
 {
-  "verdict": "true|false|misleading|unverified",
-  "confidence": 0.0 to 1.0,
-  "summary": "1-3 sentences",
-  "bottomLine": "one decisive sentence",
-  "whatDataShows": ["bullet 1", "bullet 2", "bullet 3"],
-  "spreadFactors": ["reason 1", "reason 2", "reason 3"]
+  "decisionPanel": {
+    "actionReadiness": "READY|LIMITED|NOT_RECOMMENDED",
+    "decisionConfidence": "HIGH|MODERATE|LOW",
+    "timeSensitivity": "LOW|MEDIUM|HIGH",
+    "primaryRisk": "REPUTATIONAL|LEGAL|REGULATORY|NONE",
+    "recommendedAction": {
+      "headline": "One decisive sentence",
+      "summary": "2-3 sentences explaining the recommended action",
+      "do": ["Action 1", "Action 2"],
+      "avoid": ["Risk 1", "Risk 2"]
+    }
+  },
+  "verdictClassification": "SUBSTANTIATED|CONTEXTUALLY_INCOMPLETE|NOT_SUPPORTED",
+  "confidenceValue": 0.0 to 1.0,
+  "evidenceStrength": "STRONG|MIXED|WEAK",
+  "whatTheEvidenceShows": ["Finding 1", "Finding 2", "Finding 3"],
+  "whyThisNarrativeSpread": ["Reason 1", "Reason 2"],
+  "actionScenarios": [
+    {
+      "scenario": "PUBLISH|WAIT|IGNORE",
+      "risk": "LOW|MEDIUM|HIGH",
+      "impact": "LOW|MEDIUM|HIGH",
+      "notes": "Brief explanation"
+    }
+  ]
 }
+
+DECISION LOGIC:
+- actionReadiness: Can this be acted on safely? (READY if high confidence + strong evidence)
+- decisionConfidence: Overall certainty (HIGH ≥85%, MODERATE 50-84%, LOW <50%)
+- timeSensitivity: How quickly does this need action? (HIGH if breaking/urgent)
+- primaryRisk: Main concern if published incorrectly
+- verdictClassification: SUBSTANTIATED (strong Tier 1 support), CONTEXTUALLY_INCOMPLETE (partial evidence), NOT_SUPPORTED (contradicted or absent)
+- evidenceStrength: STRONG (multiple Tier 1), MIXED (Tier 1 + conflicting Tier 2), WEAK (no Tier 1)
+
+ACTION SCENARIOS:
+Always provide 2-3 scenarios (PUBLISH, WAIT, IGNORE) with risk/impact assessment.
 `.trim();
 
     const sourcesForModel = {
@@ -556,13 +689,18 @@ Return STRICT JSON only, matching the required output shape.
 
     const jsonText = stripJsonFence(raw);
     const parsed = safeJsonParse<{
-      verdict: any;
-      confidence: any;
-      summary: any;
-      bottomLine: any;
-      whatDataShows: any;
-      spreadFactors: any;
-      citations?: { tier1?: any; tier2?: any; tier3?: any };
+      decisionPanel?: any;
+      verdictClassification?: any;
+      confidenceValue?: any;
+      evidenceStrength?: any;
+      whatTheEvidenceShows?: any;
+      whyThisNarrativeSpread?: any;
+      actionScenarios?: any;
+      // Legacy fields for backward compatibility
+      verdict?: any;
+      confidence?: any;
+      whatDataShows?: any;
+      spreadFactors?: any;
     }>(jsonText);
 
     if (!parsed) {
@@ -570,54 +708,182 @@ Return STRICT JSON only, matching the required output shape.
       warnings.push("Model output was not valid JSON; returning constrained unverified response.");
       const resp: VerifyResponse = {
         verificationId,
-        verdict: "unverified",
-        confidence: 0.2,
-        summary: "Unable to parse the verification response. Please retry.",
-        bottomLine: "Verification incomplete due to response formatting issues.",
-        whatDataShows: ["Evidence extraction succeeded, but synthesis formatting failed."],
-        spreadFactors: ["Claims often spread faster than corrections when phrased as absolutes."],
+        verifiedAt: generatedAt,
+        decisionPanel: {
+          actionReadiness: "NOT_RECOMMENDED",
+          decisionConfidence: "LOW",
+          timeSensitivity: "LOW",
+          primaryRisk: "NONE",
+          recommendedAction: {
+            headline: "Verification incomplete due to response formatting issues",
+            summary: "Unable to parse the verification response. Please retry or contact support.",
+            do: ["Retry verification", "Check claim formatting"],
+            avoid: ["Publishing without verification", "Making decisions based on incomplete data"]
+          }
+        },
+        verdict: {
+          classification: "NOT_SUPPORTED",
+          confidenceBand: "0–19%",
+          confidenceValue: 0.2,
+          confidenceColor: "RED",
+          evidenceStrength: "WEAK",
+          sourceConsensus: {
+            tier1Count: tier1.length,
+            tier2Count: tier2.length,
+            tier3Count: tier3.length,
+            summary: "Evidence extraction succeeded, but synthesis formatting failed"
+          }
+        },
+        whatTheEvidenceShows: ["Evidence extraction succeeded, but synthesis formatting failed."],
+        whyThisNarrativeSpread: ["Claims often spread faster than corrections when phrased as absolutes."],
+        actionScenarios: [
+          {
+            scenario: "IGNORE",
+            risk: "LOW",
+            impact: "LOW",
+            notes: "Cannot act on incomplete verification"
+          }
+        ],
         sources: { tier1, tier2, tier3 },
+        methodology: {
+          approach: "Multi-source consensus analysis",
+          rankingLogic: "Tier 1 (official) > Tier 2 (reputable) > Tier 3 (context)",
+          limitations: ["Response formatting error prevented full analysis"]
+        },
         searchQueries,
         model,
-        generatedAt,
         warnings,
       };
       return res.status(200).json(resp);
     }
 
-    const verdict = normalizeVerdict(parsed.verdict);
-    const confidence = clamp01(Number(parsed.confidence));
+    // Extract confidence value (try new format first, fall back to legacy)
+    const rawConfidence = parsed.confidenceValue !== undefined 
+      ? Number(parsed.confidenceValue)
+      : (parsed.confidence !== undefined ? Number(parsed.confidence) : 0.5);
+    const confidence = clamp01(rawConfidence);
 
     // Confidence constraint: no Tier 1 sources => cap confidence
     const constrainedConfidence = tier1.length === 0 ? Math.min(confidence, 0.65) : confidence;
 
-    const summary = isString(parsed.summary) ? parsed.summary.trim() : "Verification completed.";
-    const bottomLine = isString(parsed.bottomLine) ? parsed.bottomLine.trim() : "Review the evidence and sources.";
+    // Extract verdict classification (try new format first, fall back to legacy)
+    const verdictClassification: VerdictClassification = 
+      parsed.verdictClassification || 
+      mapVerdictToClassification(normalizeVerdict(parsed.verdict), constrainedConfidence);
 
-    const whatDataShows = ensureArrayOfStrings(parsed.whatDataShows, [
-      "Multiple sources were reviewed, but the available evidence is limited.",
-      "Consider checking primary (official) data for a definitive answer.",
-      "Some sources may be interpreting the same data differently.",
-    ]);
+    // Extract evidence strength (try new format first, calculate from tiers as fallback)
+    const evidenceStrength: EvidenceStrength = 
+      parsed.evidenceStrength || 
+      (tier1.length >= 2 ? "STRONG" : tier1.length >= 1 ? "MIXED" : "WEAK");
 
-    const spreadFactors = ensureArrayOfStrings(parsed.spreadFactors, [
-      "High-emotion framing increases sharing even when details are unclear.",
-      "Short, absolute claims often omit definitions and timeframes.",
-      "Repetition across channels can create a false sense of certainty.",
-    ]);
+    // Extract decision panel (with intelligent defaults)
+    const decisionPanel = parsed.decisionPanel || {
+      actionReadiness: constrainedConfidence >= 0.85 ? "READY" : constrainedConfidence >= 0.50 ? "LIMITED" : "NOT_RECOMMENDED",
+      decisionConfidence: getDecisionConfidence(constrainedConfidence),
+      timeSensitivity: "MEDIUM",
+      primaryRisk: "REPUTATIONAL",
+      recommendedAction: {
+        headline: constrainedConfidence >= 0.70 
+          ? "This claim can be referenced with appropriate caveats"
+          : "Additional verification recommended before publication",
+        summary: constrainedConfidence >= 0.70
+          ? "Evidence provides reasonable support for this claim, though context and limitations should be noted."
+          : "Current evidence is insufficient for confident publication. Consider waiting for additional authoritative sources.",
+        do: constrainedConfidence >= 0.70 
+          ? ["Reference with attribution", "Include source links", "Note any limitations"]
+          : ["Seek additional Tier 1 sources", "Verify with subject matter experts", "Monitor for updates"],
+        avoid: constrainedConfidence >= 0.70
+          ? ["Absolute language", "Omitting caveats", "Overgeneralizing"]
+          : ["Publishing as fact", "Amplifying without verification", "Making definitive statements"]
+      }
+    };
 
+    // Extract evidence findings
+    const whatTheEvidenceShows = ensureArrayOfStrings(
+      parsed.whatTheEvidenceShows || parsed.whatDataShows,
+      [
+        "Multiple sources were reviewed, but the available evidence is limited.",
+        "Consider checking primary (official) data for a definitive answer.",
+        "Some sources may be interpreting the same data differently.",
+      ]
+    );
+
+    // Extract narrative spread factors
+    const whyThisNarrativeSpread = ensureArrayOfStrings(
+      parsed.whyThisNarrativeSpread || parsed.spreadFactors,
+      [
+        "High-emotion framing increases sharing even when details are unclear.",
+        "Short, absolute claims often omit definitions and timeframes.",
+        "Repetition across channels can create a false sense of certainty.",
+      ]
+    );
+
+    // Extract or generate action scenarios
+    const actionScenarios = Array.isArray(parsed.actionScenarios) && parsed.actionScenarios.length > 0
+      ? parsed.actionScenarios.map((s: any) => ({
+          scenario: s.scenario || "WAIT",
+          risk: s.risk || "MEDIUM",
+          impact: s.impact || "MEDIUM",
+          notes: isString(s.notes) ? s.notes : "Review evidence before deciding"
+        }))
+      : [
+          {
+            scenario: "PUBLISH" as ScenarioType,
+            risk: constrainedConfidence >= 0.85 ? "LOW" as RiskLevel : "MEDIUM" as RiskLevel,
+            impact: "MEDIUM" as RiskLevel,
+            notes: constrainedConfidence >= 0.85 
+              ? "Strong evidence supports publication with standard attribution"
+              : "Moderate evidence; include caveats and limitations"
+          },
+          {
+            scenario: "WAIT" as ScenarioType,
+            risk: "LOW" as RiskLevel,
+            impact: "LOW" as RiskLevel,
+            notes: "Waiting for additional authoritative sources reduces risk"
+          },
+          {
+            scenario: "IGNORE" as ScenarioType,
+            risk: "NONE" as RiskLevel,
+            impact: "NONE" as RiskLevel,
+            notes: "No action required if claim is not relevant to your audience"
+          }
+        ];
+
+    // Build final response
     const resp: VerifyResponse = {
       verificationId,
-      verdict,
-      confidence: constrainedConfidence,
-      summary,
-      bottomLine,
-      whatDataShows,
-      spreadFactors,
+      verifiedAt: generatedAt,
+      decisionPanel,
+      verdict: {
+        classification: verdictClassification,
+        confidenceBand: getConfidenceBand(constrainedConfidence),
+        confidenceValue: constrainedConfidence,
+        confidenceColor: getConfidenceColor(constrainedConfidence),
+        evidenceStrength,
+        sourceConsensus: {
+          tier1Count: tier1.length,
+          tier2Count: tier2.length,
+          tier3Count: tier3.length,
+          summary: tier1.length >= 2 
+            ? `${tier1.length} authoritative sources provide strong consensus`
+            : tier1.length === 1
+            ? "Single authoritative source; additional corroboration recommended"
+            : "No authoritative sources found; evidence is limited to secondary sources"
+        }
+      },
+      whatTheEvidenceShows,
+      whyThisNarrativeSpread,
+      actionScenarios,
       sources: { tier1, tier2, tier3 },
+      methodology: {
+        approach: "Multi-source consensus analysis",
+        rankingLogic: "Tier 1 (official) > Tier 2 (reputable) > Tier 3 (context)",
+        limitations: tier1.length === 0 
+          ? ["No official sources available", "Confidence capped at 65%"]
+          : []
+      },
       searchQueries,
       model,
-      generatedAt,
       ...(warnings.length ? { warnings } : {}),
     };
 
@@ -631,15 +897,49 @@ Return STRICT JSON only, matching the required output shape.
     console.error("=== END ERROR ===");
 
     return res.status(200).json({
-      verdict: "unknown",
-      confidence: 0,
-      summary: "Verification failed due to an internal error.",
-      bottomLine: "Unable to verify at this time.",
-      whatDataShows: [],
-      spreadFactors: [],
-      sources: { tier1: [], tier2: [], tier3: [] },
       verificationId: crypto.randomUUID(),
-      generatedAt: new Date().toISOString(),
+      verifiedAt: new Date().toISOString(),
+      decisionPanel: {
+        actionReadiness: "NOT_RECOMMENDED",
+        decisionConfidence: "LOW",
+        timeSensitivity: "LOW",
+        primaryRisk: "NONE",
+        recommendedAction: {
+          headline: "Verification failed due to an internal error",
+          summary: "Unable to complete verification at this time. Please retry or contact support.",
+          do: ["Retry verification", "Contact support if issue persists"],
+          avoid: ["Publishing without verification", "Making decisions based on incomplete data"]
+        }
+      },
+      verdict: {
+        classification: "NOT_SUPPORTED",
+        confidenceBand: "0–19%",
+        confidenceValue: 0,
+        confidenceColor: "RED",
+        evidenceStrength: "WEAK",
+        sourceConsensus: {
+          tier1Count: 0,
+          tier2Count: 0,
+          tier3Count: 0,
+          summary: "Verification system error prevented analysis"
+        }
+      },
+      whatTheEvidenceShows: ["Verification system error prevented analysis"],
+      whyThisNarrativeSpread: [],
+      actionScenarios: [
+        {
+          scenario: "IGNORE",
+          risk: "LOW",
+          impact: "LOW",
+          notes: "Cannot act on failed verification"
+        }
+      ],
+      sources: { tier1: [], tier2: [], tier3: [] },
+      methodology: {
+        approach: "Multi-source consensus analysis",
+        rankingLogic: "Tier 1 (official) > Tier 2 (reputable) > Tier 3 (context)",
+        limitations: ["System error prevented analysis"]
+      },
       model: DEFAULT_MODEL,
       searchQueries: [],
       error: "verifier_runtime_error",
