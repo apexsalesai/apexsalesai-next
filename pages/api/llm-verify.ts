@@ -56,7 +56,7 @@ type ErrorResponse = {
   };
 };
 
-const DEFAULT_MODEL = "claude-3-5-sonnet-20241022";
+const DEFAULT_MODEL = "claude-sonnet-4-5";
 const MAX_QUERY_COUNT = 4;
 const DEFAULT_MAX_SOURCES = 12;
 
@@ -316,6 +316,8 @@ async function callAnthropic(args: {
   };
 
   console.log("Request body:", JSON.stringify(requestBody).slice(0, 200));
+  console.log("API Key present:", !!apiKey);
+  console.log("API Key length:", apiKey.length);
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -622,7 +624,11 @@ Return STRICT JSON only, matching the required output shape.
     return res.status(200).json(resp);
   } catch (err: any) {
     // STEP 1: Final catch - return 200 with fallback JSON (NO 500s)
-    console.error("LLM VERIFY ERROR:", err);
+    console.error("=== LLM VERIFY ERROR ===");
+    console.error("Error message:", err?.message);
+    console.error("Error stack:", err?.stack);
+    console.error("Full error:", JSON.stringify(err, null, 2));
+    console.error("=== END ERROR ===");
 
     return res.status(200).json({
       verdict: "unknown",
