@@ -13,12 +13,55 @@ type Source = {
 
 type VerificationResponse = {
   verificationId?: string;
-  verdict?: string;
+  verifiedAt?: string;
+  
+  // New Decision Intelligence format
+  decisionPanel?: {
+    actionReadiness: string;
+    decisionConfidence: string;
+    timeSensitivity: string;
+    primaryRisk: string;
+    recommendedAction: {
+      headline: string;
+      summary: string;
+      do: string[];
+      avoid: string[];
+    };
+  };
+  verdict?: string | {
+    classification: string;
+    confidenceBand: string;
+    confidenceValue: number;
+    confidenceColor: string;
+    evidenceStrength: string;
+    sourceConsensus: {
+      tier1Count: number;
+      tier2Count: number;
+      tier3Count: number;
+      summary: string;
+    };
+  };
+  whatTheEvidenceShows?: string[];
+  whyThisNarrativeSpread?: string[];
+  actionScenarios?: Array<{
+    scenario: string;
+    risk: string;
+    impact: string;
+    notes: string;
+  }>;
+  methodology?: {
+    approach: string;
+    rankingLogic: string;
+    limitations: string[];
+  };
+  
+  // Legacy format (for backward compatibility)
   confidence?: number;
   summary?: string;
   bottomLine?: string;
   spreadFactors?: string[];
   whatDataShows?: string[];
+  
   sources?: {
     tier1?: Source[];
     tier2?: Source[];
@@ -41,6 +84,37 @@ const ANALYSIS_PHASES: AnalysisPhase[] = [
   { id: 5, label: "Final Verdict Generated", icon: "✨" },
 ];
 
+// Helper functions to extract values from both old and new API formats
+function getConfidenceValue(result: VerificationResponse | null): number {
+  if (!result) return 0;
+  // Try new format first
+  if (typeof result.verdict === 'object' && result.verdict?.confidenceValue !== undefined) {
+    return result.verdict.confidenceValue;
+  }
+  // Fall back to legacy format
+  return result.confidence || 0;
+}
+
+function getVerdictText(result: VerificationResponse | null): string {
+  if (!result) return '';
+  // Try new format first
+  if (typeof result.verdict === 'object' && result.verdict?.classification) {
+    return result.verdict.classification;
+  }
+  // Fall back to legacy format
+  return typeof result.verdict === 'string' ? result.verdict : '';
+}
+
+function getEvidenceShows(result: VerificationResponse | null): string[] {
+  if (!result) return [];
+  return result.whatTheEvidenceShows || result.whatDataShows || [];
+}
+
+function getSpreadFactors(result: VerificationResponse | null): string[] {
+  if (!result) return [];
+  return result.whyThisNarrativeSpread || result.spreadFactors || [];
+}
+
 export default function EchoBreakerClient() {
   const [claim, setClaim] = useState("");
   const [link, setLink] = useState("");
@@ -60,9 +134,10 @@ export default function EchoBreakerClient() {
 
   // Animate confidence from 0 to final value
   useEffect(() => {
-    if (result?.confidence !== undefined) {
+    const confidenceValue = getConfidenceValue(result);
+    if (confidenceValue > 0) {
       let start = 0;
-      const end = result.confidence;
+      const end = confidenceValue;
       const duration = 1500;
       const increment = end / (duration / 16);
       
@@ -78,7 +153,7 @@ export default function EchoBreakerClient() {
       
       return () => clearInterval(timer);
     }
-  }, [result?.confidence]);
+  }, [result]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,7 +279,7 @@ export default function EchoBreakerClient() {
   };
 
   const handleShare = (platform: string) => {
-    const text = `Fact-checked: "${claim}" - Verdict: ${result?.verdict} (${Math.round(result?.confidence || 0)}% confidence)`;
+    const text = `Fact-checked: "${claim}" - Verdict: ${getVerdictText(result)} (${Math.round(getConfidenceValue(result) * 100)}% confidence)`;
     const url = window.location.href;
     
     const shareUrls: Record<string, string> = {
@@ -223,7 +298,7 @@ export default function EchoBreakerClient() {
     }
   };
 
-  const confidenceColors = result ? getConfidenceColor(result.confidence || 0) : null;
+  const confidenceColors = result ? getConfidenceColor(getConfidenceValue(result)) : null;
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
@@ -345,12 +420,12 @@ export default function EchoBreakerClient() {
             <div className="p-8 space-y-6">
               {/* Verdict Header - Streamlined */}
               <div className="flex items-center gap-6">
-                <div className={`flex-shrink-0 inline-flex items-center justify-center w-20 h-20 rounded-full ${getVerdictColor(result.verdict)} shadow-xl`}>
-                  <span className="text-4xl text-white font-bold">{getVerdictIcon(result.verdict)}</span>
+                <div className={`flex-shrink-0 inline-flex items-center justify-center w-20 h-20 rounded-full ${getVerdictColor(getVerdictText(result))} shadow-xl`}>
+                  <span className="text-4xl text-white font-bold">{getVerdictIcon(getVerdictText(result))}</span>
                 </div>
                 
                 <div className="flex-1 text-left">
-                  <h2 className="text-3xl font-black mb-2 tracking-tight">{getVerdictLabel(result.verdict)}</h2>
+                  <h2 className="text-3xl font-black mb-2 tracking-tight">{getVerdictLabel(getVerdictText(result))}</h2>
                   <p className="text-sm text-slate-400">{result.summary}</p>
                 </div>
               </div>
@@ -360,16 +435,16 @@ export default function EchoBreakerClient() {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
                     <div className={`text-3xl font-black ${confidenceColors.text} mb-1`}>
-                      {getConfidenceBand(result.confidence || 0)}
+                      {getConfidenceBand(getConfidenceValue(result))}
                     </div>
                     <div className="text-xs text-slate-400 uppercase tracking-wide">Confidence</div>
                     <div className={`text-sm font-bold ${confidenceColors.text} mt-1`}>
-                      {(result.confidence || 0) < 20 ? "<20%" : getConfidenceRange(result.confidence || 0)}
+                      {getConfidenceValue(result) < 0.20 ? "<20%" : getConfidenceRange(getConfidenceValue(result))}
                     </div>
                   </div>
                   <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
                     <div className="text-3xl font-black text-slate-200 mb-1">
-                      {getEvidenceStrength(result.confidence || 0)}
+                      {getEvidenceStrength(getConfidenceValue(result))}
                     </div>
                     <div className="text-xs text-slate-400 uppercase tracking-wide">Evidence</div>
                     <div className="text-sm font-bold text-slate-300 mt-1">Strength</div>
@@ -385,21 +460,20 @@ export default function EchoBreakerClient() {
               )}
 
               {/* What the Data Shows */}
-              {result.whatDataShows && result.whatDataShows.length > 0 && (
+              {getEvidenceShows(result).length > 0 && (
               <div className="border-t border-slate-700 pt-6">
                 <button
                   onClick={() => toggleSection('whatData')}
-                  className="flex items-center justify-between w-full text-left mb-4 group"
+                  className="flex items-center gap-3 w-full text-left group"
                 >
-                  <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                    <span className="text-2xl">📊</span>
-                    What the Data Actually Shows
-                  </h3>
-                  <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.whatData ? '▼' : '▶'}</span>
+                  <span className="text-2xl">{expandedSections.whatData ? "▼" : "▶"}</span>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-slate-200 group-hover:text-indigo-300 transition-colors">What the Evidence Shows</h3>
+                  </div>
                 </button>
                 {expandedSections.whatData && (
                   <ul className="space-y-3 pl-10">
-                    {result.whatDataShows.map((item, idx) => (
+                    {getEvidenceShows(result).map((item, idx) => (
                       <li key={idx} className="flex gap-3 text-slate-200 leading-relaxed">
                         <span className="text-emerald-400 text-xl flex-shrink-0">✓</span>
                         <span>{item}</span>
@@ -410,22 +484,21 @@ export default function EchoBreakerClient() {
               </div>
             )}
 
-            {/* Why This Claim Spread */}
-            {result.spreadFactors && result.spreadFactors.length > 0 && (
+            {/* Why This Narrative Spread */}
+            {getSpreadFactors(result).length > 0 && (
               <div className="border-t border-slate-700 pt-6">
                 <button
                   onClick={() => toggleSection('whySpread')}
-                  className="flex items-center justify-between w-full text-left mb-4 group"
+                  className="flex items-center gap-3 w-full text-left group"
                 >
-                  <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                    <span className="text-2xl">🔥</span>
-                    How This Claim Took Hold
-                  </h3>
-                  <span className="text-slate-400 group-hover:text-slate-300">{expandedSections.whySpread ? '▼' : '▶'}</span>
+                  <span className="text-2xl">{expandedSections.whySpread ? "▼" : "▶"}</span>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-slate-200 group-hover:text-indigo-300 transition-colors">Why This Narrative Spread</h3>
+                  </div>
                 </button>
                 {expandedSections.whySpread && (
                   <ul className="space-y-3 pl-10">
-                    {result.spreadFactors.map((item, idx) => (
+                    {getSpreadFactors(result).map((item, idx) => (
                       <li key={idx} className="text-slate-300 leading-relaxed">• {item}</li>
                     ))}
                   </ul>
@@ -624,22 +697,22 @@ export default function EchoBreakerClient() {
                 <div className={`absolute inset-0 ${confidenceColors?.bg} opacity-5 blur-3xl`}></div>
                 
                 <div className="text-center relative z-10">
-                  <div className={`inline-flex items-center justify-center w-28 h-28 rounded-full ${getVerdictColor(result?.verdict)} mb-6 shadow-2xl ring-8 ring-white/50`}>
-                    <span className="text-5xl text-white font-bold">{getVerdictIcon(result?.verdict)}</span>
+                  <div className={`inline-flex items-center justify-center w-28 h-28 rounded-full ${getVerdictColor(getVerdictText(result))} mb-6 shadow-2xl ring-8 ring-white/50`}>
+                    <span className="text-5xl text-white font-bold">{getVerdictIcon(getVerdictText(result))}</span>
                   </div>
-                  <h3 className="text-3xl font-black mb-3 tracking-tight">{getVerdictLabel(result?.verdict)}</h3>
+                  <h3 className="text-3xl font-black mb-3 tracking-tight">{getVerdictLabel(getVerdictText(result))}</h3>
                   <p className="text-xl text-slate-700 mb-6 font-medium leading-relaxed max-w-lg mx-auto">"{claim.length > 120 ? claim.slice(0, 120) + '...' : claim}"</p>
                   
                   {/* DOMINANT Confidence Badge - Institutional */}
                   <div className={`inline-flex flex-col items-center gap-3 px-8 py-6 rounded-2xl ${confidenceColors?.bg} bg-opacity-10 border-2 ${confidenceColors?.ring} shadow-lg`}>
                     <div className="text-sm font-bold text-slate-600 uppercase tracking-wider mb-1">
-                      {getConfidenceBand(result?.confidence || 0)}
+                      {getConfidenceBand(getConfidenceValue(result))}
                     </div>
                     <div className={`text-5xl font-black ${confidenceColors?.text}`}>
-                      {(result?.confidence || 0) < 20 ? "<20%" : getConfidenceRange(result?.confidence || 0)}
+                      {getConfidenceValue(result) < 0.20 ? "<20%" : getConfidenceRange(getConfidenceValue(result))}
                     </div>
                     <div className="text-xs text-slate-600 mt-1">
-                      Evidence Strength: {getEvidenceStrength(result?.confidence || 0)}
+                      Evidence Strength: {getEvidenceStrength(getConfidenceValue(result))}
                     </div>
                   </div>
                 </div>
