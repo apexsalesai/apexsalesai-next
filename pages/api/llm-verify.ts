@@ -56,7 +56,7 @@ type ErrorResponse = {
   };
 };
 
-const DEFAULT_MODEL = "claude-sonnet-4-5";
+const DEFAULT_MODEL = "claude-3-5-sonnet-20241022";
 const MAX_QUERY_COUNT = 4;
 const DEFAULT_MAX_SOURCES = 12;
 
