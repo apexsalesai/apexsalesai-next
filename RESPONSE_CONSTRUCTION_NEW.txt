@@ -1,0 +1,187 @@
+// NEW RESPONSE CONSTRUCTION LOGIC FOR DECISION INTELLIGENCE
+
+    if (!parsed) {
+      // If Claude returned malformed JSON, fail safely with constrained output
+      warnings.push("Model output was not valid JSON; returning constrained unverified response.");
+      const resp: VerifyResponse = {
+        verificationId,
+        verifiedAt: generatedAt,
+        decisionPanel: {
+          actionReadiness: "NOT_RECOMMENDED",
+          decisionConfidence: "LOW",
+          timeSensitivity: "LOW",
+          primaryRisk: "NONE",
+          recommendedAction: {
+            headline: "Verification incomplete due to response formatting issues",
+            summary: "Unable to parse the verification response. Please retry or contact support.",
+            do: ["Retry verification", "Check claim formatting"],
+            avoid: ["Publishing without verification", "Making decisions based on incomplete data"]
+          }
+        },
+        verdict: {
+          classification: "NOT_SUPPORTED",
+          confidenceBand: "0–19%",
+          confidenceValue: 0.2,
+          confidenceColor: "RED",
+          evidenceStrength: "WEAK",
+          sourceConsensus: {
+            tier1Count: tier1.length,
+            tier2Count: tier2.length,
+            tier3Count: tier3.length,
+            summary: "Evidence extraction succeeded, but synthesis formatting failed"
+          }
+        },
+        whatTheEvidenceShows: ["Evidence extraction succeeded, but synthesis formatting failed."],
+        whyThisNarrativeSpread: ["Claims often spread faster than corrections when phrased as absolutes."],
+        actionScenarios: [
+          {
+            scenario: "IGNORE",
+            risk: "LOW",
+            impact: "LOW",
+            notes: "Cannot act on incomplete verification"
+          }
+        ],
+        sources: { tier1, tier2, tier3 },
+        methodology: {
+          approach: "Multi-source consensus analysis",
+          rankingLogic: "Tier 1 (official) > Tier 2 (reputable) > Tier 3 (context)",
+          limitations: ["Response formatting error prevented full analysis"]
+        },
+        searchQueries,
+        model,
+        warnings,
+      };
+      return res.status(200).json(resp);
+    }
+
+    // Extract confidence value (try new format first, fall back to legacy)
+    const rawConfidence = parsed.confidenceValue !== undefined 
+      ? Number(parsed.confidenceValue)
+      : (parsed.confidence !== undefined ? Number(parsed.confidence) : 0.5);
+    const confidence = clamp01(rawConfidence);
+
+    // Confidence constraint: no Tier 1 sources => cap confidence
+    const constrainedConfidence = tier1.length === 0 ? Math.min(confidence, 0.65) : confidence;
+
+    // Extract verdict classification (try new format first, fall back to legacy)
+    const verdictClassification: VerdictClassification = 
+      parsed.verdictClassification || 
+      mapVerdictToClassification(normalizeVerdict(parsed.verdict), constrainedConfidence);
+
+    // Extract evidence strength (try new format first, calculate from tiers as fallback)
+    const evidenceStrength: EvidenceStrength = 
+      parsed.evidenceStrength || 
+      (tier1.length >= 2 ? "STRONG" : tier1.length >= 1 ? "MIXED" : "WEAK");
+
+    // Extract decision panel (with intelligent defaults)
+    const decisionPanel = parsed.decisionPanel || {
+      actionReadiness: constrainedConfidence >= 0.85 ? "READY" : constrainedConfidence >= 0.50 ? "LIMITED" : "NOT_RECOMMENDED",
+      decisionConfidence: getDecisionConfidence(constrainedConfidence),
+      timeSensitivity: "MEDIUM",
+      primaryRisk: "REPUTATIONAL",
+      recommendedAction: {
+        headline: constrainedConfidence >= 0.70 
+          ? "This claim can be referenced with appropriate caveats"
+          : "Additional verification recommended before publication",
+        summary: constrainedConfidence >= 0.70
+          ? "Evidence provides reasonable support for this claim, though context and limitations should be noted."
+          : "Current evidence is insufficient for confident publication. Consider waiting for additional authoritative sources.",
+        do: constrainedConfidence >= 0.70 
+          ? ["Reference with attribution", "Include source links", "Note any limitations"]
+          : ["Seek additional Tier 1 sources", "Verify with subject matter experts", "Monitor for updates"],
+        avoid: constrainedConfidence >= 0.70
+          ? ["Absolute language", "Omitting caveats", "Overgeneralizing"]
+          : ["Publishing as fact", "Amplifying without verification", "Making definitive statements"]
+      }
+    };
+
+    // Extract evidence findings
+    const whatTheEvidenceShows = ensureArrayOfStrings(
+      parsed.whatTheEvidenceShows || parsed.whatDataShows,
+      [
+        "Multiple sources were reviewed, but the available evidence is limited.",
+        "Consider checking primary (official) data for a definitive answer.",
+        "Some sources may be interpreting the same data differently.",
+      ]
+    );
+
+    // Extract narrative spread factors
+    const whyThisNarrativeSpread = ensureArrayOfStrings(
+      parsed.whyThisNarrativeSpread || parsed.spreadFactors,
+      [
+        "High-emotion framing increases sharing even when details are unclear.",
+        "Short, absolute claims often omit definitions and timeframes.",
+        "Repetition across channels can create a false sense of certainty.",
+      ]
+    );
+
+    // Extract or generate action scenarios
+    const actionScenarios = Array.isArray(parsed.actionScenarios) && parsed.actionScenarios.length > 0
+      ? parsed.actionScenarios.map((s: any) => ({
+          scenario: s.scenario || "WAIT",
+          risk: s.risk || "MEDIUM",
+          impact: s.impact || "MEDIUM",
+          notes: isString(s.notes) ? s.notes : "Review evidence before deciding"
+        }))
+      : [
+          {
+            scenario: "PUBLISH" as ScenarioType,
+            risk: constrainedConfidence >= 0.85 ? "LOW" as RiskLevel : "MEDIUM" as RiskLevel,
+            impact: "MEDIUM" as RiskLevel,
+            notes: constrainedConfidence >= 0.85 
+              ? "Strong evidence supports publication with standard attribution"
+              : "Moderate evidence; include caveats and limitations"
+          },
+          {
+            scenario: "WAIT" as ScenarioType,
+            risk: "LOW" as RiskLevel,
+            impact: "LOW" as RiskLevel,
+            notes: "Waiting for additional authoritative sources reduces risk"
+          },
+          {
+            scenario: "IGNORE" as ScenarioType,
+            risk: "NONE" as RiskLevel,
+            impact: "NONE" as RiskLevel,
+            notes: "No action required if claim is not relevant to your audience"
+          }
+        ];
+
+    // Build final response
+    const resp: VerifyResponse = {
+      verificationId,
+      verifiedAt: generatedAt,
+      decisionPanel,
+      verdict: {
+        classification: verdictClassification,
+        confidenceBand: getConfidenceBand(constrainedConfidence),
+        confidenceValue: constrainedConfidence,
+        confidenceColor: getConfidenceColor(constrainedConfidence),
+        evidenceStrength,
+        sourceConsensus: {
+          tier1Count: tier1.length,
+          tier2Count: tier2.length,
+          tier3Count: tier3.length,
+          summary: tier1.length >= 2 
+            ? `${tier1.length} authoritative sources provide strong consensus`
+            : tier1.length === 1
+            ? "Single authoritative source; additional corroboration recommended"
+            : "No authoritative sources found; evidence is limited to secondary sources"
+        }
+      },
+      whatTheEvidenceShows,
+      whyThisNarrativeSpread,
+      actionScenarios,
+      sources: { tier1, tier2, tier3 },
+      methodology: {
+        approach: "Multi-source consensus analysis",
+        rankingLogic: "Tier 1 (official) > Tier 2 (reputable) > Tier 3 (context)",
+        limitations: tier1.length === 0 
+          ? ["No official sources available", "Confidence capped at 65%"]
+          : []
+      },
+      searchQueries,
+      model,
+      ...(warnings.length ? { warnings } : {}),
+    };
+
+    return res.status(200).json(resp);
