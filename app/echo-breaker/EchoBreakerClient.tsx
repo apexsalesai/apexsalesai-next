@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import html2canvas from "html2canvas";
 
 type Source = {
   title: string;
@@ -396,6 +397,37 @@ ${window.location.href}
     
     navigator.clipboard.writeText(fullAnalysis);
     alert("Full analysis copied to clipboard! ✅");
+  };
+
+  const handleDownloadProofCard = async () => {
+    const proofCardElement = document.getElementById('proof-card-content');
+    if (!proofCardElement) {
+      alert("ProofCard not found. Please try again.");
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(proofCardElement, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Higher quality
+        logging: false,
+      });
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `proofcard-${Date.now()}.png`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      });
+    } catch (error) {
+      console.error('Error generating ProofCard:', error);
+      alert("Failed to generate ProofCard. Please try again.");
+    }
   };
 
   const confidenceColors = result ? getConfidenceColor(getConfidenceValue(result)) : null;
@@ -840,7 +872,7 @@ ${window.location.href}
               </div>
               
               {/* ProofCard Content - VIRAL OPTIMIZED */}
-              <div className={`bg-gradient-to-br from-white to-slate-50 text-slate-900 rounded-2xl p-10 space-y-8 relative overflow-hidden shadow-2xl`}>
+              <div id="proof-card-content" className={`bg-gradient-to-br from-white to-slate-50 text-slate-900 rounded-2xl p-10 space-y-8 relative overflow-hidden shadow-2xl`}>
                 {/* Color Glow Effect */}
                 <div className={`absolute inset-0 ${confidenceColors?.bg} opacity-5 blur-3xl`}></div>
                 
@@ -889,12 +921,15 @@ ${window.location.href}
               </div>
 
               <div className="flex gap-3 mt-6">
-                <button className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold">
+                <button 
+                  onClick={handleDownloadProofCard}
+                  className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all hover:scale-105 active:scale-95"
+                >
                   📥 Download PNG
                 </button>
                 <button
                   onClick={() => setShowProofCard(false)}
-                  className="px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white"
+                  className="flex-1 px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-all hover:scale-105 active:scale-95"
                 >
                   Close
                 </button>
