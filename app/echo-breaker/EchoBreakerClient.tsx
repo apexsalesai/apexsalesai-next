@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import html2canvas from "html2canvas";
+import DecisionPanel from "./components/DecisionPanel";
 
 type Source = {
   title: string;
@@ -570,6 +571,11 @@ ${window.location.href}
               </div>
             </div>
           </div>
+        )}
+
+        {/* Decision Panel - MANDATORY */}
+        {result && !loading && result.decisionPanel && (
+          <DecisionPanel decisionPanel={result.decisionPanel} />
         )}
 
         {/* Verdict Card - Executive Grade */}
