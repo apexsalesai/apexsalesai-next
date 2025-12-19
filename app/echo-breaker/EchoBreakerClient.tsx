@@ -355,6 +355,52 @@ ${window.location.href}`;
     alert("Sources copied to clipboard! ✅");
   };
 
+  const handleEmailFullAnalysis = () => {
+    const verdict = getVerdictLabel(getVerdictText(result));
+    const confidence = Math.round(getConfidenceValue(result) * 100);
+    const evidenceShows = getEvidenceShows(result);
+    const spreadFactors = getSpreadFactors(result);
+    const tier1 = result?.sources?.tier1 || [];
+    
+    const emailBody = `COMPLETE FACT CHECK ANALYSIS
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLAIM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"${claim}"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERDICT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${verdict}
+Confidence: ${confidence}%
+Evidence Strength: ${getEvidenceStrength(getConfidenceValue(result))}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT THE EVIDENCE SHOWS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${evidenceShows.map((e, i) => `${i + 1}. ${e}`).join('\n')}
+
+${spreadFactors.length > 0 ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHY THIS NARRATIVE SPREAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${spreadFactors.map((f, i) => `${i + 1}. ${f}`).join('\n')}` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TIER-1 SOURCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${tier1.map((s, i) => `${i + 1}. ${s.title}\n   ${s.url}`).join('\n\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Verified by ProofLayer
+${window.location.href}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+    const subject = `Fact Check: ${claim.slice(0, 50)}${claim.length > 50 ? '...' : ''}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = mailtoLink;
+  };
+
   const handleShareFullAnalysis = () => {
     const verdict = getVerdictLabel(getVerdictText(result));
     const confidence = Math.round(getConfidenceValue(result) * 100);
@@ -788,10 +834,10 @@ ${window.location.href}
               {/* Share Presets */}
               <div className="grid grid-cols-3 gap-2 mb-4">
                 <button 
-                  onClick={handleShareSummary}
+                  onClick={handleEmailFullAnalysis}
                   className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
                 >
-                  📊 Share Summary
+                  📧 Email Full Analysis
                 </button>
                 <button 
                   onClick={handleShareSources}
