@@ -296,20 +296,29 @@ export default function EchoBreakerClient() {
   };
 
   const handleShare = (platform: string) => {
-    const text = `Fact-checked: "${claim}" - Verdict: ${getVerdictText(result)} (${Math.round(getConfidenceValue(result) * 100)}% confidence)`;
+    const verdict = getVerdictLabel(getVerdictText(result));
+    const confidence = Math.round(getConfidenceValue(result) * 100);
+    const text = `Fact-checked: "${claim}"\n\n- Verdict: ${verdict} (${confidence}% confidence)\n\nVerified by ProofLayer\n${window.location.href}`;
     const url = window.location.href;
     
     const shareUrls: Record<string, string> = {
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
       reddit: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`,
-      email: `mailto:?subject=${encodeURIComponent("Fact Check Result")}&body=${encodeURIComponent(text + "\n\n" + url)}`,
+      email: `mailto:?subject=${encodeURIComponent("Fact Check Result")}&body=${encodeURIComponent(text)}`,
     };
     
     if (platform === "copy") {
       navigator.clipboard.writeText(url);
       alert("Link copied to clipboard!");
+    } else if (platform === "linkedin" || platform === "facebook") {
+      // Copy content to clipboard for platforms that don't support pre-filling
+      navigator.clipboard.writeText(text);
+      alert("✅ Content copied to clipboard!\n\nPaste it into your post when the window opens.");
+      setTimeout(() => {
+        window.open(shareUrls[platform], "_blank", "width=600,height=600");
+      }, 500);
     } else if (shareUrls[platform]) {
       window.open(shareUrls[platform], "_blank", "width=600,height=400");
     }
