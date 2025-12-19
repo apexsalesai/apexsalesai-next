@@ -644,8 +644,17 @@ DECISION LOGIC:
 - decisionConfidence: Overall certainty (HIGH ≥85%, MODERATE 50-84%, LOW <50%)
 - timeSensitivity: How quickly does this need action? (HIGH if breaking/urgent)
 - primaryRisk: Main concern if published incorrectly
-- verdictClassification: SUBSTANTIATED (strong Tier 1 support), CONTEXTUALLY_INCOMPLETE (partial evidence), NOT_SUPPORTED (contradicted or absent)
+- verdictClassification: 
+  * SUBSTANTIATED: Tier 1 sources directly support the claim with high confidence
+  * NOT_SUPPORTED: Tier 1 sources directly contradict the claim OR claim is factually false based on official data
+  * CONTEXTUALLY_INCOMPLETE: Partial evidence, missing context, or conflicting sources
 - evidenceStrength: STRONG (multiple Tier 1), MIXED (Tier 1 + conflicting Tier 2), WEAK (no Tier 1)
+- confidenceValue: Be decisive. If Tier 1 sources clearly contradict a claim, confidence should be HIGH (0.85+) that it's NOT_SUPPORTED
+
+CRITICAL: When official government sources (.gov) provide clear data that contradicts a claim, use:
+- verdictClassification: "NOT_SUPPORTED"
+- confidenceValue: 0.85 or higher
+- evidenceStrength: "STRONG"
 
 ACTION SCENARIOS:
 Always provide 2-3 scenarios (PUBLISH, WAIT, IGNORE) with risk/impact assessment.

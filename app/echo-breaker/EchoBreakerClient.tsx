@@ -226,15 +226,20 @@ export default function EchoBreakerClient() {
     });
   };
 
-  // Color system based on confidence
+  // Color system based on confidence (expects 0-1 range)
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 85) return { bg: "bg-emerald-500", text: "text-emerald-500", ring: "ring-emerald-500" };
-    if (confidence >= 50) return { bg: "bg-amber-500", text: "text-amber-500", ring: "ring-amber-500" };
+    if (confidence >= 0.85) return { bg: "bg-emerald-500", text: "text-emerald-500", ring: "ring-emerald-500" };
+    if (confidence >= 0.50) return { bg: "bg-amber-500", text: "text-amber-500", ring: "ring-amber-500" };
     return { bg: "bg-red-500", text: "text-red-500", ring: "ring-red-500" };
   };
 
   const getVerdictColor = (verdict?: string) => {
     const v = (verdict || "").toLowerCase();
+    // New format
+    if (v.includes("not_supported") || v.includes("not supported")) return "bg-red-600";
+    if (v.includes("contextually_incomplete") || v.includes("contextually incomplete")) return "bg-amber-600";
+    if (v.includes("substantiated")) return "bg-emerald-600";
+    // Legacy format
     if (v.includes("false")) return "bg-red-600";
     if (v.includes("misleading")) return "bg-amber-600";
     if (v.includes("true")) return "bg-emerald-600";
@@ -243,6 +248,11 @@ export default function EchoBreakerClient() {
 
   const getVerdictIcon = (verdict?: string) => {
     const v = (verdict || "").toLowerCase();
+    // New format
+    if (v.includes("not_supported") || v.includes("not supported")) return "✕";
+    if (v.includes("contextually_incomplete") || v.includes("contextually incomplete")) return "⚠";
+    if (v.includes("substantiated")) return "✓";
+    // Legacy format
     if (v.includes("false")) return "✕";
     if (v.includes("misleading")) return "⚠";
     if (v.includes("true")) return "✓";
@@ -251,6 +261,11 @@ export default function EchoBreakerClient() {
 
   const getVerdictLabel = (verdict?: string) => {
     const v = (verdict || "").toLowerCase();
+    // New format
+    if (v.includes("not_supported") || v.includes("not supported")) return "Not Supported by Evidence";
+    if (v.includes("contextually_incomplete") || v.includes("contextually incomplete")) return "Contextually Incomplete";
+    if (v.includes("substantiated")) return "Substantiated";
+    // Legacy format
     if (v.includes("false")) return "Not Supported by Evidence";
     if (v.includes("misleading")) return "Contextually Incomplete";
     if (v.includes("true")) return "Substantiated";
@@ -258,23 +273,23 @@ export default function EchoBreakerClient() {
   };
 
   const getConfidenceBand = (confidence: number) => {
-    if (confidence >= 85) return "HIGH";
-    if (confidence >= 50) return "MODERATE";
+    if (confidence >= 0.85) return "HIGH";
+    if (confidence >= 0.50) return "MODERATE";
     return "LOW";
   };
 
   const getConfidenceRange = (confidence: number) => {
-    // Show ranges for more credible presentation
-    if (confidence >= 85) return `${Math.max(85, confidence - 5)}–${Math.min(100, confidence + 3)}%`;
-    if (confidence >= 50) return `${confidence - 8}–${confidence + 8}%`;
-    if (confidence < 20) return "Insufficient corroboration";
-    return `${confidence - 5}–${confidence + 5}%`;
+    if (confidence >= 0.85) return "85-100%";
+    if (confidence >= 0.70) return "70-84%";
+    if (confidence >= 0.50) return "50-69%";
+    if (confidence >= 0.20) return "20-49%";
+    return "0-19%";
   };
 
   const getEvidenceStrength = (confidence: number) => {
-    if (confidence >= 85) return "Strong";
-    if (confidence >= 70) return "Medium–High";
-    if (confidence >= 50) return "Medium";
+    if (confidence >= 0.85) return "Strong";
+    if (confidence >= 0.70) return "Medium–High";
+    if (confidence >= 0.50) return "Medium";
     return "Weak";
   };
 
