@@ -313,6 +313,91 @@ export default function EchoBreakerClient() {
     }
   };
 
+  const handleShareSummary = () => {
+    const verdict = getVerdictLabel(getVerdictText(result));
+    const confidence = Math.round(getConfidenceValue(result) * 100);
+    const tier1Count = result?.sources?.tier1?.length || 0;
+    
+    const summary = `🔍 FACT CHECK RESULT
+
+Claim: "${claim}"
+
+Verdict: ${verdict}
+Confidence: ${confidence}%
+Tier-1 Sources: ${tier1Count}
+
+Verified by ProofLayer
+${window.location.href}`;
+    
+    navigator.clipboard.writeText(summary);
+    alert("Summary copied to clipboard! ✅");
+  };
+
+  const handleShareSources = () => {
+    const tier1 = result?.sources?.tier1 || [];
+    const tier2 = result?.sources?.tier2 || [];
+    
+    const sourcesList = `📚 VERIFIED SOURCES
+
+Claim: "${claim}"
+
+TIER-1 SOURCES (Official):
+${tier1.map((s, i) => `${i + 1}. ${s.title}\n   ${s.url}`).join('\n\n')}
+
+${tier2.length > 0 ? `TIER-2 SOURCES (Supporting):\n${tier2.slice(0, 3).map((s, i) => `${i + 1}. ${s.title}\n   ${s.url}`).join('\n\n')}` : ''}
+
+Verified by ProofLayer
+${window.location.href}`;
+    
+    navigator.clipboard.writeText(sourcesList);
+    alert("Sources copied to clipboard! ✅");
+  };
+
+  const handleShareFullAnalysis = () => {
+    const verdict = getVerdictLabel(getVerdictText(result));
+    const confidence = Math.round(getConfidenceValue(result) * 100);
+    const evidenceShows = getEvidenceShows(result);
+    const spreadFactors = getSpreadFactors(result);
+    const tier1 = result?.sources?.tier1 || [];
+    
+    const fullAnalysis = `🔍 COMPLETE FACT CHECK ANALYSIS
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLAIM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"${claim}"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERDICT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${verdict}
+Confidence: ${confidence}%
+Evidence Strength: ${getEvidenceStrength(getConfidenceValue(result))}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT THE EVIDENCE SHOWS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${evidenceShows.map((e, i) => `${i + 1}. ${e}`).join('\n')}
+
+${spreadFactors.length > 0 ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHY THIS NARRATIVE SPREAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${spreadFactors.map((f, i) => `${i + 1}. ${f}`).join('\n')}` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TIER-1 SOURCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${tier1.map((s, i) => `${i + 1}. ${s.title}\n   ${s.url}`).join('\n\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Verified by ProofLayer
+${window.location.href}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    
+    navigator.clipboard.writeText(fullAnalysis);
+    alert("Full analysis copied to clipboard! ✅");
+  };
+
   const confidenceColors = result ? getConfidenceColor(getConfidenceValue(result)) : null;
 
   return (
@@ -412,6 +497,45 @@ export default function EchoBreakerClient() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* HERO BANNER - Emotional Impact */}
+        {result && !loading && (
+          <div className="mb-6">
+            <div className={`relative overflow-hidden rounded-2xl p-8 text-center ${
+              getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
+                ? 'bg-gradient-to-br from-red-900 via-red-800 to-red-900'
+                : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
+                ? 'bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900'
+                : 'bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900'
+            }`}>
+              <div className="absolute inset-0 bg-black/20"></div>
+              <div className="relative z-10">
+                <div className="text-6xl mb-4 animate-pulse">
+                  {getVerdictIcon(getVerdictText(result))}
+                </div>
+                <h1 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">
+                  {getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
+                    ? '🚨 CLAIM DEBUNKED'
+                    : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
+                    ? '✅ CLAIM VERIFIED'
+                    : '⚠️ NEEDS CONTEXT'}
+                </h1>
+                <p className="text-xl text-white/90 mb-4 max-w-2xl mx-auto">
+                  {getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
+                    ? 'Official government sources contradict this claim'
+                    : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
+                    ? 'Backed by authoritative government sources'
+                    : 'Additional context required for full picture'}
+                </p>
+                <div className="flex items-center justify-center gap-2 text-sm text-white/80">
+                  <span>🔥 Share this before it spreads further</span>
+                  <span>•</span>
+                  <span>Join 10,000+ fighting misinformation</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -625,13 +749,22 @@ export default function EchoBreakerClient() {
               
               {/* Share Presets */}
               <div className="grid grid-cols-3 gap-2 mb-4">
-                <button className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors">
+                <button 
+                  onClick={handleShareSummary}
+                  className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
+                >
                   📊 Share Summary
                 </button>
-                <button className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors">
+                <button 
+                  onClick={handleShareSources}
+                  className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
+                >
                   🔗 Share Sources
                 </button>
-                <button className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors">
+                <button 
+                  onClick={handleShareFullAnalysis}
+                  className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
+                >
                   📝 Share Full Analysis
                 </button>
               </div>
