@@ -2063,3 +2063,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-18: PHASE 1: Update API schema to Decision Intelligence format
 - ✅ 2025-12-19: FIX: Update client to handle new Decision Intelligence API schema
 - ✅ 2025-12-19: FIX: Verdict mapping and confidence display - support new Decision Intelligence format
+- ✅ 2025-12-19: CRITICAL: Add non-negotiable evidence hierarchy - no more Inconclusive when Tier-1 exists
