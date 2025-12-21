@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user from database
-    const user = await prisma.EchoBreakerUser.findUnique({
+    const user = await prisma.echoBreakerUser.findUnique({
       where: { id: userId },
       select: {
         id: true,

@@ -1,0 +1,22 @@
+chore(auth): fully remove NextAuth in favor of Microsoft Entra ID
+
+ARCHITECTURAL DECISION:
+- Echo Breaker now uses Microsoft Entra ID exclusively
+- Aligns with enterprise Microsoft stack (Azure OpenAI, Key Vault, etc.)
+- Zero additional cost vs Auth0 (saves $240-1400/month)
+- Better enterprise customer alignment (existing M365 accounts)
+- Unified identity across ApexSalesAI product suite
+
+CHANGES:
+- Removed NextAuth directories and config files
+- Uninstalled next-auth package and dependencies
+- Cleaned NEXTAUTH_* environment variables
+- Implemented Entra ID routes at /api/entra/*
+- Auth0 reserved at /api/auth/[...auth0] for future use
+
+FINAL ARCHITECTURE:
+- Auth0: /api/auth/[...auth0] (reserved)
+- Entra ID: /api/entra/* (active - Echo Breaker)
+- Zero NextAuth references in codebase
+
+This is a foundational architectural decision for enterprise readiness.

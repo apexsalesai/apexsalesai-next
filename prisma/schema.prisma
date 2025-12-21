@@ -793,6 +793,7 @@ model EchoBreakerUser {
   emailVerified DateTime?
   name          String?
   image         String?
+  provider      String?   @default("entra")
   
   // Timestamps
   createdAt     DateTime @default(now())

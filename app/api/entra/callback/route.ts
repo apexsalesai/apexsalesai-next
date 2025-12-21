@@ -33,17 +33,17 @@ export async function GET(request: NextRequest) {
     const name = account.name || email;
 
     // Create or update user in database
-    const user = await prisma.EchoBreakerUser.upsert({
+    const user = await prisma.echoBreakerUser.upsert({
       where: { email },
       update: {
         name,
-        lastSignIn: new Date(),
+        lastLoginAt: new Date(),
       },
       create: {
         email,
         name,
         provider: 'entra',
-        lastSignIn: new Date(),
+        lastLoginAt: new Date(),
       },
     });
 
