@@ -742,3 +742,83 @@ model ContentPerformance {
   @@index([periodStart])
   @@map("content_performance")
 }
+
+// ============================================
+// ECHO BREAKER (PROOFLAYER) - FACT CHECKING
+// ============================================
+
+model EchoBreakerUser {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  image         String?
+  
+  // OAuth
+  provider      String?  // google|github|email
+  providerId    String?
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLoginAt   DateTime?
+  
+  // Relations
+  verifications Verification[]
+  
+  @@index([email])
+  @@map("echo_breaker_users")
+}
+
+model Verification {
+  id                String   @id @default(cuid())
+  
+  // Claim
+  claim             String   @db.Text
+  
+  // Result
+  verdict           String   // NOT_SUPPORTED|CONTEXTUALLY_INCOMPLETE|SUBSTANTIATED
+  verdictLabel      String   // "Not Supported by Evidence"|"Needs Context"|"Substantiated"
+  confidence        Float    // 0.0 - 1.0
+  confidenceBand    String   // "Very Low"|"Low"|"Medium"|"High"|"Very High"
+  evidenceStrength  String   // "Weak"|"Medium"|"Medium–High"|"Strong"
+  
+  // Summary
+  summary           String   @db.Text
+  bottomLine        String?  @db.Text
+  
+  // Evidence
+  evidenceShows     String[] // Array of evidence points
+  spreadFactors     String[] // Why this narrative spread
+  
+  // Sources (JSON)
+  sources           Json     // { tier1: [...], tier2: [...], tier3: [...] }
+  
+  // Decision Panel (JSON)
+  decisionPanel     Json?    // Full decision intelligence object
+  
+  // Action Scenarios (JSON)
+  actionScenarios   Json?    // { publish: {...}, wait: {...}, ignore: {...} }
+  
+  // Methodology
+  methodology       Json?    // { searchQueries, model, duration, etc. }
+  
+  // Metadata
+  verificationId    String   @unique // Short ID for URLs (e.g., "abc123")
+  isPublic          Boolean  @default(true)
+  viewCount         Int      @default(0)
+  shareCount        Int      @default(0)
+  
+  // User (optional - can be anonymous)
+  userId            String?
+  user              EchoBreakerUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([verificationId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([isPublic])
+  @@map("verifications")
+}

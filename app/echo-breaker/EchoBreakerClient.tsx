@@ -126,6 +126,8 @@ export default function EchoBreakerClient() {
   const [error, setError] = useState<string | null>(null);
   const [animatedConfidence, setAnimatedConfidence] = useState(0);
   const [showProofCard, setShowProofCard] = useState(false);
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [savingVerification, setSavingVerification] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     whatData: true,
     whySpread: true,
@@ -219,6 +221,7 @@ export default function EchoBreakerClient() {
     setLoading(false);
     setCurrentPhase(0);
     setAnimatedConfidence(0);
+    setVerificationId(null);
     setExpandedSections({
       whatData: true,
       whySpread: true,
@@ -226,6 +229,46 @@ export default function EchoBreakerClient() {
       tier2: true,
       tier3: false,
     });
+  };
+
+  // Auto-save verification when result is received
+  useEffect(() => {
+    if (result && !verificationId && !savingVerification) {
+      saveVerification();
+    }
+  }, [result]);
+
+  const saveVerification = async () => {
+    if (!result || savingVerification) return;
+    
+    setSavingVerification(true);
+    try {
+      const res = await fetch('/api/echo-breaker/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          claim,
+          result,
+          userId: null, // TODO: Add user ID when auth is implemented
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setVerificationId(data.verificationId);
+      }
+    } catch (err) {
+      console.error('Failed to save verification:', err);
+    } finally {
+      setSavingVerification(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (!verificationId) return;
+    const url = `${window.location.origin}/echo-breaker/v/${verificationId}`;
+    navigator.clipboard.writeText(url);
+    alert('✅ Link copied to clipboard!');
   };
 
   // Color system based on confidence (expects 0-1 range)
@@ -884,6 +927,26 @@ ${window.location.href}
             <div className="border-t border-slate-700 pt-6">
               <h3 className="text-xl sm:text-2xl font-bold text-slate-100 mb-2">Verified insight — ready to share or cite</h3>
               <p className="text-xs sm:text-sm text-slate-400 mb-4">This verification is publication-ready and backed by official sources.</p>
+              
+              {/* Shareable Permanent Link - PROMINENT */}
+              {verificationId && (
+                <div className="mb-4 p-4 bg-indigo-900/30 border-2 border-indigo-500/50 rounded-xl">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-indigo-300 mb-1">🔗 Permanent Shareable Link</div>
+                      <div className="text-xs text-slate-300 font-mono bg-slate-800/50 px-3 py-2 rounded">
+                        {window.location.origin}/echo-breaker/v/{verificationId}
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleCopyLink}
+                      className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
+                    >
+                      📋 Copy Link
+                    </button>
+                  </div>
+                </div>
+              )}
               
               {/* Share Presets - Touch Friendly */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
