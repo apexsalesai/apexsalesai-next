@@ -589,38 +589,64 @@ ${window.location.href}
           </div>
         )}
 
-        {/* HERO BANNER - Emotional Impact */}
+        {/* HERO BANNER - Emotional Impact with Enhanced Drama */}
         {result && !loading && (
-          <div className="mb-6">
-            <div className={`relative overflow-hidden rounded-2xl p-8 text-center ${
+          <div className="mb-6 animate-fadeIn">
+            <div className={`relative overflow-hidden rounded-2xl p-8 md:p-12 text-center shadow-2xl ${
               getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
                 ? 'bg-gradient-to-br from-red-900 via-red-800 to-red-900'
                 : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
                 ? 'bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900'
                 : 'bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900'
             }`}>
+              {/* Animated Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>
               <div className="absolute inset-0 bg-black/20"></div>
+              
               <div className="relative z-10">
-                <div className="text-6xl mb-4 animate-pulse">
-                  {getVerdictIcon(getVerdictText(result))}
+                {/* Large Animated Verdict Icon */}
+                <div className="inline-flex items-center justify-center w-24 h-24 md:w-32 md:h-32 mb-6 animate-scaleIn">
+                  <div className={`text-7xl md:text-8xl ${
+                    getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
+                      ? 'animate-shake'
+                      : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
+                      ? 'animate-bounce'
+                      : 'animate-pulse'
+                  }`}>
+                    {getVerdictIcon(getVerdictText(result))}
+                  </div>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">
+                
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-white mb-4 tracking-tight animate-slideUp">
                   {getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
                     ? '🚨 CLAIM DEBUNKED'
                     : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
                     ? '✅ CLAIM VERIFIED'
                     : '⚠️ NEEDS CONTEXT'}
                 </h1>
-                <p className="text-xl text-white/90 mb-4 max-w-2xl mx-auto">
+                
+                <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 max-w-3xl mx-auto leading-relaxed px-4">
                   {getVerdictText(result).toLowerCase().includes('not_supported') || getVerdictText(result).toLowerCase().includes('false')
                     ? 'Official government sources contradict this claim'
                     : getVerdictText(result).toLowerCase().includes('substantiated') || getVerdictText(result).toLowerCase().includes('true')
                     ? 'Backed by authoritative government sources'
                     : 'Additional context required for full picture'}
                 </p>
-                <div className="flex items-center justify-center gap-2 text-sm text-white/80">
-                  <span>🔥 Share this before it spreads further</span>
-                  <span>•</span>
+                
+                {/* Source Count Badge */}
+                <div className="inline-flex items-center gap-3 mb-6 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                  <span className="text-2xl">📊</span>
+                  <span className="text-white font-bold text-sm md:text-base">
+                    {result?.sources?.tier1?.length || 0} Tier-1 Sources Analyzed
+                  </span>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-white/80 px-4">
+                  <span className="flex items-center gap-1">
+                    <span className="animate-pulse">🔥</span>
+                    Share this before it spreads further
+                  </span>
+                  <span className="hidden sm:inline">•</span>
                   <span>Join 10,000+ fighting misinformation</span>
                 </div>
               </div>
@@ -662,31 +688,50 @@ ${window.location.href}
                 </div>
               </div>
 
-              {/* Confidence Metrics - Contextual */}
+              {/* Confidence Metrics - Enhanced with Animated Progress */}
               {confidenceColors && (
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                    <div className={`text-3xl font-black ${confidenceColors.text} mb-1`}>
-                      {getConfidenceBand(getConfidenceValue(result))}
+                <div className="space-y-6">
+                  {/* Animated Confidence Bar */}
+                  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Confidence Level</h4>
+                      <span className={`text-2xl font-black ${confidenceColors.text}`}>
+                        {getConfidenceBand(getConfidenceValue(result))}
+                      </span>
                     </div>
-                    <div className="text-xs text-slate-400 uppercase tracking-wide">Confidence</div>
-                    <div className={`text-sm font-bold ${confidenceColors.text} mt-1`}>
-                      {getConfidenceValue(result) < 0.20 ? "<20%" : getConfidenceRange(getConfidenceValue(result))}
+                    
+                    {/* Animated Progress Bar */}
+                    <div className="relative h-4 bg-slate-700/50 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${confidenceColors.bg} rounded-full transition-all duration-1500 ease-out animate-fillBar`}
+                        style={{ '--target-width': `${Math.round(getConfidenceValue(result) * 100)}%` } as React.CSSProperties}
+                      ></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-slate-400">0%</span>
+                      <span className={`text-sm font-bold ${confidenceColors.text}`}>
+                        {getConfidenceValue(result) < 0.20 ? "<20%" : getConfidenceRange(getConfidenceValue(result))}
+                      </span>
+                      <span className="text-xs text-slate-400">100%</span>
                     </div>
                   </div>
-                  <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                    <div className="text-3xl font-black text-slate-200 mb-1">
-                      {getEvidenceStrength(getConfidenceValue(result))}
+                  
+                  {/* Metrics Grid - Mobile Optimized */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="text-center p-5 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-colors">
+                      <div className="text-4xl font-black text-slate-200 mb-2 animate-scaleIn">
+                        {getEvidenceStrength(getConfidenceValue(result))}
+                      </div>
+                      <div className="text-xs text-slate-400 uppercase tracking-wide">Evidence Strength</div>
                     </div>
-                    <div className="text-xs text-slate-400 uppercase tracking-wide">Evidence</div>
-                    <div className="text-sm font-bold text-slate-300 mt-1">Strength</div>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-slate-800/50 border border-slate-700">
-                    <div className="text-3xl font-black text-slate-200 mb-1">
-                      {result.sources?.tier1?.length || 0}
+                    <div className="text-center p-5 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-slate-600 transition-colors">
+                      <div className="text-4xl font-black text-indigo-400 mb-2 animate-scaleIn">
+                        {result.sources?.tier1?.length || 0}
+                      </div>
+                      <div className="text-xs text-slate-400 uppercase tracking-wide">Tier-1 Sources</div>
                     </div>
-                    <div className="text-xs text-slate-400 uppercase tracking-wide">Tier-1</div>
-                    <div className="text-sm font-bold text-slate-300 mt-1">Sources</div>
                   </div>
                 </div>
               )}
@@ -835,34 +880,34 @@ ${window.location.href}
               </div>
             )}
 
-            {/* Share Section */}
+            {/* Share Section - Mobile Optimized */}
             <div className="border-t border-slate-700 pt-6">
-              <h3 className="text-2xl font-bold text-slate-100 mb-2">Verified insight — ready to share or cite</h3>
-              <p className="text-sm text-slate-400 mb-3">This verification is publication-ready and backed by official sources.</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-100 mb-2">Verified insight — ready to share or cite</h3>
+              <p className="text-xs sm:text-sm text-slate-400 mb-4">This verification is publication-ready and backed by official sources.</p>
               
-              {/* Share Presets */}
-              <div className="grid grid-cols-3 gap-2 mb-4">
+              {/* Share Presets - Touch Friendly */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                 <button 
                   onClick={handleEmailFullAnalysis}
-                  className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
+                  className="px-4 py-3 sm:py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 active:bg-slate-600 border border-slate-600 text-white text-sm sm:text-xs font-medium transition-all hover:scale-105 active:scale-95 touch-manipulation"
                 >
                   📧 Email Full Analysis
                 </button>
                 <button 
                   onClick={handleShareSources}
-                  className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
+                  className="px-4 py-3 sm:py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 active:bg-slate-600 border border-slate-600 text-white text-sm sm:text-xs font-medium transition-all hover:scale-105 active:scale-95 touch-manipulation"
                 >
                   🔗 Share Sources
                 </button>
                 <button 
                   onClick={handleShareFullAnalysis}
-                  className="px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium transition-colors hover:scale-105 active:scale-95"
+                  className="px-4 py-3 sm:py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 active:bg-slate-600 border border-slate-600 text-white text-sm sm:text-xs font-medium transition-all hover:scale-105 active:scale-95 touch-manipulation"
                 >
                   📝 Share Full Analysis
                 </button>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <button
                   onClick={() => setShowProofCard(true)}
                   className="px-4 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
