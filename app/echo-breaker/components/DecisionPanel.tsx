@@ -76,15 +76,15 @@ export default function DecisionPanel({ decisionPanel }: DecisionPanelProps) {
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Action Readiness - DOMINANT */}
-        <div className={`${readinessConfig.bgClass} border-2 ${readinessConfig.borderClass} rounded-xl p-6`}>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="text-4xl">{readinessConfig.icon}</div>
-            <div className="flex-1">
+        {/* Action Readiness - DOMINANT - Mobile Optimized */}
+        <div className={`${readinessConfig.bgClass} border-2 ${readinessConfig.borderClass} rounded-xl p-4 sm:p-6 animate-fadeIn`}>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-3">
+            <div className="text-5xl sm:text-4xl animate-scaleIn">{readinessConfig.icon}</div>
+            <div className="flex-1 text-center sm:text-left">
               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Decision Readiness
               </div>
-              <div className={`text-2xl font-black ${readinessConfig.textClass}`}>
+              <div className={`text-xl sm:text-2xl font-black ${readinessConfig.textClass}`}>
                 {readinessConfig.label}
               </div>
             </div>
@@ -99,8 +99,8 @@ export default function DecisionPanel({ decisionPanel }: DecisionPanelProps) {
           </div>
         </div>
 
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Metrics Grid - Mobile Optimized */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Decision Confidence */}
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center">
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
