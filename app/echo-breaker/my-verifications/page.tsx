@@ -1,22 +1,29 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import MyVerificationsClient from './MyVerificationsClient';
 
 const prisma = new PrismaClient();
 
 export default async function MyVerificationsPage() {
-  const session = await getServerSession(authOptions);
+  // Get user ID from Entra ID session cookie
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('entra_user_id')?.value;
 
-  if (!session) {
+  if (!userId) {
     redirect('/echo-breaker');
   }
+
+  // Get user info
+  const user = await prisma.echoBreakerUser.findUnique({
+    where: { id: userId },
+    select: { name: true },
+  });
 
   // Fetch user's verifications
   const verifications = await prisma.verification.findMany({
     where: {
-      userId: session.user.id,
+      userId,
     },
     orderBy: {
       createdAt: 'desc',
@@ -38,7 +45,7 @@ export default async function MyVerificationsPage() {
         viewCount: v.viewCount,
         shareCount: v.shareCount,
       }))}
-      userName={session.user.name || 'User'}
+      userName={user?.name || 'User'}
     />
   );
 }

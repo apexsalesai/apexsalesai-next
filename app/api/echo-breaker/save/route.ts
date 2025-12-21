@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { customAlphabet } from 'nanoid';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 10);
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    // Get user ID from Entra ID session cookie
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('entra_user_id')?.value || null;
+    
     const body = await req.json();
     
     const {
@@ -18,7 +20,6 @@ export async function POST(req: NextRequest) {
     } = body;
     
     // Use authenticated user ID if available, otherwise null (anonymous)
-    const userId = session?.user?.id || null;
 
     // Generate short verification ID for URLs
     const verificationId = nanoid(10); // e.g., "abc123xyz0"

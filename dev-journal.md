@@ -2099,3 +2099,10 @@ FINAL ARCHITECTURE:
 - Zero NextAuth references in codebase
 
 This is a foundational architectural decision for enterprise readiness.
+- ✅ 2025-12-21: fix: update Entra ID auth to use correct env vars and schema fields
+
+- Replace NEXTAUTH_URL with NEXT_PUBLIC_BASE_URL
+- Replace NEXTAUTH_SECRET with ENTRA_SESSION_SECRET
+- Add provider field to EchoBreakerUser schema
+- Fix lastSignIn to lastLoginAt in callback
+- Use camelCase for Prisma model names
