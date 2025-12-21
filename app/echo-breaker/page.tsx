@@ -1,7 +1,12 @@
 "use client";
 
 import EchoBreakerClient from "./EchoBreakerClient";
+import { Providers } from "./providers";
 
 export default function EchoBreakerPage() {
-  return <EchoBreakerClient />;
+  return (
+    <Providers>
+      <EchoBreakerClient />
+    </Providers>
+  );
 }

@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { customAlphabet } from 'nanoid';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 10);
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
     const body = await req.json();
     
     const {
       claim,
       result,
-      userId = null, // Optional - can be anonymous
     } = body;
+    
+    // Use authenticated user ID if available, otherwise null (anonymous)
+    const userId = session?.user?.id || null;
 
     // Generate short verification ID for URLs
     const verificationId = nanoid(10); // e.g., "abc123xyz0"
