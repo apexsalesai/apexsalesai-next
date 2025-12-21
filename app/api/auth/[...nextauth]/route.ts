@@ -1,6 +1,11 @@
-import NextAuth from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// DISABLED: This route has been replaced by Microsoft Entra ID authentication
+// See /api/entra/* for the new authentication routes
+// This file is kept to prevent build errors but does nothing
 
-const handler = NextAuth(authOptions);
+export async function GET() {
+  return new Response('Authentication moved to /api/entra', { status: 410 });
+}
 
-export { handler as GET, handler as POST };
+export async function POST() {
+  return new Response('Authentication moved to /api/entra', { status: 410 });
+}

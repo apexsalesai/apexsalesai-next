@@ -1,0 +1,2 @@
+// This file has been disabled - Echo Breaker now uses Microsoft Entra ID
+// See /api/entra/* for the new authentication routes

@@ -2076,3 +2076,4 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-21: FIX: Add custom sendVerificationRequest for email auth
 - ✅ 2025-12-21: FIX: Add custom sendVerificationRequest for email auth
 - ✅ 2025-12-21: FEAT: Implement Microsoft Entra ID authentication for Echo Breaker
+- ✅ 2025-12-21: FEAT: Update Echo Breaker UI to use Microsoft Entra ID authentication
