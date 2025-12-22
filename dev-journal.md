@@ -2149,3 +2149,34 @@ This unlocks:
 ✅ Compliance exports (audit trails)
 
 Ready for Stripe integration and first paid customer.
+- ✅ 2025-12-21: fix: improve search quality for better Tier 1/Tier 2 source discovery
+
+PROBLEM:
+Historical claims like "Ford was the first automobile company" were returning
+mostly Tier 3 sources instead of authoritative Tier 1/Tier 2 sources from
+government archives, encyclopedias, and fact-checkers.
+
+SOLUTION:
+
+1. Enhanced Search Query Strategy:
+   - Query 1: Government/military/academic (.gov, .mil, .edu)
+   - Query 2: Historical archives (history, archive, museum, library)
+   - Query 3: Official data and statistics
+   - Query 4: Fact-checking organizations (factcheck, snopes, politifact)
+   - Query 5: Reputable news (Reuters, AP, BBC, Britannica)
+   - Query 6: International orgs (UN, WHO, World Bank, OECD)
+
+2. Expanded Tier 2 Sources:
+   - Added: snopes.com, britannica.com
+   - Added: smithsonianmag.com, nationalgeographic.com
+   - Added: scientificamerican.com, nature.com, science.org
+   - Added: pewresearch.org, rand.org, brookings.edu, cfr.org
+
+IMPACT:
+- Better coverage of historical claims
+- More authoritative sources in results
+- Improved fact-checking with encyclopedic sources
+- Higher quality Tier 1/Tier 2 evidence
+
+This should significantly improve verification quality for historical,
+scientific, and factual claims.

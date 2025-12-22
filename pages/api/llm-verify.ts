@@ -102,8 +102,11 @@ type ErrorResponse = {
 };
 
 const DEFAULT_MODEL = "claude-sonnet-4-5";
-const MAX_QUERY_COUNT = 4;
-const DEFAULT_MAX_SOURCES = 12;
+const MAX_QUERY_COUNT = 6; // Increased from 4 to 6 for comprehensive coverage
+const DEFAULT_MAX_SOURCES = 18; // Increased from 12 to 18
+const MIN_TIER1_SOURCES = 2; // Minimum Tier 1 sources before accepting results
+const MIN_TIER2_SOURCES = 3; // Minimum Tier 2 sources before accepting results
+const RESULTS_PER_QUERY = 10; // Increased from 6 to 10 per query
 
 const OFFICIAL_ORGS = new Set([
   "who.int",
@@ -127,6 +130,13 @@ const OFFICIAL_ORGS = new Set([
   "uscis.gov",
   "cbp.gov",
   "dhs.gov",
+  "loc.gov", // Library of Congress
+  "archives.gov", // National Archives
+  "si.edu", // Smithsonian Institution
+  "nist.gov", // National Institute of Standards and Technology
+  "usgs.gov", // US Geological Survey
+  "energy.gov", // Department of Energy
+  "epa.gov", // Environmental Protection Agency
 ]);
 
 // Tier2 examples (non-exhaustive). This is NOT a whitelist — it's a biasing set.
@@ -556,11 +566,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // 1) Build deterministic queries (official-first bias)
     const searchQueries = buildSearchQueries(claim);
 
-    // 2) Brave search in parallel
+    // 2) Brave search in parallel - COMPREHENSIVE SEARCH
     const braveResultsNested = await Promise.all(
       searchQueries.map(async (q) => {
         try {
-          return await braveWebSearch(q, 6);
+          return await braveWebSearch(q, RESULTS_PER_QUERY);
         } catch (e: any) {
           warnings.push(`Search query failed: "${q}" (${String(e?.message ?? e)})`);
           return [];
@@ -604,8 +614,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const { tier1, tier2, tier3 } = splitTiers(proofSources);
 
+    // 🔒 QUALITY GATE: Check if we have sufficient authoritative sources
+    const qualityGateWarnings: string[] = [];
+    
     if (tier1.length === 0) {
+      qualityGateWarnings.push("⚠️ CRITICAL: No Tier 1 (official government/academic) sources found");
       warnings.push("No Tier 1 (official) sources found. Verdict confidence will be constrained.");
+    } else if (tier1.length < MIN_TIER1_SOURCES) {
+      qualityGateWarnings.push(`⚠️ WARNING: Only ${tier1.length} Tier 1 source(s) found (minimum recommended: ${MIN_TIER1_SOURCES})`);
+    }
+    
+    if (tier2.length < MIN_TIER2_SOURCES) {
+      qualityGateWarnings.push(`⚠️ WARNING: Only ${tier2.length} Tier 2 source(s) found (minimum recommended: ${MIN_TIER2_SOURCES})`);
+    }
+    
+    // Log quality gate status
+    if (qualityGateWarnings.length > 0) {
+      console.warn("=== QUALITY GATE WARNINGS ===");
+      qualityGateWarnings.forEach(w => console.warn(w));
+      console.warn(`Total sources found: ${sourcesAll.length} (Tier1: ${tier1.length}, Tier2: ${tier2.length}, Tier3: ${tier3.length})`);
+      console.warn("Search queries used:", searchQueries);
+      console.warn("=== END QUALITY GATE ===");
+    } else {
+      console.log(`✅ Quality gate passed: ${tier1.length} Tier 1, ${tier2.length} Tier 2, ${tier3.length} Tier 3 sources`);
     }
 
     // 6) Call Claude with strict JSON contract
