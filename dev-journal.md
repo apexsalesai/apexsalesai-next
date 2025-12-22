@@ -2268,3 +2268,40 @@ IMPACT:
 
 Example before: snopes.com, snopes.com, snopes.com, snopes.com, snopes.com
 Example after: snopes.com, britannica.com, reuters.com, bbc.com, wikipedia.org
+- ✅ 2025-12-21: fix: correct field mapping in save API to match llm-verify response
+
+PROBLEM:
+"My Verifications" page showing "No verifications yet" even after doing searches.
+Verifications were not being saved to database.
+
+ROOT CAUSE:
+Field name mismatch between llm-verify API response and save API expectations:
+- llm-verify returns: whatTheEvidenceShows, whyThisNarrativeSpread
+- save API expected: evidenceShows, spreadFactors
+
+SOLUTION:
+
+1. Fixed Field Mapping:
+   - evidenceShows: result.whatTheEvidenceShows || result.evidenceShows
+   - spreadFactors: result.whyThisNarrativeSpread || result.spreadFactors
+   - verdict: result.verdict.classification || result.verdictClassification
+   - confidence: result.verdict.confidenceValue || result.confidenceValue
+   - summary: result.decisionPanel.recommendedAction.summary
+   - bottomLine: result.decisionPanel.recommendedAction.headline
+
+2. Added Compliance Tracking:
+   - ipAddress: from x-forwarded-for or x-real-ip headers
+   - userAgent: from user-agent header
+   - Both stored for audit trail and compliance
+
+3. Backward Compatibility:
+   - Handles both old and new field names
+   - Graceful fallbacks for missing fields
+
+IMPACT:
+- Verifications now save correctly to database
+- "My Verifications" will show all user searches
+- Full compliance audit trail captured
+- Ready for enterprise requirements
+
+Test: Do a new verification and check "My Verifications" page.
