@@ -17,7 +17,10 @@ export default async function MyVerificationsPage() {
   // Get user info
   const user = await prisma.echoBreakerUser.findUnique({
     where: { id: userId },
-    select: { name: true },
+    select: { 
+      name: true,
+      subscriptionTier: true,
+    },
   });
 
   // Fetch user's verifications
@@ -46,6 +49,7 @@ export default async function MyVerificationsPage() {
         shareCount: v.shareCount,
       }))}
       userName={user?.name || 'User'}
+      subscriptionTier={user?.subscriptionTier || 'free'}
     />
   );
 }

@@ -795,6 +795,21 @@ model EchoBreakerUser {
   image         String?
   provider      String?   @default("entra")
   
+  // Subscription & Billing
+  subscriptionTier    String  @default("free") // free|professional|enterprise
+  subscriptionStatus  String  @default("active") // active|trial|expired|cancelled
+  trialEndsAt         DateTime? // Trial expiration
+  subscriptionEndsAt  DateTime? // Paid subscription end
+  stripeCustomerId    String? // For Stripe integration
+  stripeSubscriptionId String? // For Stripe integration
+  
+  // Usage Tracking (for limits)
+  verificationsCount  Int     @default(0) // Total verifications
+  exportsCount        Int     @default(0) // Total exports
+  monthlyVerifications Int    @default(0) // Reset monthly
+  monthlyExports      Int     @default(0) // Reset monthly
+  lastResetAt         DateTime @default(now()) // For monthly reset
+  
   // Timestamps
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -806,6 +821,8 @@ model EchoBreakerUser {
   verifications Verification[]
   
   @@index([email])
+  @@index([subscriptionTier])
+  @@index([subscriptionStatus])
   @@map("echo_breaker_users")
 }
 
@@ -848,6 +865,20 @@ model Verification {
   viewCount         Int      @default(0)
   shareCount        Int      @default(0)
   
+  // Monetization & Tracking
+  status            String   @default("active") // active|archived|deleted
+  exportCount       Int      @default(0) // Track PDF exports
+  lastExportedAt    DateTime? // Last export timestamp
+  sharedWith        String[] @default([]) // Email addresses shared with
+  tags              String[] @default([]) // User-defined tags
+  notes             String?  @db.Text // User notes
+  
+  // Compliance & Audit
+  ipAddress         String? // IP of requester (for compliance)
+  userAgent         String? // Browser/device info
+  exportHistory     Json?   @default("[]") // Array of export events
+  shareHistory      Json?   @default("[]") // Array of share events
+  
   // User (optional - can be anonymous)
   userId            String?
   user              EchoBreakerUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -855,10 +886,12 @@ model Verification {
   // Timestamps
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  lastViewedAt      DateTime @default(now()) // Track engagement
   
   @@index([verificationId])
   @@index([userId])
   @@index([createdAt])
   @@index([isPublic])
+  @@index([status])
   @@map("verifications")
 }

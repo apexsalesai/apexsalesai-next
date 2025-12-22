@@ -2106,3 +2106,10 @@ This is a foundational architectural decision for enterprise readiness.
 - Add provider field to EchoBreakerUser schema
 - Fix lastSignIn to lastLoginAt in callback
 - Use camelCase for Prisma model names
+- ✅ 2025-12-21: fix: remove all remaining NextAuth references from Echo Breaker
+
+- Update save verification route to use Entra ID cookies
+- Update my-verifications page to use Entra ID cookies
+- Remove all next-auth imports from Echo Breaker features
+
+This completes the migration to Microsoft Entra ID authentication.
