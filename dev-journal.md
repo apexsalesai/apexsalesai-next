@@ -2240,3 +2240,31 @@ This ensures EVERY verification does a fully comprehensive job
 scrubbing for official Tier 1 and Tier 2 sources before returning results.
 
 ENTERPRISE-READY VERIFICATION QUALITY.
+- ✅ 2025-12-21: fix: add domain diversity filter and balanced tier representation
+
+PROBLEM:
+All Tier 2 sources were from snopes.com (5 duplicate domain links).
+No Tier 3 sources were showing up for context.
+
+SOLUTION:
+
+1. Domain Diversity Filter:
+   - ensureDomainDiversity() function limits sources per domain
+   - Max 2 sources per domain (Tier 2/3)
+   - Max 3 sources per domain (Tier 1 - government sources trusted)
+   - Prevents any single domain from dominating results
+
+2. Balanced Tier Representation:
+   - Up to 6 Tier 1 sources (government/academic)
+   - Up to 6 Tier 2 sources (reputable news/research)
+   - Up to 6 Tier 3 sources (context/encyclopedic)
+   - Total capped at maxSources (18)
+
+IMPACT:
+- No more 5x snopes.com links
+- Diverse source representation across domains
+- Tier 3 sources now included for context
+- Better evidence quality and variety
+
+Example before: snopes.com, snopes.com, snopes.com, snopes.com, snopes.com
+Example after: snopes.com, britannica.com, reuters.com, bbc.com, wikipedia.org

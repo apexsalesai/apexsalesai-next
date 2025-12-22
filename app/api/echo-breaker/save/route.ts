@@ -24,12 +24,16 @@ export async function POST(req: NextRequest) {
     // Generate short verification ID for URLs
     const verificationId = nanoid(10); // e.g., "abc123xyz0"
 
-    // Extract data from result
-    const verdict = result.verdict?.verdictClassification || result.verdict || 'UNKNOWN';
+    // Extract data from result (handle both old and new field names)
+    const verdict = result.verdict?.classification || result.verdict?.verdictClassification || result.verdictClassification || 'UNKNOWN';
     const verdictLabel = getVerdictLabel(verdict);
-    const confidence = result.verdict?.confidenceValue || result.confidence || 0;
-    const confidenceBand = getConfidenceBand(confidence);
-    const evidenceStrength = getEvidenceStrength(confidence);
+    const confidence = result.verdict?.confidenceValue || result.confidenceValue || result.confidence || 0;
+    const confidenceBand = result.verdict?.confidenceBand || getConfidenceBand(confidence);
+    const evidenceStrength = result.verdict?.evidenceStrength || getEvidenceStrength(confidence);
+
+    // Get IP and user agent for compliance tracking
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
 
     // Save to database
     const verification = await prisma.verification.create({
@@ -41,14 +45,16 @@ export async function POST(req: NextRequest) {
         confidence,
         confidenceBand,
         evidenceStrength,
-        summary: result.summary || '',
-        bottomLine: result.bottomLine || null,
-        evidenceShows: result.evidenceShows || [],
-        spreadFactors: result.spreadFactors || [],
+        summary: result.decisionPanel?.recommendedAction?.summary || result.summary || '',
+        bottomLine: result.decisionPanel?.recommendedAction?.headline || result.bottomLine || null,
+        evidenceShows: result.whatTheEvidenceShows || result.evidenceShows || [],
+        spreadFactors: result.whyThisNarrativeSpread || result.spreadFactors || [],
         sources: result.sources || { tier1: [], tier2: [], tier3: [] },
         decisionPanel: result.decisionPanel || null,
         actionScenarios: result.actionScenarios || null,
         methodology: result.methodology || null,
+        ipAddress,
+        userAgent,
         isPublic: true,
         userId,
       },
