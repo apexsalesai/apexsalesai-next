@@ -149,6 +149,13 @@ const REPUTABLE_NEWS_OR_RESEARCH = new Set([
   "factcheck.org",
   "politifact.com",
   "snopes.com",
+  "britannica.com",
+  "smithsonianmag.com",
+  "nationalgeographic.com",
+  "scientificamerican.com",
+  "nature.com",
+  "science.org",
+  "snopes.com",
   "pewresearch.org",
   "rand.org",
   "brookings.edu",
@@ -301,13 +308,28 @@ async function safeReadText(res: Response): Promise<string | null> {
 function buildSearchQueries(claim: string): string[] {
   const clean = claim.trim().replace(/\s+/g, " ");
 
-  // Hard-coded "gold" query set: official-first + fact-check assist
-  const q1 = `${clean} site:.gov OR site:.mil OR site:.edu`;
-  const q2 = `${clean} data report statistics`;
-  const q3 = `${clean} fact check`;
-  const q4 = `${clean} Pew Research OR CDC OR Census OR BLS OR UN OR WHO`;
+  // Enhanced query strategy: official sources + historical records + fact-checking
+  const queries: string[] = [];
+  
+  // Query 1: Government, military, and academic sources (highest authority)
+  queries.push(`${clean} site:.gov OR site:.mil OR site:.edu`);
+  
+  // Query 2: Historical and archival sources (for historical claims)
+  queries.push(`${clean} history archive museum library congress`);
+  
+  // Query 3: Official data and statistics
+  queries.push(`${clean} data report statistics official`);
+  
+  // Query 4: Fact-checking organizations
+  queries.push(`${clean} fact check OR factcheck OR snopes OR politifact`);
+  
+  // Query 5: Reputable news and research (Reuters, AP, BBC, etc.)
+  queries.push(`${clean} site:reuters.com OR site:apnews.com OR site:bbc.com OR site:britannica.com`);
+  
+  // Query 6: International organizations and institutions
+  queries.push(`${clean} site:un.org OR site:who.int OR site:worldbank.org OR site:oecd.org`);
 
-  return [q1, q2, q3, q4].slice(0, MAX_QUERY_COUNT);
+  return queries.slice(0, MAX_QUERY_COUNT);
 }
 
 function normalizeBraveResult(r: any): { title: string; url: string; snippet: string; published?: string | null } | null {
