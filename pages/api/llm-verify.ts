@@ -278,6 +278,25 @@ function dedupeByUrl<T extends { url: string }>(items: T[]): T[] {
   return out;
 }
 
+function ensureDomainDiversity<T extends { domain: string; tier: string }>(items: T[], maxPerDomain: number = 2): T[] {
+  const domainCounts = new Map<string, number>();
+  const out: T[] = [];
+  
+  for (const item of items) {
+    const count = domainCounts.get(item.domain) || 0;
+    
+    // For Tier 1, allow more from same domain (government sources are trustworthy)
+    const limit = item.tier === "tier1" ? 3 : maxPerDomain;
+    
+    if (count < limit) {
+      out.push(item);
+      domainCounts.set(item.domain, count + 1);
+    }
+  }
+  
+  return out;
+}
+
 async function braveWebSearch(query: string, count: number): Promise<any[]> {
   // STEP 3: Harden Brave Search (NEVER THROW)
   const apiKey = process.env.BRAVE_SEARCH_API_KEY;
@@ -609,8 +628,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // 4) Rank sources: tier first, then score
     sourcesAll.sort((a, b) => b.score - a.score);
 
+    // 4.5) Apply domain diversity to prevent one domain from dominating results
+    const diverseSources = ensureDomainDiversity(sourcesAll, 2);
+
     // 5) Construct proof-grade set: exclude tier4 from the evidence set
-    const proofSources = sourcesAll.filter((s) => s.tier !== "tier4").slice(0, maxSources);
+    // Ensure balanced representation: prioritize Tier 1/2 but include Tier 3 for context
+    const tier1Sources = diverseSources.filter((s) => s.tier === "tier1");
+    const tier2Sources = diverseSources.filter((s) => s.tier === "tier2");
+    const tier3Sources = diverseSources.filter((s) => s.tier === "tier3");
+    
+    // Build balanced source set: take best from each tier
+    const proofSources = [
+      ...tier1Sources.slice(0, Math.min(6, tier1Sources.length)), // Up to 6 Tier 1
+      ...tier2Sources.slice(0, Math.min(6, tier2Sources.length)), // Up to 6 Tier 2
+      ...tier3Sources.slice(0, Math.min(6, tier3Sources.length)), // Up to 6 Tier 3
+    ].slice(0, maxSources);
 
     const { tier1, tier2, tier3 } = splitTiers(proofSources);
 
