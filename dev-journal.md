@@ -2309,3 +2309,11 @@ Test: Do a new verification and check "My Verifications" page.
 
 .env files should never be committed to git as they contain secrets.
 Removed from tracking but kept locally for development.
+- ✅ 2025-12-28: fix: remove unused next-auth import to fix build
+
+Removed next-auth import from ai-score.ts that was causing build failure.
+This file is for Marketing Console, not Echo Breaker.
+- ✅ 2025-12-28: fix: remove unused next-auth import to fix build
+
+Removed next-auth import from ai-score.ts that was causing build failure.
+This file is for Marketing Console, not Echo Breaker.

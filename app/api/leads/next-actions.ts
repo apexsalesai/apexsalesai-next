@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+// import { getServerSession } from 'next-auth'; // Removed - not using NextAuth
 // import { authOptions } from '../auth/[...nextauth]/route'; // Using Auth0 instead
 
 const prisma = new PrismaClient();

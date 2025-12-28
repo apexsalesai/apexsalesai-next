@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getHubSpotToken } from '../../../lib/hubspot';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // Removed - not using NextAuth
 // import { authOptions } from '../auth/[...nextauth]'; // Using Auth0 instead
 
 export default async function handler(
