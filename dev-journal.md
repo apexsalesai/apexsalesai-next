@@ -2305,3 +2305,7 @@ IMPACT:
 - Ready for enterprise requirements
 
 Test: Do a new verification and check "My Verifications" page.
+- ✅ 2025-12-28: security: remove .env file from git tracking
+
+.env files should never be committed to git as they contain secrets.
+Removed from tracking but kept locally for development.
