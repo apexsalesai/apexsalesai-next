@@ -2317,3 +2317,7 @@ This file is for Marketing Console, not Echo Breaker.
 
 Removed next-auth import from ai-score.ts that was causing build failure.
 This file is for Marketing Console, not Echo Breaker.
+- ✅ 2025-12-29: fix: remove all next-auth imports to fix build
+
+Commented out all remaining next-auth imports across Marketing Console files.
+These files are not used by Echo Breaker which uses Microsoft Entra ID exclusively.
