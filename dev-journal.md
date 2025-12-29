@@ -2322,3 +2322,7 @@ This file is for Marketing Console, not Echo Breaker.
 Commented out all remaining next-auth imports across Marketing Console files.
 These files are not used by Echo Breaker which uses Microsoft Entra ID exclusively.
 - ✅ 2025-12-29: trigger deployment with corrected env vars
+- ✅ 2025-12-29: debug: add comprehensive logging to auth callback
+
+Added detailed console logging throughout the callback flow to diagnose production auth failures.
+This will show in Vercel function logs exactly where the error occurs.
