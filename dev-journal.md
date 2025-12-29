@@ -2321,3 +2321,4 @@ This file is for Marketing Console, not Echo Breaker.
 
 Commented out all remaining next-auth imports across Marketing Console files.
 These files are not used by Echo Breaker which uses Microsoft Entra ID exclusively.
+- ✅ 2025-12-29: trigger deployment with corrected env vars
