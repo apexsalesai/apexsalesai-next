@@ -1,0 +1,53 @@
+{
+  "defaultOgImage": "/og-image.png",
+  "twitterCard": "summary_large_image",
+  "shareTemplates": {
+    "default": "Check out {title} from @lyfye - {url}",
+    "blog": "Insightful read: {title} by @lyfye {url}",
+    "product": "Exploring {title} - precision AI that delivers. {url}"
+  },
+  "platforms": {
+    "twitter": {
+      "enabled": true,
+      "handle": "@lyfye",
+      "templates": [
+        {
+          "template": "Just discovered {title} from @lyfye. Worth checking out: {url}"
+        },
+        {
+          "template": "{title} - {url} via @lyfye"
+        }
+      ]
+    },
+    "linkedin": {
+      "enabled": true,
+      "templates": [
+        {
+          "template": "Thought-provoking insights on AI development: {title} {url}"
+        }
+      ]
+    },
+    "facebook": {
+      "enabled": true,
+      "templates": []
+    },
+    "reddit": {
+      "enabled": true,
+      "templates": []
+    },
+    "email": {
+      "enabled": true,
+      "subject": "Worth reading: {title}",
+      "templates": [
+        {
+          "template": "I thought you might find this interesting: {title}\n\n{url}"
+        }
+      ]
+    }
+  },
+  "utmDefaults": {
+    "source": "share",
+    "medium": "social",
+    "campaign": "organic"
+  }
+}

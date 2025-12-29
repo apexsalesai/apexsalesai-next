@@ -1,0 +1,106 @@
+{
+  "header": {
+    "nav": [
+      {
+        "label": "Products",
+        "href": "/products"
+      },
+      {
+        "label": "R&D Lab",
+        "href": "/lab"
+      },
+      {
+        "label": "Insights",
+        "href": "/blog"
+      },
+      {
+        "label": "Community",
+        "href": "/community"
+      }
+    ],
+    "cta": {
+      "label": "Contact",
+      "href": "/contact",
+      "variant": "primary"
+    }
+  },
+  "footer": {
+    "sections": [
+      {
+        "title": "Products",
+        "links": [
+          {
+            "label": "ApexSalesAI",
+            "href": "/products/apexsalesai"
+          },
+          {
+            "label": "Product Portfolio",
+            "href": "/products"
+          },
+          {
+            "label": "Case Studies",
+            "href": "/case-studies"
+          }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          {
+            "label": "R&D Lab",
+            "href": "/lab"
+          },
+          {
+            "label": "Our Approach",
+            "href": "/approach"
+          },
+          {
+            "label": "Community",
+            "href": "/community"
+          },
+          {
+            "label": "Blog",
+            "href": "/blog"
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Documentation",
+            "href": "/docs"
+          },
+          {
+            "label": "API Reference",
+            "href": "/api"
+          },
+          {
+            "label": "Status",
+            "href": "https://status.lyfye.com",
+            "external": true
+          },
+          {
+            "label": "Security",
+            "href": "/security"
+          }
+        ]
+      }
+    ],
+    "legal": [
+      {
+        "label": "Privacy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms",
+        "href": "/terms"
+      },
+      {
+        "label": "Security",
+        "href": "/security"
+      }
+    ],
+    "copyright": "© {year} Lyfye Technologies. All rights reserved."
+  }
+}

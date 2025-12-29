@@ -1,0 +1,40 @@
+{
+  "name": "Lyfye",
+  "tagline": "No VC. No ads. Just product.",
+  "description": "Parent R&D AI technology company building precision AI systems and structured deliverables from messy inputs.",
+  "url": "https://lyfye.com",
+  "logo": {
+    "light": "/logo-light.svg",
+    "dark": "/logo-dark.svg",
+    "favicon": "/favicon.ico"
+  },
+  "social": {
+    "twitter": "https://twitter.com/lyfye",
+    "linkedin": "https://linkedin.com/company/lyfye",
+    "github": "https://github.com/lyfye"
+  },
+  "contact": {
+    "email": "hello@lyfye.com",
+    "press": "press@lyfye.com",
+    "business": "partners@lyfye.com"
+  },
+  "legal": {
+    "companyName": "Lyfye Technologies",
+    "foundedYear": 2024
+  },
+  "seo": {
+    "defaultTitle": "Lyfye - R&D AI Technology Company",
+    "titleTemplate": "%s | Lyfye",
+    "defaultDescription": "Building precision AI systems that deliver structured outputs from messy inputs. No VC funding. No advertising. Just exceptional products.",
+    "defaultOgImage": "/og-image.png",
+    "twitterHandle": "@lyfye"
+  },
+  "analytics": {
+    "googleAnalyticsId": ""
+  },
+  "theme": {
+    "defaultMode": "dark",
+    "primaryColor": "hsl(222.2, 47.4%, 11.2%)",
+    "accentColor": "hsl(217.2, 32.6%, 17.5%)"
+  }
+}

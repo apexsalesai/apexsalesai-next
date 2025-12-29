@@ -1,0 +1,106 @@
+{
+  "slug": "home",
+  "metadata": {
+    "title": "Lyfye - R&D AI Technology Company",
+    "description": "Building precision AI systems that deliver structured outputs from messy inputs. No VC funding. No advertising. Just exceptional products.",
+    "keywords": ["ai", "r&d", "technology", "precision ai", "product-led"],
+    "ogImage": "/og-home.png"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "badge": "Product-First AI Company",
+      "title": "No VC. No ads. Just product.",
+      "description": "We build precision AI systems that transform messy inputs into structured, shareable deliverables. Distribution earned through excellence, not hype.",
+      "buttons": [
+        {
+          "label": "Explore Our Products",
+          "href": "/products",
+          "variant": "primary"
+        },
+        {
+          "label": "Read Our Approach",
+          "href": "/approach",
+          "variant": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "features",
+      "title": "How We Build",
+      "description": "Our principles guide every product we create.",
+      "features": [
+        {
+          "title": "Proof-First Systems",
+          "description": "Every output includes evidence. No black boxes. Every claim backed by structured proof that can be verified and shared.",
+          "icon": "🎯"
+        },
+        {
+          "title": "Structured Deliverables",
+          "description": "Transform messy inputs into clean, actionable outputs. Templates, frameworks, and precision over vague suggestions.",
+          "icon": "📊"
+        },
+        {
+          "title": "Product-Led Growth",
+          "description": "Distribution through shareability. Products so good they spread organically. No paid ads, no VC pressure.",
+          "icon": "🚀"
+        },
+        {
+          "title": "Built for Microsoft Ecosystem",
+          "description": "Deep integration with Microsoft 365, Azure, and Entra ID. Enterprise-ready from day one.",
+          "icon": "⚡"
+        },
+        {
+          "title": "R&D Transparency",
+          "description": "Public roadmap. Regular updates. Real progress, not marketing spin. You see what we're building before it ships.",
+          "icon": "🔬"
+        },
+        {
+          "title": "Security by Design",
+          "description": "SOC 2 compliant infrastructure. Zero-trust architecture. Your data never trains our models.",
+          "icon": "🔒"
+        }
+      ]
+    },
+    {
+      "type": "grid",
+      "title": "Our Products",
+      "description": "AI systems built to solve real problems with precision.",
+      "items": [
+        {
+          "title": "ApexSalesAI",
+          "description": "Autonomous AI sales agent that researches prospects, generates personalized outreach, and manages multi-channel campaigns. Built for B2B teams who value quality over quantity.",
+          "href": "/products/apexsalesai",
+          "badge": "Flagship Product",
+          "tags": ["Sales AI", "Automation", "B2B"]
+        },
+        {
+          "title": "Future Products",
+          "description": "More precision AI systems in development. Join our community to get early access and shape what we build next.",
+          "href": "/community",
+          "tags": ["Coming Soon"]
+        }
+      ],
+      "columns": 2
+    },
+    {
+      "type": "cta",
+      "title": "Ready to Experience Precision AI?",
+      "description": "Join companies that choose substance over hype.",
+      "buttons": [
+        {
+          "label": "Get Started",
+          "href": "/contact",
+          "variant": "primary"
+        },
+        {
+          "label": "Explore Products",
+          "href": "/products",
+          "variant": "secondary"
+        }
+      ],
+      "background": "gradient"
+    }
+  ],
+  "published": true
+}
