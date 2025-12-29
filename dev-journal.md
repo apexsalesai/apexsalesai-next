@@ -2326,3 +2326,10 @@ These files are not used by Echo Breaker which uses Microsoft Entra ID exclusive
 
 Added detailed console logging throughout the callback flow to diagnose production auth failures.
 This will show in Vercel function logs exactly where the error occurs.
+- ✅ 2025-12-29: fix: move Entra ID routes to pages/api for Vercel serverless functions
+
+Vercel wasn't deploying the app/api/entra routes as serverless functions.
+Moved all Entra ID authentication routes to pages/api/entra/ (Pages Router format)
+to ensure they're properly deployed as Vercel serverless functions.
+
+This fixes the auth_failed error by ensuring the callback route actually exists.
