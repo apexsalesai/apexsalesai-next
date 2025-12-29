@@ -2333,3 +2333,7 @@ Moved all Entra ID authentication routes to pages/api/entra/ (Pages Router forma
 to ensure they're properly deployed as Vercel serverless functions.
 
 This fixes the auth_failed error by ensuring the callback route actually exists.
+- ✅ 2025-12-29: fix: remove duplicate app/api/entra routes
+
+Removed app/api/entra/ directory to resolve Next.js conflict.
+Only pages/api/entra/ routes should exist for Vercel serverless functions.
