@@ -2338,3 +2338,4 @@ This fixes the auth_failed error by ensuring the callback route actually exists.
 Removed app/api/entra/ directory to resolve Next.js conflict.
 Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2025-12-30: trigger redeploy with new Azure AD client secret
+- ✅ 2025-12-30: trigger-fresh-deployment
