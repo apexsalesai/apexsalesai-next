@@ -2341,3 +2341,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2025-12-30: trigger-fresh-deployment
 - ✅ 2025-12-30: redeploy-with-correct-env-vars
 - ✅ 2025-12-30: force-prisma-regeneration
+- ✅ 2025-12-30: add db diagnostic route
