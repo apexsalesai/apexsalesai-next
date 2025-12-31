@@ -2,7 +2,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { msalInstance, REDIRECT_URI, SCOPES } from '../../../lib/entra-auth';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {

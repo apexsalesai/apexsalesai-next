@@ -2344,3 +2344,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2025-12-30: add db diagnostic route
 - ✅ 2025-12-30: add env probe endpoint
 - ✅ 2025-12-30: force prisma regeneration
+- ✅ 2025-12-30: add database url logging to callback
