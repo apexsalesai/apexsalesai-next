@@ -51,6 +51,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Create or update user in database
     console.log('[Callback] Saving user to database...');
+    console.log('[Callback] DATABASE_URL check:', {
+      hasUrl: !!process.env.DATABASE_URL,
+      urlHost: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0],
+      urlPath: process.env.DATABASE_URL?.split('@')[1]?.split('/')[1]?.split('?')[0],
+    });
     const user = await prisma.echoBreakerUser.upsert({
       where: { email },
       update: {
