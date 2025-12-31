@@ -2,10 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { msalInstance, REDIRECT_URI, SCOPES } from '../../../lib/entra-auth';
 import { PrismaClient } from '@prisma/client';
 
+const databaseUrl = process.env.DIRECT_URL || process.env.DATABASE_URL;
+
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
+      url: databaseUrl,
     },
   },
 });
@@ -57,11 +59,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Create or update user in database
     console.log('[Callback] Saving user to database...');
-    console.log('[Callback] DATABASE_URL check:', {
-      hasUrl: !!process.env.DATABASE_URL,
-      urlHost: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0],
-      urlPath: process.env.DATABASE_URL?.split('@')[1]?.split('/')[1]?.split('?')[0],
+    const safeUrl = (() => {
+      if (!databaseUrl) return null;
+      try {
+        const parsed = new URL(databaseUrl);
+        return {
+          host: parsed.host,
+          database: parsed.pathname.replace(/^\//, ''),
+          hasPassword: Boolean(parsed.password),
+        };
+      } catch {
+        return { host: 'invalid-url' };
+      }
+    })();
+    console.log('[Callback] DB connection info:', {
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      hasDirectUrl: !!process.env.DIRECT_URL,
+      selected: process.env.DIRECT_URL ? 'DIRECT_URL' : 'DATABASE_URL',
+      safeUrl,
     });
+    try {
+      const dbInfo = await prisma.$queryRaw<
+        Array<{ current_user: string; current_database: string; current_schema: string; search_path: string }>
+      >`SELECT current_user, current_database(), current_schema(), current_setting('search_path') AS search_path`;
+      console.log('[Callback] DB runtime info:', dbInfo?.[0]);
+    } catch (dbInfoError: any) {
+      console.error('[Callback] DB runtime info error:', dbInfoError?.message || dbInfoError);
+    }
     const user = await prisma.echoBreakerUser.upsert({
       where: { email },
       update: {

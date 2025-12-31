@@ -2347,3 +2347,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2025-12-30: add database url logging to callback
 - ✅ 2025-12-31: force prisma to use runtime DATABASE_URL
 - ✅ 2025-12-31: force prisma to use runtime DATABASE_URL
+- ✅ 2025-12-31: docs: update dev journal
