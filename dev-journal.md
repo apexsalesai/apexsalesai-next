@@ -2351,3 +2351,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-01: fix(auth): Entra callback DB diagnostics / deterministic DB runtime check
 - ✅ 2026-01-01: force delete prisma cache before build
 - ✅ 2026-01-01: add DATABASE_URL logging to build
+- ✅ 2026-01-01: invalidate build cache for prisma regeneration

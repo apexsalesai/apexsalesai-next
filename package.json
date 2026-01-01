@@ -14,7 +14,7 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky",
-    "postinstall": "prisma generate",
+    "postinstall": "echo 'Skipping postinstall prisma generate'",
     "kv:test": "tsx scripts/testKeyVault.ts SendGrid-API-Production",
     "diagnose:vercel": "tsx scripts/diagnose-vercel.ts"
   },
