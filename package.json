@@ -10,7 +10,7 @@
     "clean-dev": "taskkill /F /IM node.exe 2>nul & rmdir /s /q .next 2>nul & npx prisma generate & npm run dev",
     "predev": "node scripts/verify-env.js",
     "dev": "next dev -p 3005",
-    "build": "prisma generate && next build",
+    "build": "rm -rf node_modules/.prisma && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky",
