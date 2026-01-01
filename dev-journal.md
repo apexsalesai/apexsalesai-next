@@ -2350,3 +2350,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2025-12-31: docs: update dev journal
 - ✅ 2026-01-01: fix(auth): Entra callback DB diagnostics / deterministic DB runtime check
 - ✅ 2026-01-01: force delete prisma cache before build
+- ✅ 2026-01-01: add DATABASE_URL logging to build
