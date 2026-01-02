@@ -2356,3 +2356,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-02: disable postinstall prisma to force fresh generation
 - ✅ 2026-01-02: fix-prisma-client-initialization
 - ✅ 2026-01-02: fix-all-pages-api-prisma-clients
+- ✅ 2026-01-02: comprehensive-prisma-singleton-fixes

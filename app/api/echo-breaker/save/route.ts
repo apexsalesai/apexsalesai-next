@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { customAlphabet } from 'nanoid';
 import { cookies } from 'next/headers';
-
-const prisma = new PrismaClient();
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 10);
 
 export async function POST(req: NextRequest) {

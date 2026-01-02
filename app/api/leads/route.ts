@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 // Using Auth0 for authentication - session management handled by Auth0 SDK
-
-const prisma = new PrismaClient();
 
 // Helper to get tenantId from session
 // TODO: Implement proper Auth0 session validation

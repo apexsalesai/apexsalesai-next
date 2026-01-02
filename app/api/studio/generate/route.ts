@@ -5,9 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Content type definitions for both B2B and B2C markets
