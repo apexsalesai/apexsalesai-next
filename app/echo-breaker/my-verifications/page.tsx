@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import MyVerificationsClient from './MyVerificationsClient';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export default async function MyVerificationsPage() {
   // Get user ID from Entra ID session cookie

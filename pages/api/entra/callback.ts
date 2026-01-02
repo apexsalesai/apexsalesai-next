@@ -1,16 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { msalInstance, REDIRECT_URI, SCOPES } from '../../../lib/entra-auth';
-import { PrismaClient } from '@prisma/client';
-
-const databaseUrl = process.env.DIRECT_URL || process.env.DATABASE_URL;
-
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: databaseUrl,
-    },
-  },
-});
+import { prisma } from '@/lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -59,25 +49,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Create or update user in database
     console.log('[Callback] Saving user to database...');
-    const safeUrl = (() => {
-      if (!databaseUrl) return null;
-      try {
-        const parsed = new URL(databaseUrl);
-        return {
-          host: parsed.host,
-          database: parsed.pathname.replace(/^\//, ''),
-          hasPassword: Boolean(parsed.password),
-        };
-      } catch {
-        return { host: 'invalid-url' };
-      }
-    })();
-    console.log('[Callback] DB connection info:', {
-      hasDatabaseUrl: !!process.env.DATABASE_URL,
-      hasDirectUrl: !!process.env.DIRECT_URL,
-      selected: process.env.DIRECT_URL ? 'DIRECT_URL' : 'DATABASE_URL',
-      safeUrl,
-    });
     try {
       const dbInfo = await prisma.$queryRaw<
         Array<{ current_user: string; current_database: string; current_schema: string; search_path: string }>

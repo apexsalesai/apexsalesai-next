@@ -3,11 +3,9 @@
  * Post content to Instagram using Meta Graph API
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../prisma';
 import { decrypt } from '../encryption';
 import type { PublishContext, PublishResult } from '../publisher-registry';
-
-const prisma = new PrismaClient();
 
 export async function publish(context: PublishContext): Promise<PublishResult> {
   try {

@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import EchoBreakerVerificationView from './EchoBreakerVerificationView';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 interface PageProps {
   params: Promise<{ id: string }>;
