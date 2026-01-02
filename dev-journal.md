@@ -2352,3 +2352,5 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-01: force delete prisma cache before build
 - ✅ 2026-01-01: add DATABASE_URL logging to build
 - ✅ 2026-01-01: invalidate build cache for prisma regeneration
+- ✅ 2026-01-02: disable postinstall prisma to force fresh generation
+- ✅ 2026-01-02: disable postinstall prisma to force fresh generation

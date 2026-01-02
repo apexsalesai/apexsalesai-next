@@ -6,10 +6,8 @@ import Head from 'next/head';
 import React from 'react';
 import Markdown from 'react-markdown';
 import Navbar from '../../components/Navbar';
-import { PrismaClient } from '@prisma/client';
 import BlogArticleClient from './BlogArticleClient';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function generateStaticParams() {
   // Check both locations for blog posts
