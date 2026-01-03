@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  // Force regeneration - v2
+  // Force regeneration - v4 (apex_app permissions applied)
 }
 
 datasource db {
