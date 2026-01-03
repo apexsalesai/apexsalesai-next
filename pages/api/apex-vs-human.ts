@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
 
+// Force Node.js runtime (not Edge)
+export const runtime = 'nodejs';
+
 // Define the response types
 interface PerformanceMetric {
   category: string;

@@ -2361,3 +2361,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-02: fix database build error
 - ✅ 2026-01-02: trigger redeploy
 - ✅ 2026-01-02: force rebuild with new env vars
+- ✅ 2026-01-02: force-rebuild-apex-app-permissions
