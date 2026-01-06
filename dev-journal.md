@@ -2362,3 +2362,5 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-02: trigger redeploy
 - ✅ 2026-01-02: force rebuild with new env vars
 - ✅ 2026-01-02: force-rebuild-apex-app-permissions
+- ✅ 2026-01-05: force-nodejs-runtime-for-prisma-routes
+- ✅ 2026-01-06: force-nodejs-runtime-for-prisma-routes

@@ -13,6 +13,7 @@
     "build": "echo DATABASE_URL=$DATABASE_URL && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "next lint --fix",
     "prepare": "husky",
     "postinstall": "echo 'Skipping postinstall prisma generate'",
     "kv:test": "tsx scripts/testKeyVault.ts SendGrid-API-Production",
