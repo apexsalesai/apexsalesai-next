@@ -2019,13 +2019,350 @@ Phase 2-3 now at 70% completion.
 - ✅ 2025-12-14: feat: expose Echo Breaker public page
 - ✅ 2025-12-14: feat: add Echo Breaker UI with verification form
 - ✅ 2025-12-14: fix: add reality-scan API to support Echo Breaker
-- ✅ 2025-12-14: feat: match Echo Breaker UI to approved design and add client handler
-- ✅ 2025-12-14: fix: harden reality-scan proxy and client error handling
-- ✅ 2025-12-14: fix: move reality-scan to pages API to ensure production route
-- ✅ 2025-12-15: fix: serve reality-scan via app router POST
-- ✅ 2025-12-15: fix: serve reality-scan via pages API with POST handler
-- ✅ 2025-12-15: fix: serve reality-scan via pages API POST
-- ✅ 2025-12-15: chore: confirm pages reality-scan POST handler
-- ✅ 2025-12-15: test: log and handle reality-scan POST in pages api
-- ✅ 2025-12-15: fix: add app router reality-scan POST diagnostic and remove pages route
-- ✅ 2025-12-15: chore: add version endpoint and surface build id
+- ✅ 2025-12-15: feat: match Echo Breaker UI to approved design and add client handler
+- ✅ 2025-12-16: chore: pin prooflayer api surface and patch next
+- ✅ 2025-12-16: feat: restore real llm verifier for prooflayer
+- ✅ 2025-12-16: feat: rebuild llm verifier to match approved behavior
+- ✅ 2025-12-16: fix: add anthropic model fallbacks and richer search cues
+- ✅ 2025-12-16: fix: use claude-3-5-sonnet-20241022 and keep fallbacks
+- ✅ 2025-12-16: restore llm verifier file with anthopic fallbacks
+- ✅ 2025-12-16: restore llm verifier file with anthopic fallbacks
+- ✅ 2025-12-16: feat: complete Echo Breaker with all approved features
+- ✅ 2025-12-16: fix: enhance Claude prompt to return rich data arrays and increase token limit
+- ✅ 2025-12-16: fix: add fallback data for whatDataShows and spreadFactors arrays
+- ✅ 2025-12-16: feat: restore approved Echo Breaker UI with collapsible sections
+- ✅ 2025-12-16: feat: prioritize government sources - dual search strategy with tier-based sorting and visual badges
+- ✅ 2025-12-16: fix: strip markdown code blocks from Claude JSON response
+- ✅ 2025-12-16: feat: GOLD STANDARD verification engine with tier-based source ranking and enhanced UX
+- ✅ 2025-12-16: CRITICAL: harden all API routes - env guards, no-throw Brave/Anthropic, safe error handling
+- ✅ 2025-12-16: fix: update Anthropic model name to claude-3-5-sonnet-20240620
+- ✅ 2025-12-16: CRITICAL FIX: no 500s, flatten Anthropic response, enforce JSON-only, confidence cap enforced
+- ✅ 2025-12-16: fix: use claude-3-5-sonnet-latest model alias
+- ✅ 2025-12-16: fix: use correct Anthropic model name claude-3-5-sonnet-20241022
+- ✅ 2025-12-16: EXACT FIX: hard-set headers, verify key at runtime, Messages API only, correct params
+- ✅ 2025-12-16: debug: add detailed logging for Anthropic API calls
+- ✅ 2025-12-16: GOLD STANDARD: explicit key check, support both SDK formats, hard-code model
+- ✅ 2025-12-16: PHASE 1 UX RESTORATION: confidence display, animation, verdict card, ProofCard, sharing
+- ✅ 2025-12-16: PHASE 1.5: DOMINANT confidence display (w-48 h-48 with glow), enhanced ProofCard viral appeal, better branding
+- ✅ 2025-12-16: REALITY INFRASTRUCTURE REFRAME: Share with confidence, Verified Evidence, How This Claim Took Hold, neutral authoritative tone
+- ✅ 2025-12-16: PHASE 2: DECISION-GRADE CLAIM INTELLIGENCE - Institutional verdicts, confidence bands with context, trust artifact ProofCard, publication-ready language
+- ✅ 2025-12-17: PHASE 3.1: Bottom Line executive strip, rebalanced confidence (3-column contextual), streamlined verdict header
+- ✅ 2025-12-17: PHASE 3.2: Share presets (Summary/Sources/Full Analysis) - workflow-ready sharing
+- ✅ 2025-12-17: PROOFLAYER v1.0 - DECISION-GRADE CLAIM INTELLIGENCE - PRODUCTION READY\n\nCOMPLETE TRANSFORMATION (5/10  8/10):\n\nPHASE 1: Reality Infrastructure Reframe\n- Changed from fact-checker to Reality Infrastructure\n- Hero: Verify reality before you publish\n- Tagline: Reality Infrastructure (not Verification)\n- Share CTA: Verified insight  ready to share or cite\n\nPHASE 2: Institutional-Grade Language\n- Verdicts: Not Supported by Evidence / Contextually Incomplete / Substantiated\n- Confidence Bands: HIGH/MODERATE/LOW with ranges (85-95% not 87%)\n- Evidence Strength: Strong / Medium-High / Weak\n- Source Consensus: X Tier-1 sources\n- Handles low confidence: Shows Insufficient corroboration (not 1%)\n\nPHASE 3: Premium Polish\n- Bottom Line executive strip at top (color-coded, max 2 lines)\n- 3-column confidence metrics (not giant circle)\n- Streamlined verdict header (horizontal layout)\n- Share presets: Summary / Sources / Full Analysis\n- Reset button: Analyze Another Claim\n\nCORE FEATURES:\n Multi-stage analysis animation (5 phases)\n Institutional-grade verdicts (neutral, executive-safe)\n Confidence bands + context (not fake precision)\n ProofCard trust artifact (Verification ID + Timestamp)\n Publication-ready language throughout\n Workflow-oriented sharing\n Multiple claim analysis support\n\nTARGET USERS UNLOCKED:\n Journalists - Can cite without embarrassment\n Corporate Comms - Safe for brand reputation\n Government - Neutral, process-driven\n Academia - Methodology-transparent\n Legal - Audit-ready documentation\n\nCATEGORY POSITIONING:\nProofLayer  Decision-Grade Claim Intelligence\nThe Bloomberg Terminal of claim verification\nThe Stripe of trust infrastructure\nNot loud. Not political. Not flashy.\nAuthoritative. Calm. Unavoidable.\n\nREADY FOR PRODUCTION DEPLOYMENT
+- ✅ 2025-12-17: CRITICAL FIX: Add missing /api/reality-scan route for Echo Breaker
+- ✅ 2025-12-17: FIX: Remove conflicting pages/api/reality-scan.ts (using app router now)
+- ✅ 2025-12-17: FIX: TypeScript error in reality-scan route - explicitly type Anthropic params
+- ✅ 2025-12-17: IMPROVE: Better error handling for missing ANTHROPIC_API_KEY
+- ✅ 2025-12-17: FIX: Correct Anthropic model name (claude-sonnet-4-20250514 not claude-sonnet-4-5)
+- ✅ 2025-12-17: CRITICAL FIX: Force Node.js runtime for reality-scan API (Edge runtime incompatible with Anthropic SDK)
+- ✅ 2025-12-17: FIX: Use valid Anthropic model name (claude-3-5-sonnet-20241022)
+- ✅ 2025-12-17: RESTORE: Revert to working pages/api/reality-scan.ts that calls llm-verify (was working before)
+- ✅ 2025-12-18: DOCS: Add proper development workflow for Echo Breaker improvements
+- ✅ 2025-12-18: CRITICAL FIX: Update DEFAULT_MODEL to valid Anthropic model name (claude-3-5-sonnet-20241022)
+- ✅ 2025-12-18: FIX: Use claude-sonnet-4-5 model name (verified working Dec 18, 2025)
+- ✅ 2025-12-18: PHASE 1: Update API schema to Decision Intelligence format
+- ✅ 2025-12-19: FIX: Update client to handle new Decision Intelligence API schema
+- ✅ 2025-12-19: FIX: Verdict mapping and confidence display - support new Decision Intelligence format
+- ✅ 2025-12-19: CRITICAL: Add non-negotiable evidence hierarchy - no more Inconclusive when Tier-1 exists
+- ✅ 2025-12-19: ADD: Emotional hero banner + working share buttons (Summary/Sources/Full Analysis)
+- ✅ 2025-12-19: FIX: ProofCard download - add html2canvas integration for PNG export
+- ✅ 2025-12-19: PHASE 2: Add Decision Panel component with action readiness badges
+- ✅ 2025-12-19: UPDATE: Change first share button to Email Full Analysis (opens email client)
+- ✅ 2025-12-21: IMPROVE: Auto-copy content to clipboard for LinkedIn/Facebook share buttons
+- ✅ 2025-12-21: ENHANCE: Add visual drama + mobile optimization (animated progress bars, larger icons, touch-friendly buttons)
+- ✅ 2025-12-21: ENHANCE: Add visual drama + mobile optimization (animated progress bars, larger icons, touch-friendly buttons)
+- ✅ 2025-12-21: FEATURE: Add shareable permanent links for verifications
+- ✅ 2025-12-21: FEATURE: Add multi-provider auth - Google, Microsoft, Email with My Verifications dashboard
+- ✅ 2025-12-21: FIX: Add custom sendVerificationRequest for email auth
+- ✅ 2025-12-21: FIX: Add custom sendVerificationRequest for email auth
+- ✅ 2025-12-21: FEAT: Implement Microsoft Entra ID authentication for Echo Breaker
+- ✅ 2025-12-21: FEAT: Update Echo Breaker UI to use Microsoft Entra ID authentication
+- ✅ 2025-12-21: chore(auth): fully remove NextAuth in favor of Microsoft Entra ID
+
+ARCHITECTURAL DECISION:
+- Echo Breaker now uses Microsoft Entra ID exclusively
+- Aligns with enterprise Microsoft stack (Azure OpenAI, Key Vault, etc.)
+- Zero additional cost vs Auth0 (saves $240-1400/month)
+- Better enterprise customer alignment (existing M365 accounts)
+- Unified identity across ApexSalesAI product suite
+
+CHANGES:
+- Removed NextAuth directories and config files
+- Uninstalled next-auth package and dependencies
+- Cleaned NEXTAUTH_* environment variables
+- Implemented Entra ID routes at /api/entra/*
+- Auth0 reserved at /api/auth/[...auth0] for future use
+
+FINAL ARCHITECTURE:
+- Auth0: /api/auth/[...auth0] (reserved)
+- Entra ID: /api/entra/* (active - Echo Breaker)
+- Zero NextAuth references in codebase
+
+This is a foundational architectural decision for enterprise readiness.
+- ✅ 2025-12-21: fix: update Entra ID auth to use correct env vars and schema fields
+
+- Replace NEXTAUTH_URL with NEXT_PUBLIC_BASE_URL
+- Replace NEXTAUTH_SECRET with ENTRA_SESSION_SECRET
+- Add provider field to EchoBreakerUser schema
+- Fix lastSignIn to lastLoginAt in callback
+- Use camelCase for Prisma model names
+- ✅ 2025-12-21: fix: remove all remaining NextAuth references from Echo Breaker
+
+- Update save verification route to use Entra ID cookies
+- Update my-verifications page to use Entra ID cookies
+- Remove all next-auth imports from Echo Breaker features
+
+This completes the migration to Microsoft Entra ID authentication.
+- ✅ 2025-12-21: feat: Add monetization foundation - verification assets with PDF export gate
+
+MONETIZATION INFRASTRUCTURE:
+- Enhanced Verification schema with tracking fields (status, export history, share history)
+- Added subscription tiers to EchoBreakerUser (free, professional, enterprise)
+- Usage tracking for monthly limits (verifications, exports)
+- Compliance audit trail (IP, user agent, export/share events)
+
+SUBSCRIPTION SYSTEM:
+- lib/subscription.ts - Subscription limits and feature gates
+- Professional: $29/mo, 100 verifications, 50 exports
+- Enterprise: $99/mo, unlimited everything
+
+PDF EXPORT WITH GATE:
+- /api/echo-breaker/export/[id] - Export API with subscription check
+- 🔒 Returns 403 if user is on free tier
+- Tracks export events for compliance and analytics
+- Updates user export count
+
+PREMIUM UI:
+- /echo-breaker/upgrade - Beautiful pricing page
+- My Verifications dashboard with Export PDF button
+- Animated "PRO" badge on locked features
+- Upgrade modal with pricing and features
+- Visual distinction between free and paid users
+
+FIRST CONVERSION POINT:
+"Export Verification Record (PDF / citation-ready)" - Professional feature
+
+This unlocks:
+✅ Teams (enterprise feature)
+✅ Billing (Stripe integration ready)
+✅ Subscriptions (tier management)
+✅ Compliance exports (audit trails)
+
+Ready for Stripe integration and first paid customer.
+- ✅ 2025-12-21: fix: improve search quality for better Tier 1/Tier 2 source discovery
+
+PROBLEM:
+Historical claims like "Ford was the first automobile company" were returning
+mostly Tier 3 sources instead of authoritative Tier 1/Tier 2 sources from
+government archives, encyclopedias, and fact-checkers.
+
+SOLUTION:
+
+1. Enhanced Search Query Strategy:
+   - Query 1: Government/military/academic (.gov, .mil, .edu)
+   - Query 2: Historical archives (history, archive, museum, library)
+   - Query 3: Official data and statistics
+   - Query 4: Fact-checking organizations (factcheck, snopes, politifact)
+   - Query 5: Reputable news (Reuters, AP, BBC, Britannica)
+   - Query 6: International orgs (UN, WHO, World Bank, OECD)
+
+2. Expanded Tier 2 Sources:
+   - Added: snopes.com, britannica.com
+   - Added: smithsonianmag.com, nationalgeographic.com
+   - Added: scientificamerican.com, nature.com, science.org
+   - Added: pewresearch.org, rand.org, brookings.edu, cfr.org
+
+IMPACT:
+- Better coverage of historical claims
+- More authoritative sources in results
+- Improved fact-checking with encyclopedic sources
+- Higher quality Tier 1/Tier 2 evidence
+
+This should significantly improve verification quality for historical,
+scientific, and factual claims.
+- ✅ 2025-12-21: feat: implement comprehensive exhaustive search with quality gates
+
+CRITICAL UPGRADE: EXHAUSTIVE TIER 1/TIER 2 SOURCE DISCOVERY
+
+PROBLEM:
+Previous implementation was too shallow:
+- Only 4 search queries
+- Only 6 results per query = 24 total results
+- No quality gates - returned whatever it found first
+- Missing critical government archives and institutions
+
+SOLUTION - COMPREHENSIVE SEARCH STRATEGY:
+
+1. INCREASED SEARCH DEPTH:
+   - MAX_QUERY_COUNT: 4 → 6 queries
+   - RESULTS_PER_QUERY: 6 → 10 results per query
+   - Total search capacity: 24 → 60 results
+   - DEFAULT_MAX_SOURCES: 12 → 18 sources analyzed
+
+2. QUALITY GATES (NEW):
+   - MIN_TIER1_SOURCES = 2 (government/academic minimum)
+   - MIN_TIER2_SOURCES = 3 (reputable news/research minimum)
+   - Comprehensive logging when quality gates fail
+   - Shows exactly which queries were used and what was found
+
+3. EXPANDED TIER 1 SOURCES:
+   Added critical government institutions:
+   - loc.gov (Library of Congress)
+   - archives.gov (National Archives)
+   - si.edu (Smithsonian Institution)
+   - nist.gov (National Institute of Standards)
+   - usgs.gov (US Geological Survey)
+   - energy.gov (Department of Energy)
+   - epa.gov (Environmental Protection Agency)
+
+4. QUALITY GATE LOGGING:
+   Console output shows:
+   - ⚠️ CRITICAL: No Tier 1 sources found
+   - ⚠️ WARNING: Insufficient Tier 1/Tier 2 sources
+   - ✅ Quality gate passed: X Tier 1, Y Tier 2, Z Tier 3 sources
+   - Total sources found breakdown
+   - Search queries used for debugging
+
+IMPACT:
+
+Before:
+- 24 total search results
+- No quality checks
+- Often returned weak Tier 3 sources
+
+After:
+- 60 total search results (2.5x increase)
+- Quality gates ensure minimum authoritative sources
+- Comprehensive logging for debugging
+- Better coverage of historical, scientific, and government sources
+
+This ensures EVERY verification does a fully comprehensive job
+scrubbing for official Tier 1 and Tier 2 sources before returning results.
+
+ENTERPRISE-READY VERIFICATION QUALITY.
+- ✅ 2025-12-21: fix: add domain diversity filter and balanced tier representation
+
+PROBLEM:
+All Tier 2 sources were from snopes.com (5 duplicate domain links).
+No Tier 3 sources were showing up for context.
+
+SOLUTION:
+
+1. Domain Diversity Filter:
+   - ensureDomainDiversity() function limits sources per domain
+   - Max 2 sources per domain (Tier 2/3)
+   - Max 3 sources per domain (Tier 1 - government sources trusted)
+   - Prevents any single domain from dominating results
+
+2. Balanced Tier Representation:
+   - Up to 6 Tier 1 sources (government/academic)
+   - Up to 6 Tier 2 sources (reputable news/research)
+   - Up to 6 Tier 3 sources (context/encyclopedic)
+   - Total capped at maxSources (18)
+
+IMPACT:
+- No more 5x snopes.com links
+- Diverse source representation across domains
+- Tier 3 sources now included for context
+- Better evidence quality and variety
+
+Example before: snopes.com, snopes.com, snopes.com, snopes.com, snopes.com
+Example after: snopes.com, britannica.com, reuters.com, bbc.com, wikipedia.org
+- ✅ 2025-12-21: fix: correct field mapping in save API to match llm-verify response
+
+PROBLEM:
+"My Verifications" page showing "No verifications yet" even after doing searches.
+Verifications were not being saved to database.
+
+ROOT CAUSE:
+Field name mismatch between llm-verify API response and save API expectations:
+- llm-verify returns: whatTheEvidenceShows, whyThisNarrativeSpread
+- save API expected: evidenceShows, spreadFactors
+
+SOLUTION:
+
+1. Fixed Field Mapping:
+   - evidenceShows: result.whatTheEvidenceShows || result.evidenceShows
+   - spreadFactors: result.whyThisNarrativeSpread || result.spreadFactors
+   - verdict: result.verdict.classification || result.verdictClassification
+   - confidence: result.verdict.confidenceValue || result.confidenceValue
+   - summary: result.decisionPanel.recommendedAction.summary
+   - bottomLine: result.decisionPanel.recommendedAction.headline
+
+2. Added Compliance Tracking:
+   - ipAddress: from x-forwarded-for or x-real-ip headers
+   - userAgent: from user-agent header
+   - Both stored for audit trail and compliance
+
+3. Backward Compatibility:
+   - Handles both old and new field names
+   - Graceful fallbacks for missing fields
+
+IMPACT:
+- Verifications now save correctly to database
+- "My Verifications" will show all user searches
+- Full compliance audit trail captured
+- Ready for enterprise requirements
+
+Test: Do a new verification and check "My Verifications" page.
+- ✅ 2025-12-28: security: remove .env file from git tracking
+
+.env files should never be committed to git as they contain secrets.
+Removed from tracking but kept locally for development.
+- ✅ 2025-12-28: fix: remove unused next-auth import to fix build
+
+Removed next-auth import from ai-score.ts that was causing build failure.
+This file is for Marketing Console, not Echo Breaker.
+- ✅ 2025-12-28: fix: remove unused next-auth import to fix build
+
+Removed next-auth import from ai-score.ts that was causing build failure.
+This file is for Marketing Console, not Echo Breaker.
+- ✅ 2025-12-29: fix: remove all next-auth imports to fix build
+
+Commented out all remaining next-auth imports across Marketing Console files.
+These files are not used by Echo Breaker which uses Microsoft Entra ID exclusively.
+- ✅ 2025-12-29: trigger deployment with corrected env vars
+- ✅ 2025-12-29: debug: add comprehensive logging to auth callback
+
+Added detailed console logging throughout the callback flow to diagnose production auth failures.
+This will show in Vercel function logs exactly where the error occurs.
+- ✅ 2025-12-29: fix: move Entra ID routes to pages/api for Vercel serverless functions
+
+Vercel wasn't deploying the app/api/entra routes as serverless functions.
+Moved all Entra ID authentication routes to pages/api/entra/ (Pages Router format)
+to ensure they're properly deployed as Vercel serverless functions.
+
+This fixes the auth_failed error by ensuring the callback route actually exists.
+- ✅ 2025-12-29: fix: remove duplicate app/api/entra routes
+
+Removed app/api/entra/ directory to resolve Next.js conflict.
+Only pages/api/entra/ routes should exist for Vercel serverless functions.
+- ✅ 2025-12-30: trigger redeploy with new Azure AD client secret
+- ✅ 2025-12-30: trigger-fresh-deployment
+- ✅ 2025-12-30: redeploy-with-correct-env-vars
+- ✅ 2025-12-30: force-prisma-regeneration
+- ✅ 2025-12-30: add db diagnostic route
+- ✅ 2025-12-30: add env probe endpoint
+- ✅ 2025-12-30: force prisma regeneration
+- ✅ 2025-12-30: add database url logging to callback
+- ✅ 2025-12-31: force prisma to use runtime DATABASE_URL
+- ✅ 2025-12-31: force prisma to use runtime DATABASE_URL
+- ✅ 2025-12-31: docs: update dev journal
+- ✅ 2026-01-01: fix(auth): Entra callback DB diagnostics / deterministic DB runtime check
+- ✅ 2026-01-01: force delete prisma cache before build
+- ✅ 2026-01-01: add DATABASE_URL logging to build
+- ✅ 2026-01-01: invalidate build cache for prisma regeneration
+- ✅ 2026-01-02: disable postinstall prisma to force fresh generation
+- ✅ 2026-01-02: disable postinstall prisma to force fresh generation
+- ✅ 2026-01-02: fix-prisma-client-initialization
+- ✅ 2026-01-02: fix-all-pages-api-prisma-clients
+- ✅ 2026-01-02: comprehensive-prisma-singleton-fixes
+- ✅ 2026-01-02: fix-all-remaining-prisma-clients
+- ✅ 2026-01-02: fix database build error
+- ✅ 2026-01-02: trigger redeploy
+- ✅ 2026-01-02: force rebuild with new env vars
+- ✅ 2026-01-02: force-rebuild-apex-app-permissions
+- ✅ 2026-01-05: force-nodejs-runtime-for-prisma-routes
+- ✅ 2026-01-06: force-nodejs-runtime-for-prisma-routes
+- ✅ 2026-01-08: chore: add claude code team scaffold (memory, agents, commands, hooks)
+- ✅ 2026-01-08: hotfix: restore pages reality-scan POST and stub llm-verify

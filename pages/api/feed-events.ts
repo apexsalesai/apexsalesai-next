@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { FeedEventsResponse } from '../../types/api';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+
+// Force Node.js runtime (not Edge)
+export const runtime = 'nodejs';
 // Auth imports temporarily disabled until next-auth is properly configured
 // import { getServerSession } from 'next-auth/next';
 // import { authOptions } from './auth/[...nextauth]';
-
-const prisma = new PrismaClient();
 
 // Fallback mock events in case database query fails
 const fallbackEvents: FeedEventsResponse = {

@@ -1,33 +1,45 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3005").replace(/\/$/, "");
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
+  // STEP 4: Reality Scan MUST Catch Everything (NO RAW THROWS)
   try {
-    const { claim, link } = req.body || {};
-    if (!claim || typeof claim !== "string" || !claim.trim()) {
-      return res.status(400).json({ error: "Missing or invalid claim" });
+    const { claim = "", url = "" } = (req.body || {}) as { claim?: string; url?: string };
+    const trimmedClaim = (claim || "").toString().trim();
+
+    if (!trimmedClaim) {
+      return res.status(400).json({ error: "Claim is required" });
     }
 
-    const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.apexsalesai.com";
-    const upstream = await fetch(`${base.replace(/\/$/, "")}/api/llm-verify`, {
+    // Call llm-verify (orchestrator pattern)
+    const verifyResp = await fetch(`${BASE_URL}/api/llm-verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ claim, link }),
+      body: JSON.stringify({ claim: trimmedClaim, url }),
     });
 
-    const text = await upstream.text();
-    const json = text ? JSON.parse(text) : {};
+    const data = await verifyResp.json();
 
-    if (!upstream.ok) {
-      return res.status(upstream.status).json({ error: json?.error || "Verification failed" });
+    if (!verifyResp.ok) {
+      return res.status(500).json({
+        error: "Verification failed",
+        upstream: data
+      });
     }
 
-    return res.status(200).json(json);
+    return res.status(200).json(data);
+
   } catch (err: any) {
-    return res.status(500).json({ error: err?.message || "Internal server error" });
+    return res.status(500).json({
+      error: "Reality scan crashed",
+      message: err?.message ?? "Unknown error",
+      stage: "reality-scan"
+    });
   }
 }

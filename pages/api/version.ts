@@ -1,27 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import packageJson from "../../package.json";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const commit =
-    process.env.VERCEL_GIT_COMMIT_SHA ||
-    process.env.COMMIT_SHA ||
-    process.env.BUILD_SHA ||
-    "unknown";
+type VersionResponse = {
+  commit?: string;
+  branch?: string;
+  buildTime?: string;
+  error?: string;
+};
 
-  const buildId =
-    process.env.NEXT_PUBLIC_BUILD_ID ||
-    commit ||
-    "unknown";
+const TOKEN = process.env.VERSION_TOKEN;
 
-  const generatedAt =
-    process.env.BUILD_TIME ||
-    new Date().toISOString();
+export default function handler(req: NextApiRequest, res: NextApiResponse<VersionResponse>) {
+  if (TOKEN) {
+    const provided = req.query.token;
+    if (!provided || provided !== TOKEN) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+  }
 
-  res.status(200).json({
-    name: packageJson.name,
-    version: packageJson.version,
-    buildId,
-    commit,
-    generatedAt,
+  return res.status(200).json({
+    commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_COMMIT || "unknown",
+    branch: process.env.VERCEL_GIT_COMMIT_REF || process.env.GIT_BRANCH || "unknown",
+    buildTime: new Date().toISOString(),
   });
 }

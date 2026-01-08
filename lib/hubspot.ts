@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from './prisma';
 
 // HubSpot OAuth configuration
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID || '';

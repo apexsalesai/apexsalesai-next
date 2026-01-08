@@ -6,10 +6,8 @@ import Head from 'next/head';
 import React from 'react';
 import Markdown from 'react-markdown';
 import Navbar from '../../components/Navbar';
-import { PrismaClient } from '@prisma/client';
 import BlogArticleClient from './BlogArticleClient';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function generateStaticParams() {
   // Check both locations for blog posts
@@ -83,19 +81,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function BlogPostPage({ params: { slug } }: { params: { slug: string } }) {
   // First, try to find the post in the database (for AI-generated posts)
-  try {
-    const dbPost = await prisma.blogPost.findUnique({
-      where: { slug },
-      select: {
-        title: true,
-        content: true,
-        excerpt: true,
-        image: true,
-        author: true,
-        publishedAt: true,
-        tags: true,
-      }
-    });
+  // Skip database during build time to avoid SSG errors
+  const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+  
+  if (!isBuildTime) {
+    try {
+      const dbPost = await prisma.blogPost.findUnique({
+        where: { slug },
+        select: {
+          title: true,
+          content: true,
+          excerpt: true,
+          image: true,
+          author: true,
+          publishedAt: true,
+          tags: true,
+        }
+      });
 
     if (dbPost && dbPost.publishedAt) {
       // Found in database - render it
@@ -170,9 +172,10 @@ export default async function BlogPostPage({ params: { slug } }: { params: { slu
         </>
       );
     }
-  } catch (error) {
-    console.error('Error fetching post from database:', error);
-    // Fall through to markdown file lookup
+    } catch (error) {
+      console.error('Error fetching post from database:', error);
+      // Fall through to markdown file lookup
+    }
   }
 
   // If not in database, try markdown files (for legacy posts)
