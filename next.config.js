@@ -2,6 +2,8 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable Turbopack for compatibility
+  turbopack: {},
   // Disable Vercel toolbar for production
   devIndicators: {
     position: 'bottom-right',
