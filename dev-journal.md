@@ -2369,3 +2369,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-09: merge: production-prooflayer into main
 - ✅ 2026-01-09: update-nextjs-security
 - ✅ 2026-01-09: force-deploy-nextjs16
+- ✅ 2026-01-09: nextjs-16-with-npmrc
