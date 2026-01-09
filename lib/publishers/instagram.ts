@@ -28,7 +28,8 @@ export async function publish(context: PublishContext): Promise<PublishResult> {
 
     // Decrypt access token
     const accessToken = decrypt(token.accessToken);
-    const igUserId = token.metadata?.igUserId;
+    const metadata = token.metadata as { igUserId?: string } | null;
+    const igUserId = metadata?.igUserId;
 
     if (!igUserId) {
       return {
@@ -42,7 +43,8 @@ export async function publish(context: PublishContext): Promise<PublishResult> {
 
     // Note: Instagram requires an image URL for posts
     // This is a simplified implementation - full version needs image handling
-    const imageUrl = context.asset.metadata?.imageUrl;
+    const assetMetadata = context.asset.metadata as { imageUrl?: string } | null;
+    const imageUrl = assetMetadata?.imageUrl;
 
     if (!imageUrl) {
       return {
