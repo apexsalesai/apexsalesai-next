@@ -5,8 +5,21 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// Type definition for jobs
+type PublishJob = {
+  id: string;
+  platform: string;
+  status: string;
+  scheduledAt: string | null;
+  postedAt: string | null;
+  postUrl: string | null;
+  errorMessage: string | null;
+  assetId: string;
+  createdAt: string;
+};
+
 // Mock data
-const mockJobs = [
+const mockJobs: PublishJob[] = [
   {
     id: '1',
     platform: 'linkedin',
