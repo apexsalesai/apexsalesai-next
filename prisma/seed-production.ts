@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, BlogPostStatus } from '@prisma/client';
 const prisma = new PrismaClient();
 
 /**
@@ -467,7 +467,7 @@ As AI becomes more capable, the stakes get higher. Organizations that prioritize
 **Trust is the foundation of AI adoption. At ApexSalesAI, we're committed to earning yours.**`,
       excerpt: 'Enterprise compliance for AI-driven sales platforms: Learn how ApexSalesAI ensures transparency, auditability, and GDPR compliance.',
       slug: slugify('Building Trust in AI-Driven Revenue Operations'),
-      status: 'PUBLISHED',
+      status: BlogPostStatus.PUBLISHED,
       publishedAt: new Date('2025-10-05'),
       createdBy: 'system',
       author: 'ApexSalesAI Editorial Team',
@@ -481,7 +481,7 @@ As AI becomes more capable, the stakes get higher. Organizations that prioritize
     await prisma.blogPost.upsert({
       where: { slug: blog.slug },
       update: {},
-      create: blog,
+      create: blog as any,
     });
   }
   console.log(`  ✅ BlogPosts (${blogCount + newBlogCount} total, ${newBlogCount} new)`);
