@@ -2366,3 +2366,4 @@ Only pages/api/entra/ routes should exist for Vercel serverless functions.
 - ✅ 2026-01-06: force-nodejs-runtime-for-prisma-routes
 - ✅ 2026-01-08: chore: add claude code team scaffold (memory, agents, commands, hooks)
 - ✅ 2026-01-08: hotfix: restore pages reality-scan POST and stub llm-verify
+- ✅ 2026-01-09: merge: production-prooflayer into main
