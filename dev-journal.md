@@ -1768,3 +1768,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2026-01-09: fix-node-fetch-import-use-native-fetch
 - ✅ 2026-01-09: fix-params-null-check-studio-page
 - ✅ 2026-01-09: fix-cookies-api-nextjs15-async-await
+- ✅ 2026-01-09: fix-metadata-type-assertions-all-publishers
