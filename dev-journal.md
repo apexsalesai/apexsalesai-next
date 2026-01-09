@@ -1766,3 +1766,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2026-01-09: add-npmrc-for-legacy-peer-deps
 - ✅ 2026-01-09: fix-typescript-error-publish-route
 - ✅ 2026-01-09: fix-node-fetch-import-use-native-fetch
+- ✅ 2026-01-09: fix-params-null-check-studio-page
