@@ -1774,3 +1774,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2026-01-09: fix-seed-premium-type-assertions
 - ✅ 2026-01-09: fix-blog-post-status-enum-type
 - ✅ 2026-01-09: fix-seed-ts-type-assertions-and-agent-fields
+- ✅ 2026-01-13: exclude-scripts-from-typescript-build
