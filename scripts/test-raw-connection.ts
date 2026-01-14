@@ -3,6 +3,7 @@
  */
 
 import 'dotenv/config';
+// @ts-ignore
 import { Client } from 'pg';
 
 async function testConnection() {

@@ -25,7 +25,7 @@ export const PublishRequestSchema = z.object({
   assetId: z.string().cuid(),
   platform: PlatformEnum,
   scheduledAt: z.string().datetime().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export type PublishRequest = z.infer<typeof PublishRequestSchema>;
@@ -36,7 +36,7 @@ export const CareerProfileSchema = z.object({
   bio: z.string().min(10).max(5000),
   skills: z.array(z.string()).max(50),
   portfolioUrls: z.array(z.string().url()).max(20),
-  socialLinks: z.record(z.string().url()).optional(),
+  socialLinks: z.record(z.string(), z.string().url()).optional(),
   visibility: z.enum(['private', 'org', 'public']).optional(),
 });
 
@@ -103,11 +103,10 @@ export const publishBase = z.object({
   scheduledAt: z.string().datetime().optional(),
 });
 
-export const publishEmail = z.object({
-  assetId: z.string().min(1),
-  to: z.union([z.string().email(), z.array(z.string().email())]),
-  subject: z.string().optional(),
-  scheduledAt: z.string().datetime().optional(),
+export const publishEmail = publishBase.extend({
+  provider: z.enum(['resend', 'sendgrid']).default('resend'),
+  to: z.array(z.string().email()).min(1),
+  subject: z.string().min(1),
 });
 
 export const publishBlog = publishBase.extend({
@@ -122,8 +121,10 @@ export const publishX = publishBase;
 
 export const publishSocial = z.object({
   assetId: z.string().min(1),
-  text: z.string().optional(),
+  title: z.string().optional(),
+  body: z.string().optional(),
   scheduledAt: z.string().datetime().optional(),
+  channels: z.array(z.enum(['blog', 'email', 'linkedin', 'x'])).min(1),
 });
 
 // Helper function to validate and parse
@@ -135,7 +136,7 @@ export function validateRequest<T>(
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const messages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      const messages = error.issues.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`);
       throw new Error(`Validation failed: ${messages.join(', ')}`);
     }
     throw error;

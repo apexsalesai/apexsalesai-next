@@ -1,5 +1,4 @@
 // Sends a notification to a Microsoft Teams channel via Incoming Webhook
-import fetch from 'node-fetch';
 
 export async function sendTeamsNotification(title: string, message: string) {
   const webhookUrl = process.env.TEAMS_WEBHOOK_URL;

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { assetId, text, scheduledAt } = validation.data;
+    const { assetId, body: text, scheduledAt } = validation.data;
 
     // Check for LinkedIn credentials
     if (!process.env.LINKEDIN_ACCESS_TOKEN || !process.env.LINKEDIN_ACTOR_URN) {

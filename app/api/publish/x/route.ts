@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { assetId, text, scheduledAt } = validation.data;
+    const { assetId, body: text, scheduledAt } = validation.data;
 
     // Check for Twitter credentials
     if (!process.env.TWITTER_BEARER_TOKEN) {

@@ -122,6 +122,7 @@ async function testAgents(): Promise<boolean> {
 async function testAPIs(): Promise<boolean> {
   console.log('🌐 Validating APIs...');
   try {
+    // @ts-ignore
     const fetch = (await import('node-fetch')).default;
     
     // Test campaign creation
@@ -199,6 +200,7 @@ async function checkDatabase(): Promise<boolean> {
 async function verifyLegacyCleanup(): Promise<boolean> {
   console.log('🧹 Checking for legacy API noise...');
   try {
+    // @ts-ignore
     const fetch = (await import('node-fetch')).default;
     const res = await fetch('http://localhost:3000/api/posts');
     
