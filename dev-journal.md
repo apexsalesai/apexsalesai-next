@@ -1776,3 +1776,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2026-01-09: fix-seed-ts-type-assertions-and-agent-fields
 - ✅ 2026-01-13: exclude-scripts-from-typescript-build
 - ✅ 2026-01-13: upgrade-nextjs-15.1.6-for-vercel-security
+- ✅ 2026-01-14: enable-postinstall-scripts-for-prisma-generate
