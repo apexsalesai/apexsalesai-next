@@ -25,7 +25,7 @@ export const PublishRequestSchema = z.object({
   assetId: z.string().cuid(),
   platform: PlatformEnum,
   scheduledAt: z.string().datetime().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export type PublishRequest = z.infer<typeof PublishRequestSchema>;
@@ -36,7 +36,7 @@ export const CareerProfileSchema = z.object({
   bio: z.string().min(10).max(5000),
   skills: z.array(z.string()).max(50),
   portfolioUrls: z.array(z.string().url()).max(20),
-  socialLinks: z.record(z.string().url()).optional(),
+  socialLinks: z.record(z.string(), z.string().url()).optional(),
   visibility: z.enum(['private', 'org', 'public']).optional(),
 });
 
@@ -136,7 +136,7 @@ export function validateRequest<T>(
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const messages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      const messages = error.issues.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`);
       throw new Error(`Validation failed: ${messages.join(', ')}`);
     }
     throw error;

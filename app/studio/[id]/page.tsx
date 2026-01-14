@@ -34,7 +34,7 @@ interface Version {
 export default function WorkspacePage() {
   const params = useParams();
   const router = useRouter();
-  const campaignId = params.id as string;
+  const campaignId = params?.id as string;
   
   const { campaign, error, isLoading, mutate } = useCampaign(campaignId);
   

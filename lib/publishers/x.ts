@@ -69,7 +69,7 @@ export async function publish(context: PublishContext): Promise<PublishResult> {
 
     const data = await response.json();
     const tweetId = data.data.id;
-    const username = token.metadata?.username || 'user';
+    const username = (token.metadata as any)?.username || 'user';
     const tweetUrl = `https://twitter.com/${username}/status/${tweetId}`;
 
     return {

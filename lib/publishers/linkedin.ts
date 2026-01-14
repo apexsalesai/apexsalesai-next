@@ -42,7 +42,7 @@ export async function publish(context: PublishContext): Promise<PublishResult> {
 
     // Build LinkedIn UGC post payload
     const payload = {
-      author: `urn:li:person:${token.metadata?.personId || 'me'}`,
+      author: `urn:li:person:${(token.metadata as any)?.personId || 'me'}`,
       lifecycleState: 'PUBLISHED',
       specificContent: {
         'com.linkedin.ugc.ShareContent': {

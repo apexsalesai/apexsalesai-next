@@ -1,0 +1,11 @@
+{
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "slack"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)"
+    ]
+  }
+}

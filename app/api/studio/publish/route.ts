@@ -6,7 +6,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mock data
-const mockJobs = [
+type MockJob = {
+  id: string;
+  platform: string;
+  status: string;
+  scheduledAt: string | null;
+  postedAt: string | null;
+  postUrl: string | null;
+  errorMessage: string | null;
+  assetId: string;
+  createdAt: string;
+};
+
+const mockJobs: MockJob[] = [
   {
     id: '1',
     platform: 'linkedin',
@@ -48,7 +60,7 @@ export async function POST(req: NextRequest) {
     const { platform, scheduledAt } = body;
 
     // Create mock job
-    const newJob = {
+    const newJob: MockJob = {
       id: String(mockJobs.length + 1),
       platform,
       status: scheduledAt ? 'queued' : 'posting',

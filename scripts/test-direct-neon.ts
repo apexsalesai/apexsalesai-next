@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Client } from 'pg';
 
 const connectionString = "postgresql://neondb_owner:pg_6Dwv1hS0YKkq@ep-misty-surf-adv6olws-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require";
