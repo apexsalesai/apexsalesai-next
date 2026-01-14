@@ -1765,3 +1765,4 @@ THIS IS THE FUTURE OF CONTENT GENERATION!
 - ✅ 2026-01-14: restore-october-working-version-nextjs-15.0.3
 - ✅ 2026-01-14: restore-correct-homepage-with-proper-navigation
 - ✅ 2026-01-14: add-npmrc-for-vercel-build
+- ✅ 2026-01-14: fix-dashboard-redirect-to-operator-agent
