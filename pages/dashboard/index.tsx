@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-// Redirect to the Simple Dashboard (operator-agent has runtime errors)
+// Redirect to the Apex AI Revenue Operator Dashboard
 export default function DashboardIndex() {
   const router = useRouter();
   
   useEffect(() => {
-    // Redirect to the simple dashboard
-    router.replace('/dashboard/simple');
+    // Redirect to the operator agent dashboard
+    router.replace('/dashboard/operator-agent');
   }, [router]);
   
   // Return a loading state while redirecting
