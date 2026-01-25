@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(npx lighthouse:*)",
+      "Bash(cat:*)",
+      "Bash(python3:*)",
+      "Bash(start C:/Users/apexs/lyfye-website/lighthouse-report.report.html)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run seed:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(vercel:*)",
+      "Bash(git add:*)",
+      "Bash(npm run lint)",
+      "Bash(node --version:*)",
+      "Bash(npm:*)",
+      "Bash(npx tsx:*)",
+      "Bash(git remote:*)",
+      "Bash(gh api:*)",
+      "Bash(node test-tiering.js:*)"
+    ]
+  }
+}
