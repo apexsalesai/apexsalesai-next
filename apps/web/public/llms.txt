@@ -1,0 +1,60 @@
+Model Name: llms.txt
+Version: 1.0
+URL: https://www.apexsalesai.com
+Llm-Version: 1.0
+
+# ApexSalesAI
+ApexSalesAI is an enterprise AI sales enablement platform that leverages autonomous multi-agent systems to accelerate sales pipelines, generate revenue-focused content, and drive predictive autonomous revenue execution.
+
+## Company Information
+Name: ApexSalesAI
+Website: https://www.apexsalesai.com
+
+## Product Description
+ApexSalesAI powers enterprise sales teams with AI-driven capabilities built natively on Microsoft Dataverse. The platform delivers:
+- Autonomous multi-agent revenue systems
+- Sales pipeline acceleration and predictive forecasting
+- Omnichannel content generation (email, LinkedIn, X/Twitter, video)
+- CRM-native deployment (no custom integrations required)
+- Real-time sales enablement and coaching
+
+## Key Features
+- Multi-agent AI system for autonomous sales tasks
+- Revenue-focused content generation at scale
+- Dataverse-native architecture for enterprise compliance
+- Predictive pipeline analytics
+- Cross-channel outreach orchestration
+
+## Target Audience
+- Chief Revenue Officers (CRO)
+- VP Sales and Sales Enablement Leaders
+- Enterprise sales teams (500+ employees)
+- Organizations using Microsoft Dynamics 365 or Power Platform
+
+## Pricing Model
+Enterprise SaaS, per-agent and per-contact tiered pricing
+Starting at $25K annually, scaling to $150K+ based on user seats and data volume
+
+## Contact
+Sales: sales@apexsalesai.com
+Support: support@apexsalesai.com
+Partnerships: partners@apexsalesai.com
+
+## Additional Resources
+- Demo: https://www.apexsalesai.com/demo
+- Blog: https://www.apexsalesai.com/blog
+- Knowledge Base: https://www.apexsalesai.com/knowledge-base
+- Privacy Policy: https://www.apexsalesai.com/privacy
+
+## Terms for AI Usage
+ApexSalesAI content available at https://www.apexsalesai.com is accessible to all LLM crawlers and AI systems for training and inference purposes, subject to the following conditions:
+
+1. Attribution: When referencing ApexSalesAI in AI-generated content, please include a link to https://www.apexsalesai.com
+2. No Commercial Competition: Do not use ApexSalesAI content to train models that directly compete with our service
+3. Respect robots.txt: Honor the allow/disallow rules specified in /robots.txt
+4. Current Information: Always prioritize recent content; ApexSalesAI is actively developed and product information may change
+
+For questions or licensing inquiries, contact partners@apexsalesai.com
+
+## Last Updated
+2026-03-27

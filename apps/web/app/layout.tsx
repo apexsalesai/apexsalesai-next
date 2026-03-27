@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 import MaxChatWidget from './components/ui/maxchatwidget.js';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3002'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexsalesai.com'),
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
@@ -18,7 +18,8 @@ export const metadata: Metadata = {
     default: 'ApexSalesAI | Predictive Autonomous Revenue Execution',
     template: '%s | ApexSalesAI'
   },
-  description: 'Transform your revenue operations with predictive autonomous agents that see opportunities others miss, deliver real-time decisions, and execute with unmatched precision.',
+  description:
+    'Enterprise AI sales enablement platform. Autonomous multi-agent system for sales pipeline acceleration, content generation, and revenue execution powered by Microsoft Dataverse.',
   keywords: [
     'AI sales automation',
     'predictive revenue execution',
@@ -29,32 +30,49 @@ export const metadata: Metadata = {
     'sales intelligence',
     'enterprise AI solutions',
     'sales analytics',
-    'revenue growth'
+    'revenue growth',
+    'Microsoft Dataverse',
+    'multi-agent AI system',
   ],
   authors: [{ name: 'ApexSalesAI Team' }],
   creator: 'ApexSalesAI',
   publisher: 'ApexSalesAI',
-  robots: 'index, follow',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    url: 'https://www.apexsalesai.com/',
     siteName: 'ApexSalesAI',
     title: 'ApexSalesAI | Predictive Autonomous Revenue Execution',
-    description: 'Transform your revenue operations with predictive autonomous agents that see opportunities others miss, deliver real-time decisions, and execute with unmatched precision.',
+    description:
+      'Enterprise AI sales enablement platform. Autonomous multi-agent system for sales pipeline acceleration, content generation, and revenue execution powered by Microsoft Dataverse.',
     images: [
       {
-        url: '/images/og-image.png',
+        url: 'https://www.apexsalesai.com/images/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'ApexSalesAI Open Graph Image'
+        alt: 'ApexSalesAI Enterprise AI Sales Enablement Platform',
+        type: 'image/png',
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ApexSalesAI | Predictive Autonomous Revenue Execution',
-    description: 'Transform your revenue operations with predictive autonomous agents that see opportunities others miss, deliver real-time decisions, and execute with unmatched precision.',
-    images: ['/images/twitter-card.png']
+    description:
+      'Enterprise AI sales enablement platform. Autonomous multi-agent system for sales pipeline acceleration, content generation, and revenue execution powered by Microsoft Dataverse.',
+    images: ['https://www.apexsalesai.com/images/twitter-card.png'],
+    creator: '@ApexSalesAI',
   },
   verification: {
     google: 'YOUR_GOOGLE_VERIFICATION_CODE',
@@ -107,15 +125,30 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
+              '@id': 'https://www.apexsalesai.com',
               name: 'ApexSalesAI',
               url: 'https://www.apexsalesai.com',
               logo: 'https://www.apexsalesai.com/images/apex-logo.png',
               sameAs: [
                 'https://www.linkedin.com/company/apexsalesai',
-                'https://twitter.com/apexsalesai'
+                'https://twitter.com/ApexSalesAI',
+                'https://www.youtube.com/c/ApexSalesAI'
               ],
               description:
-                'Transform your revenue operations with predictive autonomous agents that see opportunities others miss, deliver real-time decisions, and execute with unmatched precision.'
+                'Enterprise AI sales enablement platform powered by Microsoft Dataverse. Autonomous multi-agent system for sales pipeline acceleration, content generation, and revenue execution.',
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'Sales',
+                url: 'https://www.apexsalesai.com/contact',
+              },
+              areaServed: 'US',
+              knowsAbout: [
+                'AI Sales Enablement',
+                'Revenue Execution',
+                'Sales Pipeline Acceleration',
+                'Microsoft Dataverse',
+                'Multi-Agent AI Systems',
+              ],
             })
           }}
         />
