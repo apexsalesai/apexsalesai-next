@@ -3,13 +3,24 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { BreadcrumbJsonLd, FAQPageJsonLd } from '../components/seo/json-ld';
 
 // Only one set of helpers above. No duplicates below.
 
-export default function DemoPage() {    
+export default function DemoPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   return (
     <main className="min-h-screen bg-[#0d1321] text-[#e2e8f0] py-12">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Request Demo', url: 'https://www.apexsalesai.com/demo' },
+      ]} />
+      <FAQPageJsonLd items={[
+        { question: 'How long does a typical demo session last?', answer: 'Our standard demo sessions are scheduled for 30 minutes, with an additional 15 minutes for Q&A.' },
+        { question: 'Is the demo customized to my business?', answer: 'Absolutely! We tailor every demo to your industry, team size, and specific goals.' },
+        { question: 'What happens after I request early access?', answer: 'Our team will reach out as soon as the live demo is available to schedule your session and discuss your needs.' },
+        { question: 'Can I invite colleagues to the demo?', answer: 'Yes, you can invite as many team members as you\'d like to join the session.' },
+      ]} />
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Hero Section */}
         <section className="text-center mb-16">

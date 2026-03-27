@@ -5,6 +5,7 @@ const ROICalculator = dynamic(() => import('../components/ROICalculator'), { ssr
 const ROIAnalysisPanel = dynamic(() => import('../components/ROIAnalysisPanel'), { ssr: false });
 import AnnualBillingToggle from './AnnualBillingToggle';
 import PricingCard from './PricingCard';
+import { SoftwareApplicationJsonLd, BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 import { useState } from 'react';
 
@@ -12,6 +13,19 @@ export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(true);
   return (
     <div className="min-h-screen bg-[#101522] text-white">
+      <SoftwareApplicationJsonLd
+        description="Enterprise SaaS pricing based on number of agents, contacts, and channels. Flexible plans for teams of all sizes."
+        offers={{
+          lowPrice: '499',
+          highPrice: '150000',
+          priceCurrency: 'USD',
+          description: 'Annual enterprise licensing with custom configurations',
+        }}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Pricing', url: 'https://www.apexsalesai.com/pricing' },
+      ]} />
       {/* Hero Section */}
       <section className="pt-20 pb-10 text-center bg-gradient-to-b from-[#101522] to-[#1a1e29]">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">Flexible Pricing. Immediate ROI.</h1>

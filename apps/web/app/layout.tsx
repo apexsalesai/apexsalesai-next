@@ -7,6 +7,7 @@ import Head from 'next/head';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MaxChatWidget from './components/ui/maxchatwidget.js';
+import { OrganizationJsonLd } from './components/seo/json-ld';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexsalesai.com'),
@@ -118,42 +119,10 @@ export default function RootLayout({
           gtag('js', new Date());
           gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX'}');
         `}</Script>
-        {/* Structured Data for Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              '@id': 'https://www.apexsalesai.com',
-              name: 'ApexSalesAI',
-              url: 'https://www.apexsalesai.com',
-              logo: 'https://www.apexsalesai.com/images/apex-logo.png',
-              sameAs: [
-                'https://www.linkedin.com/company/apexsalesai',
-                'https://twitter.com/ApexSalesAI',
-                'https://www.youtube.com/c/ApexSalesAI'
-              ],
-              description:
-                'Enterprise AI sales enablement platform powered by Microsoft Dataverse. Autonomous multi-agent system for sales pipeline acceleration, content generation, and revenue execution.',
-              contactPoint: {
-                '@type': 'ContactPoint',
-                contactType: 'Sales',
-                url: 'https://www.apexsalesai.com/contact',
-              },
-              areaServed: 'US',
-              knowsAbout: [
-                'AI Sales Enablement',
-                'Revenue Execution',
-                'Sales Pipeline Acceleration',
-                'Microsoft Dataverse',
-                'Multi-Agent AI Systems',
-              ],
-            })
-          }}
-        />
+        {/* Organization structured data now rendered via OrganizationJsonLd in body */}
       </Head>
       <body className="min-h-screen bg-[#0d1321]">
+        <OrganizationJsonLd />
         {/* Legacy Botpress/Botpress Cloud webchat scripts and code removed here. */}
         {/* New MaxChatWidget React component injected globally below. */}
         <div className="min-h-screen flex flex-col">

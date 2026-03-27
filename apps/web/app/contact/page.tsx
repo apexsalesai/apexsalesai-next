@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { ContactPointJsonLd, BreadcrumbJsonLd, FAQPageJsonLd } from '../components/seo/json-ld';
 
 // To enable live chat, insert your Intercom (or other provider) snippet in _app.tsx or _document.tsx.
 // For TypeScript, declare Intercom on window:
@@ -60,6 +61,17 @@ export default function Contact() {
 
   return (
     <div>
+      <ContactPointJsonLd />
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Contact', url: 'https://www.apexsalesai.com/contact' },
+      ]} />
+      <FAQPageJsonLd items={[
+        { question: 'How quickly can we implement ApexSalesAI?', answer: 'Most clients are fully operational within 2-4 weeks, depending on the complexity of your existing systems and integration requirements.' },
+        { question: 'Does ApexSalesAI integrate with our existing CRM?', answer: 'Yes, ApexSalesAI integrates with all major CRM platforms including Salesforce, HubSpot, Microsoft Dynamics, and others.' },
+        { question: 'How do you ensure data security and compliance?', answer: 'ApexSalesAI is SOC 2 Type II certified and GDPR compliant. We implement industry-leading encryption, access controls, and security protocols.' },
+        { question: 'What kind of support is included?', answer: 'All plans include access to our customer success team via chat, email, and scheduled calls. Enterprise plans include a dedicated customer success manager and 24/7 priority support.' },
+      ]} />
       <section className="pt-20 pb-16 relative">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/3 left-1/4 w-[30vw] h-[30vw] rounded-full bg-[#00c2cb] opacity-10 filter blur-[100px] z-0"></div>

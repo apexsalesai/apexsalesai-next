@@ -1,10 +1,22 @@
 // app/about/page.tsx
 import Link from 'next/link';
 import Image from 'next/image';
+import { BreadcrumbJsonLd, FAQPageJsonLd } from '../components/seo/json-ld';
 
 export default function About() {
   return (
     <>
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'About', url: 'https://www.apexsalesai.com/about' },
+      ]} />
+      <FAQPageJsonLd items={[
+        { question: "What is ApexSalesAI's mission?", answer: "To empower every organization to achieve more with predictive autonomous agents. We turn every customer moment into momentum." },
+        { question: "Who leads ApexSalesAI?", answer: "Our leadership team brings decades of experience in AI, enterprise sales, and technology. We are united by a single vision: to change the game for our customers." },
+        { question: "How can I join the team?", answer: "We are always looking for passionate, driven people. Visit our Careers page or reach out directly." },
+        { question: "What makes your culture unique?", answer: "We combine bold ambition with deep empathy. We celebrate big wins and learn from every challenge." },
+        { question: "How does ApexSalesAI support diversity?", answer: "We recruit globally. We listen deeply. We invest in every team member's growth. Diversity is not an initiative. It is who we are." },
+      ]} />
       <section className="pt-20 pb-16 relative bg-white dark:bg-[#0d1321]">
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           <div className="absolute top-1/3 left-1/4 w-[30vw] h-[30vw] rounded-full bg-[#00c2cb] opacity-10 filter blur-[100px] z-0"></div>

@@ -1,9 +1,14 @@
 'use client';
 import ConsultingSection from '../components/ConsultingSection';
+import { BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 export default function ConsultingPage() {
   return (
     <main className="bg-gradient-to-b from-white/90 to-[#f8fafc] min-h-screen">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Consulting', url: 'https://www.apexsalesai.com/consulting' },
+      ]} />
       {/* Hero Section */}
       <section className="py-24 bg-[#0d1321] text-white text-center">
         <div className="container mx-auto px-4">

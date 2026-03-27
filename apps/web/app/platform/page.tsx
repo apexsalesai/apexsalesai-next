@@ -1,9 +1,25 @@
 import Link from 'next/link';
 import DashboardTabs from '../components/DashboardTabs';
+import { SoftwareApplicationJsonLd, BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 export default function Platform() {
   return (
     <>
+      <SoftwareApplicationJsonLd
+        featureList={[
+          'Multi-agent AI system (Max & Mia)',
+          'Microsoft Dataverse native integration',
+          'Autonomous content generation across channels',
+          'Real-time sales pipeline acceleration',
+          'Advanced analytics and insights',
+          'Enterprise-grade security and compliance',
+          'Seamless team collaboration',
+        ]}
+      />
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Platform', url: 'https://www.apexsalesai.com/platform' },
+      ]} />
       <section className="pt-20 pb-16 relative text-center">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/3 left-1/4 w-[30vw] h-[30vw] rounded-full bg-[#00c2cb] opacity-10 filter blur-[100px] z-0"></div>

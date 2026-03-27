@@ -15,11 +15,14 @@ import HomeDashboardTabsClient from "./components/HomeDashboardTabsClient";
 import BeyondTraditionalSection from "./components/BeyondTraditionalSection";
 
 import SecuritySection from "./components/SecuritySection";
+import { WebSiteJsonLd, SoftwareApplicationJsonLd } from "./components/seo/json-ld";
 
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0d1321] text-[#e2e8f0]">
+      <WebSiteJsonLd />
+      <SoftwareApplicationJsonLd />
       {/* Hero Section */}
       <HeroSection />
 

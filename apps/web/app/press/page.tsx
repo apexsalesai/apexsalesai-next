@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 export default function Press() {
   return (
     <div className="min-h-screen bg-white text-[#052438]">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Press', url: 'https://www.apexsalesai.com/press' },
+      ]} />
       <section className="pt-24 pb-12 text-center bg-gradient-to-b from-[#00c2cb]/10 to-white">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4">ApexSalesAI Press & Media</h1>

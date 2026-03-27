@@ -1,9 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
+import { BreadcrumbJsonLd } from '../../components/seo/json-ld';
 
 export default function LeadNurturingPage() {
   return (
     <div className="container mx-auto px-4 py-16">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Solutions', url: 'https://www.apexsalesai.com/solutions' },
+        { name: 'Lead Nurturing', url: 'https://www.apexsalesai.com/solutions/lead-nurturing' },
+      ]} />
       {/* Hero Section */}
       <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
         <div className="flex-shrink-0">

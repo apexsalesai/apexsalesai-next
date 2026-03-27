@@ -1,9 +1,14 @@
 'use client';
 import React from 'react';
+import { BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 export default function ResellerPage() {
   return (
     <div className="bg-[#0d1321] text-slate-100 min-h-screen font-inter">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Reseller Program', url: 'https://www.apexsalesai.com/reseller' },
+      ]} />
       {/* Hero Section with Sharpened Value Prop */}
       <section className="hero py-20 text-center relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">

@@ -1,9 +1,26 @@
 'use client';
 import Link from "next/link";
+import { ProductJsonLd, BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 export default function AiAgentsPage() {
   return (
     <div className="min-h-screen bg-[#0d1321] text-[#e2e8f0]">
+      <ProductJsonLd
+        name="Max - AI Sales Agent"
+        description="Enterprise AI sales agent for autonomous content generation, pipeline acceleration, and campaign orchestration."
+        url="https://www.apexsalesai.com/ai-agents"
+        image="https://www.apexsalesai.com/images/og-image.png"
+      />
+      <ProductJsonLd
+        name="Mia - AI Content Strategist"
+        description="Content strategist AI agent for guided sales enablement, market insights, and multi-channel publishing."
+        url="https://www.apexsalesai.com/ai-agents"
+        image="https://www.apexsalesai.com/images/og-image.png"
+      />
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'AI Agents', url: 'https://www.apexsalesai.com/ai-agents' },
+      ]} />
       {/* Hero Section */}
       <section className="pt-28 pb-16 text-center bg-gradient-to-b from-[#00c2cb]/10 to-[#0d1321]">
         <div className="container mx-auto px-4">

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { NewsletterSubscribe } from '../components/NewsletterSubscribe';
 import Navbar from '../components/Navbar';
+import { BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 interface BlogPost {
   slug: string;
@@ -134,6 +135,10 @@ export default function BlogPage() {
 
   return (
     <>
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Blog', url: 'https://www.apexsalesai.com/blog' },
+      ]} />
       <Head>
         <title>Blog | ApexSalesAI</title>
         <meta name="description" content="Stay up to date with AI-powered GTM trends, sales execution strategies, and automation insights from ApexSalesAI." />

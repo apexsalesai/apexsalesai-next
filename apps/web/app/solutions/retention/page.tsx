@@ -1,9 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
+import { BreadcrumbJsonLd } from '../../components/seo/json-ld';
 
 export default function RetentionPage() {
   return (
     <div className="container mx-auto px-4 py-16">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'Solutions', url: 'https://www.apexsalesai.com/solutions' },
+        { name: 'Retention', url: 'https://www.apexsalesai.com/solutions/retention' },
+      ]} />
       {/* Hero Section */}
       <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
         <div className="flex-shrink-0">

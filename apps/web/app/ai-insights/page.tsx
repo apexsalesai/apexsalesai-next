@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChartBarIcon, ArrowTrendingUpIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { SparklesIcon } from '@heroicons/react/24/solid';
+import { BreadcrumbJsonLd } from '../components/seo/json-ld';
 
 const agentInsights = [
   {
@@ -34,6 +35,10 @@ const agentInsights = [
 export default function AIInsightsPage() {
   return (
     <div className="py-12">
+      <BreadcrumbJsonLd items={[
+        { name: 'Home', url: 'https://www.apexsalesai.com' },
+        { name: 'AI Insights', url: 'https://www.apexsalesai.com/ai-insights' },
+      ]} />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">AI Agent Insights</h1>
