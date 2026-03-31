@@ -1,0 +1,5 @@
+Contact: mailto:security@lyfye.com
+Expires: 2027-03-30T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://apexsalesai.com/.well-known/security.txt
+Policy: https://lyfye.com/security-policy
