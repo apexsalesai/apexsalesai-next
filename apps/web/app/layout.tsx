@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MaxChatWidget from './components/ui/maxchatwidget.js';
 import { OrganizationJsonLd } from './components/seo/json-ld';
+import { CookieConsentBanner } from './components/cookie-consent';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexsalesai.com'),
@@ -135,6 +136,7 @@ export default function RootLayout({
         <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 10000 }}>
           <MaxChatWidget />
         </div>
+        <CookieConsentBanner />
       </body>
     </html>
   );
